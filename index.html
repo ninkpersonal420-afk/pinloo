@@ -327,8 +327,22 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
 
 // Floating hashtag pills — static scatter, no animation loop
 (function() {
-  const leftTags  = ['#skincare','#affiliatemarketing','#beautytips','#workfromhome','#selfcare','#haircare','#fitness','#homegym','#mealprep','#momlife','#cozyhome','#budgetfinds','#organization','#naturalbeauty'];
-  const rightTags = ['#pinterestmarketing','#kitchengadgets','#homedecor','#veganrecipes','#travelhacks','#outdoorliving','#productivity','#budgetbeauty','#cleanbeauty','#gymlife','#wellnessjourney','#fashionfinds','#skincareroutine','#homestyle'];
+  const allTags = [
+    '#skincare','#affiliatemarketing','#beautytips','#workfromhome','#selfcare',
+    '#haircare','#fitness','#homegym','#mealprep','#momlife','#cozyhome',
+    '#budgetfinds','#organization','#naturalbeauty','#pinterestmarketing',
+    '#kitchengadgets','#homedecor','#veganrecipes','#travelhacks','#outdoorliving',
+    '#productivity','#budgetbeauty','#cleanbeauty','#gymlife','#wellnessjourney',
+    '#fashionfinds','#skincareroutine','#homestyle','#affordablebeauty','#healthyrecipes',
+    '#interiordesign','#plantmom','#crochet','#giftideas','#travelfinds',
+    '#lowcarbrecipes','#morningroutine','#bookrecommendations','#desksetup','#petcare',
+    '#weddinginspo','#crafting','#studymotivation','#minimalism','#capsulewardrobe',
+    '#foodphotography','#homeofficedecor','#weightloss','#selfcaresunday','#amazonfinds'
+  ];
+  // Shuffle and split into two distinct halves
+  const shuffled = allTags.slice().sort(() => Math.random() - 0.5);
+  const leftTags  = shuffled.slice(0, 14);
+  const rightTags = shuffled.slice(14, 28);
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
