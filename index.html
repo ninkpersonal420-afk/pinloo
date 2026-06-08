@@ -692,38 +692,46 @@ function toggleFaq(el) {
   if (!el) return;
 
   // Seed offset — increase this to bump the displayed number above the raw KV count
-  const SEED = 200;
-
   function formatCount(n) {
     if (n >= 1000000) return '✦ ' + (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M pins generated and counting';
     if (n >= 1000) return '✦ ' + (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k pins generated and counting';
     return '✦ ' + n.toLocaleString() + ' pins generated and counting';
   }
 
-  function animateTo(target) {
-    const duration = 1400;
+  let currentDisplayed = 0;
+
+  function animateTo(target, duration) {
+    duration = duration || 1200;
     const start = performance.now();
-    const from = 0;
+    const from = currentDisplayed;
+    if (from === target) return;
     function step(now) {
       const progress = Math.min((now - start) / duration, 1);
       const ease = 1 - Math.pow(1 - progress, 3);
       const current = Math.round(from + (target - from) * ease);
       el.textContent = formatCount(current);
       if (progress < 1) requestAnimationFrame(step);
+      else currentDisplayed = target;
     }
     requestAnimationFrame(step);
   }
 
   const wrap = document.getElementById('pin-counter-wrap');
-  try {
-    const res = await fetch('/pin-count');
-    const { count } = await res.json();
-    animateTo((count || 0) + SEED);
-  } catch (_) {
-    animateTo(SEED);
-  } finally {
-    if (wrap) wrap.style.opacity = '1';
+
+  async function fetchAndUpdate() {
+    try {
+      const res = await fetch('/pin-count');
+      const { count } = await res.json();
+      const n = count || 0;
+      if (n !== currentDisplayed) animateTo(n, currentDisplayed === 0 ? 1200 : 800);
+      if (wrap) wrap.style.opacity = '1';
+    } catch (_) {
+      if (wrap) wrap.style.opacity = '1';
+    }
   }
+
+  fetchAndUpdate();
+  setInterval(fetchAndUpdate, 10000);
 })();
 </script>
 </body>
