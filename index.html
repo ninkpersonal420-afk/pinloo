@@ -707,15 +707,14 @@ function toggleFaq(el) {
     requestAnimationFrame(step);
   }
 
+  const wrap = document.getElementById('pin-counter-wrap');
   try {
     const res = await fetch('/pin-count');
     const { count } = await res.json();
-    const display = (count || 0) + SEED;
-    animateTo(display);
+    animateTo((count || 0) + SEED);
   } catch (_) {
-    el.textContent = formatCount(SEED);
+    animateTo(SEED);
   } finally {
-    const wrap = document.getElementById('pin-counter-wrap');
     if (wrap) wrap.style.opacity = '1';
   }
 })();
