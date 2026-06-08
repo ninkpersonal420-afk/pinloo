@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Pinlo â€” Pinterest Pin Generator</title>
+<title>Pinlo — Pinterest Pin Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -173,7 +173,7 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .result-panel{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:1.75rem;margin-bottom:1.25rem;display:none;box-shadow:0 8px 32px rgba(245,146,74,0.1);}
 .result-panel.show{display:block;animation:fadeUp 0.35s ease;}
 
-/* â”€â”€ EMAIL GATE â”€â”€ */
+/* ── EMAIL GATE ── */
 .email-gate-overlay{position:fixed;inset:0;background:rgba(22,12,7,0.92);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.2s;}
 .email-gate-overlay.show{opacity:1;pointer-events:all;}
 .email-gate-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem 2rem;max-width:420px;width:100%;box-shadow:0 24px 80px rgba(22,12,7,0.4);text-align:center;transform:translateY(20px);transition:transform 0.3s;position:relative;}
@@ -193,7 +193,7 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .input-clear-x{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:var(--border);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);transition:background 0.15s,color 0.15s;padding:0;line-height:1;}
 .input-clear-x:hover{background:rgba(217,79,56,0.12);color:var(--red);}
 .field-clear{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text4);cursor:pointer;background:none;border:none;padding:5px 0 0 1px;font-family:'Outfit',sans-serif;letter-spacing:0.5px;text-transform:uppercase;transition:color 0.15s;white-space:nowrap;text-align:left;}
-.field-clear::before{content:'Ã—';font-size:14px;line-height:1;font-weight:400;}
+.field-clear::before{content:'×';font-size:14px;line-height:1;font-weight:400;}
 .field-clear:hover{color:var(--red);}
 
 [data-theme="light"] .header{background:linear-gradient(90deg,#FFF8F0,#FFF4EC);}
@@ -471,9 +471,9 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <button class="avatar-btn" id="avatar-btn" onclick="toggleAvatarDropdown()" aria-label="Account menu" title="Account">?</button>
       <div class="avatar-dropdown" id="avatar-dropdown">
         <div class="avatar-dropdown-email"><strong>Signed in as</strong><span id="avatar-dropdown-email-val"></span></div>
-        <button class="avatar-dropdown-item" id="avatar-manage-btn" onclick="openManageModal();closeAvatarDropdown()">ðŸ’³ Manage subscription</button>
-        <button class="avatar-dropdown-item" id="avatar-upgrade-btn" onclick="showPaywall();closeAvatarDropdown()">âš¡ Upgrade to Pro</button>
-        <button class="avatar-dropdown-item danger" onclick="closeAvatarDropdown();switchAccount()">â†© Sign out</button>
+        <button class="avatar-dropdown-item" id="avatar-manage-btn" onclick="openManageModal();closeAvatarDropdown()">💳 Manage subscription</button>
+        <button class="avatar-dropdown-item" id="avatar-upgrade-btn" onclick="showPaywall();closeAvatarDropdown()">⚡ Upgrade to Pro</button>
+        <button class="avatar-dropdown-item danger" onclick="closeAvatarDropdown();switchAccount()">↩ Sign out</button>
       </div>
     </div>
   </div>
@@ -598,22 +598,22 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
         <div class="field-header"><label>Pin goal</label></div>
         <div class="template-grid">
           <div class="template-card active" onclick="pickTemplate(this,'drive_clicks')">
-            <div class="template-card-icon">ðŸ–±ï¸</div>
+            <div class="template-card-icon">🖱️</div>
             <div class="template-card-label">Drive clicks</div>
             <div class="template-card-desc">Maximize link taps</div>
           </div>
           <div class="template-card" onclick="pickTemplate(this,'get_saves')">
-            <div class="template-card-icon">ðŸ”–</div>
+            <div class="template-card-icon">🔖</div>
             <div class="template-card-label">Get saves</div>
             <div class="template-card-desc">Build long-term reach</div>
           </div>
           <div class="template-card" onclick="pickTemplate(this,'sell_product')">
-            <div class="template-card-icon">ðŸ’°</div>
+            <div class="template-card-icon">💰</div>
             <div class="template-card-label">Sell product</div>
             <div class="template-card-desc">Push purchase intent</div>
           </div>
 <div class="template-card" onclick="pickTemplate(this,'inspire')">
-            <div class="template-card-icon">âœ¨</div>
+            <div class="template-card-icon">✨</div>
             <div class="template-card-label">Inspire</div>
             <div class="template-card-desc">Emotional connection</div>
           </div>
@@ -637,14 +637,14 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
 
     <div class="btn-row">
-      <button class="gen-btn" id="gen-btn" onclick="generatePin()"><span id="gen-btn-label">Generate 1 Pin</span><span id="gen-btn-spinner" style="display:none;margin-left:8px;">âŸ³</span></button>
+      <button class="gen-btn" id="gen-btn" onclick="generatePin()"><span id="gen-btn-label">Generate 1 Pin</span><span id="gen-btn-spinner" style="display:none;margin-left:8px;">⟳</span></button>
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <div class="qty-wrap">
           <button class="qty-btn" id="qty-down" onclick="changeQty(-1)" disabled>&#8722;</button>
           <span class="qty-val" id="qty-val">1</span>
           <button class="qty-btn" id="qty-up" onclick="changeQty(1)">+</button>
         </div>
-        <span id="qty-pro-hint" style="display:none;font-size:10px;color:var(--red);cursor:pointer;white-space:nowrap;" onclick="showPaywall('bulk')">Pro: up to 10 pins â†‘</span>
+        <span id="qty-pro-hint" style="display:none;font-size:10px;color:var(--red);cursor:pointer;white-space:nowrap;" onclick="showPaywall('bulk')">Pro: up to 10 pins ↑</span>
       </div>
     </div>
 
@@ -654,16 +654,16 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
 
     <div class="empty-state" id="empty-state">
-      <div style="font-size:40px;margin-bottom:1rem;opacity:0.15;">âœ¦</div>
+      <div style="font-size:40px;margin-bottom:1rem;opacity:0.15;">✦</div>
       <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;opacity:0.5;">Your next viral pin starts here</div>
-      <div style="font-size:13px;color:var(--text4);line-height:1.6;max-width:280px;margin:0 auto;">Describe your product above and hit Generate â€” Pinlo handles the rest</div>
+      <div style="font-size:13px;color:var(--text4);line-height:1.6;max-width:280px;margin:0 auto;">Describe your product above and hit Generate — Pinlo handles the rest</div>
     </div>
 
     <div class="result-panel" id="result-panel">
-      <div class="pin-img-strip"><span class="pin-img-strip-icon">ðŸ“Œ</span></div>
+      <div class="pin-img-strip"><span class="pin-img-strip-icon">📌</span></div>
       <div class="pin-preview-bar" style="border-radius:0;margin-top:0;">
-        <span class="pin-preview-bar-label">ðŸ“Œ Pin preview</span>
-        <span class="pin-preview-bar-niche" id="pin-niche-chip">â€”</span>
+        <span class="pin-preview-bar-label">📌 Pin preview</span>
+        <span class="pin-preview-bar-niche" id="pin-niche-chip">—</span>
       </div>
       <div class="result-panel-header">
         <div class="result-panel-title">Your pin</div>
@@ -676,7 +676,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div class="score-bar-wrap" id="score-wrap" style="display:none;">
         <div class="score-top">
           <span class="score-label">SEO Score</span>
-          <span class="score-num" id="score-num">â€”</span>
+          <span class="score-num" id="score-num">—</span>
         </div>
         <div class="score-track"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
         <div class="score-breakdown" id="score-breakdown"></div>
@@ -730,14 +730,14 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
       <div id="niche-tips-wrap" style="display:none;"></div>
 
-      <!-- Pro upsell banner â€” shown for free users after generation -->
+      <!-- Pro upsell banner — shown for free users after generation -->
       <div id="pro-upsell-banner" style="display:none;margin-top:1.25rem;padding:1.1rem 1.25rem;background:linear-gradient(135deg,rgba(217,79,56,0.07),rgba(245,146,74,0.06));border:1.5px solid rgba(217,79,56,0.18);border-radius:14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
           <div>
             <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">Get more out of every pin</div>
-            <div style="font-size:12px;color:var(--text3);line-height:1.5;">SEO score Â· Bulk generate up to 10 pins Â· Pain point suggestions Â· Unlimited pins</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5;">SEO score · Bulk generate up to 10 pins · Pain point suggestions · Unlimited pins</div>
           </div>
-          <button onclick="showPaywall()" style="flex-shrink:0;padding:9px 18px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(217,79,56,0.25);">Upgrade to Pro â†’</button>
+          <button onclick="showPaywall()" style="flex-shrink:0;padding:9px 18px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(217,79,56,0.25);">Upgrade to Pro →</button>
         </div>
       </div>
     </div>
@@ -754,7 +754,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <!-- Free user history nudge -->
       <div id="history-pro-nudge" style="display:none;margin-bottom:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,rgba(217,79,56,0.07),rgba(245,146,74,0.06));border:1.5px solid rgba(217,79,56,0.18);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
         <div style="font-size:13px;color:var(--text2);line-height:1.5;"><strong style="color:var(--text);">Want more pins?</strong> You have 5 free generations. Pro removes the limit and adds bulk generation.</div>
-        <button onclick="showPaywall()" style="flex-shrink:0;padding:8px 16px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;">Upgrade to Pro â†’</button>
+        <button onclick="showPaywall()" style="flex-shrink:0;padding:8px 16px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;">Upgrade to Pro →</button>
       </div>
       <div id="history-container"></div>
     </div>
@@ -777,23 +777,23 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
       <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">ðŸ“ˆ</div>
-          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">SEO â€” Search Engine Optimization</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">📈</div>
+          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">SEO — Search Engine Optimization</div>
         </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">How your content gets found. On Pinterest, it means using the right keywords in your title and description so when someone searches "yoga mat for beginners," your pin shows up â€” not someone else's. Better SEO = more organic reach, more clicks, more commissions.</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">How your content gets found. On Pinterest, it means using the right keywords in your title and description so when someone searches "yoga mat for beginners," your pin shows up — not someone else's. Better SEO = more organic reach, more clicks, more commissions.</div>
       </div>
 
       <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,79,56,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">ðŸŽ¯</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,79,56,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">🎯</div>
           <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Pin Goal</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-left:42px;">
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Drive clicks</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Curiosity + urgency â€” gets people to tap your link</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Get saves</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Bookmark-worthy content â€” saves drive long-term traffic</div></div>
+          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Drive clicks</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Curiosity + urgency — gets people to tap your link</div></div>
+          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Get saves</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Bookmark-worthy content — saves drive long-term traffic</div></div>
           <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Sell product</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Benefit-led copy that pushes toward buying</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Educate</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">How-to content â€” high saves, builds authority</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Inspire</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Emotional hooks â€” great for lifestyle niches</div></div>
+          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Educate</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">How-to content — high saves, builds authority</div></div>
+          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Inspire</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Emotional hooks — great for lifestyle niches</div></div>
           <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Build followers</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Drives people to your profile, not just a product</div></div>
         </div>
       </div>
@@ -804,21 +804,21 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
           <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Tone</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;padding-left:42px;">
-          <div style="font-size:13px;color:var(--text2);line-height:1.6;">Tone is set automatically based on your pin goal â€” urgent for clicks, casual for selling, inspirational for saves and inspire pins. This keeps the copy consistent without extra decisions.</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6;">Tone is set automatically based on your pin goal — urgent for clicks, casual for selling, inspirational for saves and inspire pins. This keeps the copy consistent without extra decisions.</div>
         </div>
       </div>
 
       <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">ðŸ’°</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">💰</div>
           <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Affiliate Marketing</div>
         </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">You get a unique link for each product you promote. When someone clicks your pin and buys through your link, you earn a percentage of the sale â€” typically 1â€“10%. No inventory, no customers, no fulfilment. You create the pin, they buy, you get paid.</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">You get a unique link for each product you promote. When someone clicks your pin and buys through your link, you earn a percentage of the sale — typically 1–10%. No inventory, no customers, no fulfilment. You create the pin, they buy, you get paid.</div>
       </div>
 
       <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">ðŸ·ï¸</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">🏷️</div>
           <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Niche</div>
         </div>
         <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">Your content category. Niche accounts perform better because Pinterest recommends your content to people already interested in that topic. Pinlo uses your niche to write copy that matches what your audience is actually searching for.</div>
@@ -826,10 +826,10 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
       <div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.5rem 0;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,79,56,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">âš¡</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,79,56,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">⚡</div>
           <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">SEO Score</div>
         </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">Pinlo scores each pin from 0â€“100 based on keyword placement, title length, and description quality. <strong style="color:var(--green-text);">80+</strong> is well-optimized. <strong style="color:var(--amber-text);">60â€“79</strong> is solid. <strong style="color:var(--red);">Below 60</strong> means it could rank better â€” regenerate and compare. <em style="color:var(--text3);">Pro feature.</em></div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">Pinlo scores each pin from 0–100 based on keyword placement, title length, and description quality. <strong style="color:var(--green-text);">80+</strong> is well-optimized. <strong style="color:var(--amber-text);">60–79</strong> is solid. <strong style="color:var(--red);">Below 60</strong> means it could rank better — regenerate and compare. <em style="color:var(--text3);">Pro feature.</em></div>
       </div>
 
     </div>
@@ -851,7 +851,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
       <!-- Story -->
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.75rem;margin-bottom:1rem;box-shadow:var(--shadow);">
-        <div style="font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:1.25rem;">A title and description for every single pin, every single day. It sounds small. It isn't. If you're posting consistently across a few niches, you're making dozens of these decisions a week â€” getting the keywords right, making the hook strong enough to stop a scroll, keeping the description from sounding like a product listing.</div>
+        <div style="font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:1.25rem;">A title and description for every single pin, every single day. It sounds small. It isn't. If you're posting consistently across a few niches, you're making dozens of these decisions a week — getting the keywords right, making the hook strong enough to stop a scroll, keeping the description from sounding like a product listing.</div>
         <div style="font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:1.25rem;">I tried ChatGPT. Generic. Didn't understand how Pinterest search works. Templates. Too rigid. Nothing out there was actually built for Pinterest affiliate marketing specifically.</div>
         <div style="font-size:15px;color:var(--text2);line-height:1.9;">So I built Pinlo. It knows what a Pinterest title needs to do. It knows the description has to lead with a problem, not a product name. You put in what you're promoting and it takes care of the rest.</div>
       </div>
@@ -877,7 +877,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
         <div style="width:52px;height:52px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Playfair Display',serif;box-shadow:0 4px 14px rgba(217,79,56,0.3);">N</div>
         <div>
           <div style="font-size:16px;font-weight:700;color:var(--text);">Nicholas</div>
-          <div style="font-size:13px;color:var(--text3);margin-top:2px;">Founder Â· Pinterest affiliate marketer Â· Built Pinlo for myself, then for you</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:2px;">Founder · Pinterest affiliate marketer · Built Pinlo for myself, then for you</div>
         </div>
       </div>
     </div>
@@ -898,7 +898,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);">Common questions</div>
       <div class="support-faq-item" onclick="this.classList.toggle('open')">
         <div class="support-faq-q">Why did my pin count go down? <span class="support-faq-icon">+</span></div>
-        <div class="support-faq-a">Each time you click Generate, it uses one pin credit. Bulk generation counts each pin individually. Your count is tied to your email and saved on our server â€” it won't reset if you clear your browser.</div>
+        <div class="support-faq-a">Each time you click Generate, it uses one pin credit. Bulk generation counts each pin individually. Your count is tied to your email and saved on our server — it won't reset if you clear your browser.</div>
       </div>
       <div class="support-faq-item" onclick="this.classList.toggle('open')">
         <div class="support-faq-q">How do I upgrade to Pro? <span class="support-faq-icon">+</span></div>
@@ -935,7 +935,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
 
     <div id="support-success" style="display:none;text-align:center;padding:1.75rem;background:var(--green-bg);border:1px solid var(--green);border-radius:14px;margin-bottom:1rem;">
-      <div style="font-size:28px;margin-bottom:8px;">âœ“</div>
+      <div style="font-size:28px;margin-bottom:8px;">✓</div>
       <div style="font-size:16px;font-weight:700;color:var(--green-text);">Message sent!</div>
       <div style="font-size:13px;color:var(--text3);margin-top:4px;">We'll get back to you within 24 hours.</div>
     </div>
@@ -951,28 +951,28 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 <!-- EMAIL GATE -->
 <div class="email-gate-overlay" id="email-gate-overlay">
   <div class="email-gate-card">
-    <button onclick="hideEmailGate()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text4);line-height:1;padding:4px;" title="Close">Ã—</button>
+    <button onclick="hideEmailGate()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text4);line-height:1;padding:4px;" title="Close">×</button>
 
     <!-- Step 1: Email -->
     <div id="gate-step-email">
-      <div class="email-gate-icon">ðŸ“Œ</div>
+      <div class="email-gate-icon">📌</div>
       <div class="email-gate-title">Sign in to Pinlo</div>
       <div class="email-gate-sub">Enter your email and we'll send you a quick login code. No password needed.</div>
       <input type="email" class="email-gate-input" id="email-gate-input" placeholder="your@email.com" onkeydown="if(event.key==='Enter')submitEmailGate()"/>
       <div class="email-gate-error" id="email-gate-error">Please enter a valid email address.</div>
-      <button class="email-gate-btn" id="email-gate-btn" onclick="submitEmailGate()">Send login code â†’</button>
+      <button class="email-gate-btn" id="email-gate-btn" onclick="submitEmailGate()">Send login code →</button>
       <div class="email-gate-note">No spam. No password. Your 5 free pins are tied to this email.</div>
     </div>
 
     <!-- Step 2: OTP -->
     <div id="gate-step-otp" style="display:none;">
-      <div class="email-gate-icon">âœ‰ï¸</div>
+      <div class="email-gate-icon">✉️</div>
       <div class="email-gate-title">Check your email</div>
       <div class="email-gate-sub" id="gate-otp-sub">We sent a 6-digit code to <strong id="gate-otp-email-display"></strong></div>
       <input type="text" inputmode="numeric" maxlength="6" class="email-gate-input" id="otp-input" placeholder="000000" onkeydown="if(event.key==='Enter')submitOTP()" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="text-align:center;letter-spacing:6px;font-size:22px;font-weight:700;"/>
       <div class="email-gate-error" id="otp-error"></div>
-      <button class="email-gate-btn" id="otp-btn" onclick="submitOTP()">Verify code â†’</button>
-      <div class="email-gate-note"><span id="gate-resend-link" onclick="resetToEmailStep()" style="color:var(--red);cursor:pointer;text-decoration:underline;">Use a different email</span> Â· Code expires in 10 min</div>
+      <button class="email-gate-btn" id="otp-btn" onclick="submitOTP()">Verify code →</button>
+      <div class="email-gate-note"><span id="gate-resend-link" onclick="resetToEmailStep()" style="color:var(--red);cursor:pointer;text-decoration:underline;">Use a different email</span> · Code expires in 10 min</div>
     </div>
 
   </div>
@@ -987,24 +987,24 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem;">
       <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg3);border-radius:12px;">
-        <span style="font-size:22px;flex-shrink:0;width:28px;text-align:center;">âˆž</span>
+        <span style="font-size:22px;flex-shrink:0;width:28px;text-align:center;">∞</span>
         <div style="line-height:1.4;">
           <span style="font-size:14px;font-weight:700;color:var(--text);">Unlimited pins</span>
-          <span style="font-size:14px;color:var(--text3);"> â€” no daily cap, ever</span>
+          <span style="font-size:14px;color:var(--text3);"> — no daily cap, ever</span>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg3);border-radius:12px;">
-        <span style="font-size:22px;flex-shrink:0;width:28px;text-align:center;">âš¡</span>
+        <span style="font-size:22px;flex-shrink:0;width:28px;text-align:center;">⚡</span>
         <div style="line-height:1.4;">
           <span style="font-size:14px;font-weight:700;color:var(--text);">Bulk generate up to 10 pins</span>
-          <span style="font-size:14px;color:var(--text3);"> â€” batch your whole week at once</span>
+          <span style="font-size:14px;color:var(--text3);"> — batch your whole week at once</span>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg3);border-radius:12px;">
-        <span style="font-size:22px;flex-shrink:0;width:28px;text-align:center;">ðŸ§ </span>
+        <span style="font-size:22px;flex-shrink:0;width:28px;text-align:center;">🧠</span>
         <div style="line-height:1.4;">
           <span style="font-size:14px;font-weight:700;color:var(--text);">AI pain points & niche tips</span>
-          <span style="font-size:14px;color:var(--text3);"> â€” specific to your product, not generic</span>
+          <span style="font-size:14px;color:var(--text3);"> — specific to your product, not generic</span>
         </div>
       </div>
 
@@ -1019,21 +1019,21 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div class="plan-tile" id="plan-yr" onclick="pickPlan('yr')" style="padding:0.875rem;">
         <div class="plan-tile-name">Annual <span class="save-tag">Save 37%</span></div>
         <div class="plan-tile-price"><sup>$</sup>89.99<sub>/yr</sub></div>
-        <div class="plan-tile-note">$7.50/mo â€” best value</div>
+        <div class="plan-tile-note">$7.50/mo — best value</div>
       </div>
     </div>
 
-    <button class="pw-subscribe" onclick="handleSubscribe()" style="font-size:15px;padding:14px;">Start Pro â€” Unlimited Pins â†’</button>
+    <button class="pw-subscribe" onclick="handleSubscribe()" style="font-size:15px;padding:14px;">Start Pro — Unlimited Pins →</button>
     <div class="pw-fine" style="margin-top:8px;font-size:12px;">Cancel anytime. Stripe handles checkout.</div>
-    <a href="#" onclick="openManageModal();return false;" style="display:block;margin-top:14px;font-size:12px;color:var(--text3);text-decoration:none;text-align:center;">Already subscribed? <span style="color:var(--red);font-weight:600;text-decoration:underline;">Manage your subscription â†’</span></a>
-    <button class="pw-back" onclick="closePaywall()" style="margin-top:10px;font-size:13px;">â† Go back</button>
+    <a href="#" onclick="openManageModal();return false;" style="display:block;margin-top:14px;font-size:12px;color:var(--text3);text-decoration:none;text-align:center;">Already subscribed? <span style="color:var(--red);font-weight:600;text-decoration:underline;">Manage your subscription →</span></a>
+    <button class="pw-back" onclick="closePaywall()" style="margin-top:10px;font-size:13px;">← Go back</button>
   </div>
 </div>
 
 
 <div class="paywall-overlay" id="manage-overlay">
   <div class="paywall-box" style="max-width:380px;width:calc(100% - 2rem);padding:2rem;">
-    <div style="font-size:32px;text-align:center;margin-bottom:12px;">ðŸ”</div>
+    <div style="font-size:32px;text-align:center;margin-bottom:12px;">🔐</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;line-height:1.25;margin-bottom:10px;text-align:center;color:var(--text);">Manage your subscription</div>
     <div style="font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:1.5rem;text-align:center;">Stripe will email you a link to manage your subscription. From there you can cancel, update your card, or view invoices.</div>
     <div style="background:var(--bg3);border-radius:10px;padding:14px 18px;margin-bottom:1.5rem;font-size:13px;color:var(--text2);line-height:1.5;text-align:left;max-width:280px;margin-left:auto;margin-right:auto;">
@@ -1041,22 +1041,22 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span style="color:var(--red);font-weight:700;flex-shrink:0;width:14px;">2.</span><span>Stripe emails you a link</span></div>
       <div style="display:flex;align-items:flex-start;gap:12px;"><span style="color:var(--red);font-weight:700;flex-shrink:0;width:14px;">3.</span><span>Click it to manage your account</span></div>
     </div>
-    <button onclick="goToPortal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#D94F38 0%,#E8825C 100%);color:#fff;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(217,79,56,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Continue to Stripe â†’</button>
-    <button class="pw-back" onclick="closeManageModal()" style="margin-top:10px;font-size:13px;">â† Cancel</button>
+    <button onclick="goToPortal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#D94F38 0%,#E8825C 100%);color:#fff;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(217,79,56,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Continue to Stripe →</button>
+    <button class="pw-back" onclick="closeManageModal()" style="margin-top:10px;font-size:13px;">← Cancel</button>
   </div>
 </div>
 
 
 <footer style="position:relative;z-index:1;margin-top:48px;padding:24px 16px 32px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text3);">
   <div id="signed-in-row" style="display:none;margin-bottom:14px;font-size:12px;color:var(--text3);">
-    Signed in as <span id="signed-in-email" style="color:var(--text2);font-weight:600;"></span> Â· <a href="#" onclick="switchAccount();return false;" style="color:var(--red);text-decoration:none;font-weight:600;cursor:pointer;">Switch</a>
+    Signed in as <span id="signed-in-email" style="color:var(--text2);font-weight:600;"></span> · <a href="#" onclick="switchAccount();return false;" style="color:var(--red);text-decoration:none;font-weight:600;cursor:pointer;">Switch</a>
   </div>
   <div style="display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;line-height:1.6;">
     <a href="#" onclick="openManageModal();return false;" style="color:var(--text3);text-decoration:none;transition:color 0.15s;cursor:pointer;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">Manage subscription</a>
-    <span style="opacity:0.4;">Â·</span>
+    <span style="opacity:0.4;">·</span>
     <a href="mailto:pinlosupport@proton.me" style="color:var(--text3);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">Support</a>
   </div>
-  <div style="margin-top:12px;opacity:0.6;">Â© 2026 Pinlo. Checkout handled by Stripe.</div>
+  <div style="margin-top:12px;opacity:0.6;">© 2026 Pinlo. Checkout handled by Stripe.</div>
 </footer>
 
 <script>
@@ -1106,7 +1106,7 @@ function activatePro(plan) {
   const badge = document.getElementById('plan-badge');
   if (badge) { badge.textContent = 'PRO'; badge.style.background = 'linear-gradient(135deg,#F4705A,#FFB347)'; badge.style.color = '#fff'; badge.style.border = 'none'; }
   const proBtn = document.querySelector('.pro-btn');
-  if (proBtn) { proBtn.textContent = 'âœ“ Pro'; proBtn.style.background = 'var(--green-bg)'; proBtn.style.color = 'var(--green-text)'; proBtn.style.border = '1px solid var(--green)'; }
+  if (proBtn) { proBtn.textContent = '✓ Pro'; proBtn.style.background = 'var(--green-bg)'; proBtn.style.color = 'var(--green-text)'; proBtn.style.border = '1px solid var(--green)'; }
   const freeBadge = document.querySelector('.free-badge');
   if (freeBadge) freeBadge.style.display = 'none';
   const usageRow = document.getElementById('usage-row');
@@ -1167,7 +1167,7 @@ async function verifyStripeSession(sessionId) {
 }
 
 // On every app load: if we have a gate email, check the database for current Pro status.
-// Handles cross-device: pay on laptop, open on phone, enter same email â†’ Pro.
+// Handles cross-device: pay on laptop, open on phone, enter same email → Pro.
 (function initPro() {
   document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
@@ -1252,41 +1252,41 @@ const NICHE_DATA = {
 const NICHE_PILL_LABELS = {'Home & Organization':'Home','Health & Wellness':'Health','Beauty & Skincare':'Beauty','Kitchen & Cooking':'Kitchen','Fitness & Gym':'Fitness','Tech & Gadgets':'Tech','Fashion & Style':'Fashion','Mom & Baby':'Mom & Baby','Food & Recipes':'Food','Travel':'Travel','Personal Finance':'Finance','Self Improvement':'Self Improvement','Pets':'Pets','Wedding & Events':'Wedding','DIY & Crafts':'DIY','Outdoor & Garden':'Outdoor','Photography':'Photography','Books & Education':'Books','Gaming':'Gaming','Mental Health':'Mental Health','Baby & Nursery':'Nursery','Cleaning & Organization':'Cleaning','Hair Care':'Hair','Supplements & Nutrition':'Supplements','Home Office':'Home Office','Candles & Home Fragrance':'Candles','Jewelry & Accessories':'Jewelry','Stationery & Journaling':'Stationery','Vintage & Thrift':'Vintage'};
 
 const NICHE_TIPS = {
-  "Home & Organization": `ðŸ  Sunday and Monday mornings are peak browse time for home content â€” people plan projects for the week. Create 3 boards minimum: one broad ("Home Organization"), one specific ("Small Closet Ideas"), one seasonal ("Spring Cleaning Tips"). Save each pin to 2â€“3 boards to triple your distribution. The Amazon affiliate conversion rate in this niche is 4â€“8% â€” higher than average.`,
-  "Health & Wellness": `ðŸ’Š January 1â€“15 and September 1â€“15 are the two highest-traffic weeks of the year in this niche. Pin daily during these windows â€” even low-effort pins outperform the rest of the year. Use titles that start with numbers ("7 Signs You Need...", "3 Habits That...") â€” they get 30% more clicks. Link to supplement and wellness product pages directly, not homepages.`,
-  "Beauty & Skincare": `ðŸ’„ Beauty is Pinterest's #1 affiliate niche by click volume. Post 1â€“3 fresh pins per day â€” Pinterest heavily rewards fresh content over repins. Your boards should mirror how people search: "Skincare for Sensitive Skin", "Anti-Aging Routine", "Clean Beauty Products". Titles with "dermatologist" or "proven" outperform generic beauty titles. Morning posts (7â€“9am) perform best.`,
-  "Kitchen & Cooking": `ðŸ³ Post between 4â€“7pm on weekdays â€” people are deciding what to cook. Thursday and Friday posts dominate weekend meal planning searches. Create boards by meal type AND by diet ("High Protein Dinners", "30 Minute Meals", "Gluten Free Recipes"). Kitchen gadget affiliate links in recipe pins outperform standalone product pins because the context sells the item.`,
-  "Fitness & Gym": `ðŸ’ª Januaryâ€“March and Mayâ€“June are your money months â€” plan and schedule content in advance. Transformation and before/after language in titles gets 2â€“3x more saves than generic fitness tips. Create separate boards for goal types ("Fat Loss", "Muscle Building", "Home Workout") â€” people follow goal-specific boards, not generic fitness boards. Equipment links convert best when paired with a workout that requires them.`,
-  "Tech & Gadgets": `ðŸ’» Tech converts best Tuesdayâ€“Thursday when purchase intent is highest. Product comparison titles ("X vs Y", "Best X Under $50") consistently outperform single product pins. Save to boards organized by use case, not product type â€” "Work From Home Setup", "Gaming Room Ideas", "Desk Organization" â€” because that's how buyers search. Always link directly to the product page, not a category page.`,
-  "Fashion & Style": `ðŸ‘— Post 3â€“4 weeks before each season for maximum seasonal search traffic. Outfit-based titles outperform item-based titles ("How to Style a Blazer" beats "Best Blazers for Women"). Create boards by occasion AND style ("Casual Work Outfits", "Date Night Looks", "Airport Style"). Amazon fashion affiliate commissions are low â€” focus on high-ticket items ($50+) to make the math work.`,
-  "Mom & Baby": `ðŸ‘¶ Sunday evenings and Monday mornings are peak engagement times â€” moms plan the week. This niche has the highest repin rate on Pinterest because moms share constantly. Create boards around stages ("Newborn Essentials", "Toddler Activities", "Back to School") not just generic "Mom Tips". Product list pins ("10 Must-Have Baby Items") convert at 2â€“3x the rate of single product pins.`,
-  "Food & Recipes": `ðŸ½ï¸ Thursdayâ€“Saturday dominates weekend meal planning traffic. Recipe pins that include a product naturally ("This blender makes the smoothest soups") convert better than standalone product pins. Create boards by diet, occasion, AND time ("Quick Weeknight Dinners", "Meal Prep Sunday", "Holiday Appetizers"). Seasonal content â€” holiday recipes, summer BBQ â€” can drive traffic for 3â€“5 years if the pin performs.`,
-  "Travel": `âœˆï¸ Travel pins have a 2â€“4 year lifespan on Pinterest â€” one strong pin keeps earning. Post destination content year-round; people plan 6â€“12 months in advance. "Things to do in X", "X on a Budget", "X Travel Guide" are top-performing title formats. Booking affiliate programs (hotels, tours) pay 4â€“8% commissions â€” far higher than Amazon. Build boards around destinations and trip types, not just continents.`,
-  "Personal Finance": `ðŸ’° January and October are the two biggest months â€” resolution season and pre-holiday budget anxiety. Titles that include specific numbers ("Save $500 in 30 Days", "How I Paid Off $12k") dramatically outperform vague tips. Pinterest users in this niche skew toward women 25â€“44 making household financial decisions â€” write to them. Evening posts (7â€“10pm) get the most saves when people are reflecting on money.`,
-  "Self Improvement": `ðŸ§  Sunday evenings are your #1 posting time â€” highest intent period of the week. Habit and routine content ("My 5am Morning Routine", "10 Habits That Changed My Life") consistently outperforms motivational quote content. Save to specific boards ("Morning Routine Ideas", "Productivity Systems", "Reading Lists") not just "Self Improvement". Book affiliate links perform exceptionally well here â€” readers in this niche buy constantly.`,
-  "Pets": `ðŸ¾ Pet content gets consistent daily engagement year-round â€” no major seasonal swings. Dog content gets 3â€“5x more engagement than cat content on Pinterest. Save to breed-specific boards when possible ("Golden Retriever Tips", "Small Dog Accessories") â€” they attract high-intent buyers shopping for their specific pet. Product list pins ("Best Toys for High-Energy Dogs") convert at 4â€“6% â€” above the platform average.`,
-  "Wedding & Events": `ðŸ’ Januaryâ€“March is your highest-traffic window â€” newly engaged couples start planning immediately after holidays. Post 12â€“18 months before peak wedding season (Mayâ€“October) to build momentum. Boards should be hyper-specific: "Boho Wedding Decor", "Budget Wedding Ideas Under $5k", "Small Intimate Wedding". This niche has high purchase intent and high cart values â€” prioritize decor, attire, and experience products.`,
-  "DIY & Crafts": `ðŸ”¨ Thursday and Friday are peak browse days â€” people plan weekend projects. Beginner-friendly content consistently outperforms advanced projects because the audience is larger. Use skill-level language in titles and board names ("Easy DIY for Beginners", "No-Sew Projects"). Supply list pins with affiliate links to materials convert extremely well â€” the project creates the need for the product.`,
-  "Outdoor & Garden": `ðŸŒ± Januaryâ€“April is your build season â€” post aggressively while people plan spring projects. Garden content has a long tail: a strong spring pin can rank and convert for 3+ years. Create boards by project type and skill level ("Raised Bed Gardening", "Small Space Garden Ideas", "Beginner Vegetable Garden"). Tool and supply affiliate links convert best when tied to a specific project or outcome.`,
-  "Photography": `ðŸ“¸ Tutorial and how-to content gets 4â€“5x more saves than gear review content on Pinterest. Focus titles on outcomes ("How to Take Sharp Photos in Low Light") not equipment ("Best Camera for Beginners"). Mid-week posts perform best. Create boards around skill levels and scenarios ("Photography for Beginners", "Portrait Lighting Tips", "Phone Photography Hacks") â€” gear boards underperform.`,
-  "Books & Education": `ðŸ“š January and September are peak months â€” people in learning mode. Series and list pins ("10 Books That Changed My Life", "Best Books on X Topic") consistently outperform single book recommendations. Create boards by genre, goal, and audience ("Books for Entrepreneurs", "Self Help Books Women", "Personal Finance Books"). Affiliate commission on books is low â€” recommend higher-ticket courses or bundles alongside book recommendations.`,
-  "Gaming": `ðŸŽ® Gaming content peaks Tuesdayâ€“Thursday when purchase intent is highest. Setup and "battlestation" content consistently outperforms pure review pins. Create boards by genre and setup type ("PC Gaming Setup", "Console Gaming Room", "Streamer Essentials"). Ergonomic and comfort products (chairs, headsets, desk pads) have the highest affiliate conversion because gamers spend long sessions and feel the pain daily.`,
-  "Mental Health": `ðŸ§  This niche has the highest save rate on Pinterest â€” people bookmark content they want to return to. Post Sunday evenings when anxiety peaks. Create boards like "Anxiety Relief", "Therapy Tools", "Calm Your Mind". Product pins perform best when framed around relief, not diagnosis. Weighted blankets, journals, and light therapy lamps are top converters. Avoid clinical language â€” speak to feelings, not conditions.`,
-  "Baby & Nursery": `ðŸ‘¶ Nursery content drives purchases 3â€“6 months before the due date â€” target expecting parents early. Januaryâ€“March is peak nursery planning season. Create boards by nursery style ("Boho Nursery", "Minimalist Baby Room", "Gender Neutral Nursery"). Safety and sleep products convert exceptionally well because parents prioritize them. Pins with "under $50" or "Amazon finds" in the title see 2x the click-through rate.`,
-  "Cleaning & Organization": `ðŸ§¹ Cleaning content peaks in January (new year reset) and Marchâ€“April (spring cleaning). "Before and after" style titles dramatically outperform generic cleaning tips. Create boards by room ("Bathroom Organization", "Pantry Makeover", "Under Sink Storage"). Robot vacuum and mop system affiliate links have high cart values â€” prioritize them. Post Monday mornings when people are motivated to tackle household tasks.`,
-  "Hair Care": `ðŸ’‡ Curly hair and natural hair communities are the most engaged on Pinterest â€” highly specific boards outperform general ones. Create boards like "4C Hair Growth Tips", "Curly Girl Method", "Damaged Hair Recovery". Tutorial-style titles ("How I Grew My Hair 3 Inches in 90 Days") dramatically outperform product-only pins. Post Thursdayâ€“Sunday when people are doing their wash day routines. High-ticket tools (shower filters, blow dry brushes) convert well.`,
-  "Supplements & Nutrition": `ðŸ’Š January and September are peak months â€” coincide with fitness resolutions and fall resets. Specific result-focused titles ("I took magnesium for 30 days and...") outperform generic health tips 3:1. Create boards by goal ("Gut Health", "Energy Supplements", "Keto Supplements", "Postpartum Recovery"). FTC requires clear disclosure for supplement claims â€” keep language experiential, not medical. Amazon commission on supplements is low â€” link to brand direct pages where possible.`,
-  "Home Office": `ðŸ’» WFH content is evergreen â€” post year-round. Desk setup and aesthetic pins get 5x more saves than pure productivity content. Create boards by budget and style ("Minimal Desk Setup", "Home Office on a Budget", "Aesthetic WFH Setup"). Ergonomic products (chairs, monitor arms, standing desks) have high cart values and high intent â€” buyers are in pain and ready to spend. Post Monday mornings when WFH frustration peaks.`,
-  "Candles & Home Fragrance": `ðŸ•¯ï¸ Peak season is Octoberâ€“December â€” holiday gifting drives massive traffic. Create boards like "Cozy Home Aesthetic", "Fall Candle Vibes", "Gift Ideas for Her". Aesthetic and mood-based titles ("This candle made my apartment feel like a luxury hotel") outperform product descriptions. Candles photograph beautifully â€” descriptions that paint a sensory picture convert better than feature lists. Weekend posts perform best when people are nesting at home.`,
-  "Jewelry & Accessories": `ðŸ’ Gift-giving seasons (Valentine's Day, Mother's Day, Christmas) are peak traffic periods â€” plan content 6â€“8 weeks in advance. "Dupe" and "affordable alternative" framing ("Looks like a $500 necklace, costs $28") consistently goes viral. Create boards by metal type, occasion, and style. High-quality product photos are critical in this niche. Stackable jewelry and gift sets have the highest conversion because buyers are shopping for others, not just themselves.`,
-  "Stationery & Journaling": `ðŸ““ January and September peak â€” new year and back to school planning seasons. The bullet journal and ADHD planning communities are the most engaged audiences in this niche. Create boards like "Bullet Journal Ideas", "ADHD Planner System", "Aesthetic Stationery". Tutorial-style pins ("How I set up my weekly spread") get far more saves than product-only pins. Post Sunday evenings when people are planning the upcoming week.`,
-  "Vintage & Thrift": `ðŸ‘— Sustainable fashion content grows fastest on Pinterest among Gen Z and millennial women. Thrift flip and styling content gets 3â€“5x more saves than resale tips. Create boards like "Thrift Flip Ideas", "Vintage Outfit Inspo", "Sustainable Fashion Finds". The community responds strongly to authenticity â€” raw, unfiltered content outperforms polished product photography. Post Thursdayâ€“Saturday when people are planning weekend thrift runs.`
+  "Home & Organization": `🏠 Sunday and Monday mornings are peak browse time for home content — people plan projects for the week. Create 3 boards minimum: one broad ("Home Organization"), one specific ("Small Closet Ideas"), one seasonal ("Spring Cleaning Tips"). Save each pin to 2–3 boards to triple your distribution. The Amazon affiliate conversion rate in this niche is 4–8% — higher than average.`,
+  "Health & Wellness": `💊 January 1–15 and September 1–15 are the two highest-traffic weeks of the year in this niche. Pin daily during these windows — even low-effort pins outperform the rest of the year. Use titles that start with numbers ("7 Signs You Need...", "3 Habits That...") — they get 30% more clicks. Link to supplement and wellness product pages directly, not homepages.`,
+  "Beauty & Skincare": `💄 Beauty is Pinterest's #1 affiliate niche by click volume. Post 1–3 fresh pins per day — Pinterest heavily rewards fresh content over repins. Your boards should mirror how people search: "Skincare for Sensitive Skin", "Anti-Aging Routine", "Clean Beauty Products". Titles with "dermatologist" or "proven" outperform generic beauty titles. Morning posts (7–9am) perform best.`,
+  "Kitchen & Cooking": `🍳 Post between 4–7pm on weekdays — people are deciding what to cook. Thursday and Friday posts dominate weekend meal planning searches. Create boards by meal type AND by diet ("High Protein Dinners", "30 Minute Meals", "Gluten Free Recipes"). Kitchen gadget affiliate links in recipe pins outperform standalone product pins because the context sells the item.`,
+  "Fitness & Gym": `💪 January–March and May–June are your money months — plan and schedule content in advance. Transformation and before/after language in titles gets 2–3x more saves than generic fitness tips. Create separate boards for goal types ("Fat Loss", "Muscle Building", "Home Workout") — people follow goal-specific boards, not generic fitness boards. Equipment links convert best when paired with a workout that requires them.`,
+  "Tech & Gadgets": `💻 Tech converts best Tuesday–Thursday when purchase intent is highest. Product comparison titles ("X vs Y", "Best X Under $50") consistently outperform single product pins. Save to boards organized by use case, not product type — "Work From Home Setup", "Gaming Room Ideas", "Desk Organization" — because that's how buyers search. Always link directly to the product page, not a category page.`,
+  "Fashion & Style": `👗 Post 3–4 weeks before each season for maximum seasonal search traffic. Outfit-based titles outperform item-based titles ("How to Style a Blazer" beats "Best Blazers for Women"). Create boards by occasion AND style ("Casual Work Outfits", "Date Night Looks", "Airport Style"). Amazon fashion affiliate commissions are low — focus on high-ticket items ($50+) to make the math work.`,
+  "Mom & Baby": `👶 Sunday evenings and Monday mornings are peak engagement times — moms plan the week. This niche has the highest repin rate on Pinterest because moms share constantly. Create boards around stages ("Newborn Essentials", "Toddler Activities", "Back to School") not just generic "Mom Tips". Product list pins ("10 Must-Have Baby Items") convert at 2–3x the rate of single product pins.`,
+  "Food & Recipes": `🍽️ Thursday–Saturday dominates weekend meal planning traffic. Recipe pins that include a product naturally ("This blender makes the smoothest soups") convert better than standalone product pins. Create boards by diet, occasion, AND time ("Quick Weeknight Dinners", "Meal Prep Sunday", "Holiday Appetizers"). Seasonal content — holiday recipes, summer BBQ — can drive traffic for 3–5 years if the pin performs.`,
+  "Travel": `✈️ Travel pins have a 2–4 year lifespan on Pinterest — one strong pin keeps earning. Post destination content year-round; people plan 6–12 months in advance. "Things to do in X", "X on a Budget", "X Travel Guide" are top-performing title formats. Booking affiliate programs (hotels, tours) pay 4–8% commissions — far higher than Amazon. Build boards around destinations and trip types, not just continents.`,
+  "Personal Finance": `💰 January and October are the two biggest months — resolution season and pre-holiday budget anxiety. Titles that include specific numbers ("Save $500 in 30 Days", "How I Paid Off $12k") dramatically outperform vague tips. Pinterest users in this niche skew toward women 25–44 making household financial decisions — write to them. Evening posts (7–10pm) get the most saves when people are reflecting on money.`,
+  "Self Improvement": `🧠 Sunday evenings are your #1 posting time — highest intent period of the week. Habit and routine content ("My 5am Morning Routine", "10 Habits That Changed My Life") consistently outperforms motivational quote content. Save to specific boards ("Morning Routine Ideas", "Productivity Systems", "Reading Lists") not just "Self Improvement". Book affiliate links perform exceptionally well here — readers in this niche buy constantly.`,
+  "Pets": `🐾 Pet content gets consistent daily engagement year-round — no major seasonal swings. Dog content gets 3–5x more engagement than cat content on Pinterest. Save to breed-specific boards when possible ("Golden Retriever Tips", "Small Dog Accessories") — they attract high-intent buyers shopping for their specific pet. Product list pins ("Best Toys for High-Energy Dogs") convert at 4–6% — above the platform average.`,
+  "Wedding & Events": `💍 January–March is your highest-traffic window — newly engaged couples start planning immediately after holidays. Post 12–18 months before peak wedding season (May–October) to build momentum. Boards should be hyper-specific: "Boho Wedding Decor", "Budget Wedding Ideas Under $5k", "Small Intimate Wedding". This niche has high purchase intent and high cart values — prioritize decor, attire, and experience products.`,
+  "DIY & Crafts": `🔨 Thursday and Friday are peak browse days — people plan weekend projects. Beginner-friendly content consistently outperforms advanced projects because the audience is larger. Use skill-level language in titles and board names ("Easy DIY for Beginners", "No-Sew Projects"). Supply list pins with affiliate links to materials convert extremely well — the project creates the need for the product.`,
+  "Outdoor & Garden": `🌱 January–April is your build season — post aggressively while people plan spring projects. Garden content has a long tail: a strong spring pin can rank and convert for 3+ years. Create boards by project type and skill level ("Raised Bed Gardening", "Small Space Garden Ideas", "Beginner Vegetable Garden"). Tool and supply affiliate links convert best when tied to a specific project or outcome.`,
+  "Photography": `📸 Tutorial and how-to content gets 4–5x more saves than gear review content on Pinterest. Focus titles on outcomes ("How to Take Sharp Photos in Low Light") not equipment ("Best Camera for Beginners"). Mid-week posts perform best. Create boards around skill levels and scenarios ("Photography for Beginners", "Portrait Lighting Tips", "Phone Photography Hacks") — gear boards underperform.`,
+  "Books & Education": `📚 January and September are peak months — people in learning mode. Series and list pins ("10 Books That Changed My Life", "Best Books on X Topic") consistently outperform single book recommendations. Create boards by genre, goal, and audience ("Books for Entrepreneurs", "Self Help Books Women", "Personal Finance Books"). Affiliate commission on books is low — recommend higher-ticket courses or bundles alongside book recommendations.`,
+  "Gaming": `🎮 Gaming content peaks Tuesday–Thursday when purchase intent is highest. Setup and "battlestation" content consistently outperforms pure review pins. Create boards by genre and setup type ("PC Gaming Setup", "Console Gaming Room", "Streamer Essentials"). Ergonomic and comfort products (chairs, headsets, desk pads) have the highest affiliate conversion because gamers spend long sessions and feel the pain daily.`,
+  "Mental Health": `🧠 This niche has the highest save rate on Pinterest — people bookmark content they want to return to. Post Sunday evenings when anxiety peaks. Create boards like "Anxiety Relief", "Therapy Tools", "Calm Your Mind". Product pins perform best when framed around relief, not diagnosis. Weighted blankets, journals, and light therapy lamps are top converters. Avoid clinical language — speak to feelings, not conditions.`,
+  "Baby & Nursery": `👶 Nursery content drives purchases 3–6 months before the due date — target expecting parents early. January–March is peak nursery planning season. Create boards by nursery style ("Boho Nursery", "Minimalist Baby Room", "Gender Neutral Nursery"). Safety and sleep products convert exceptionally well because parents prioritize them. Pins with "under $50" or "Amazon finds" in the title see 2x the click-through rate.`,
+  "Cleaning & Organization": `🧹 Cleaning content peaks in January (new year reset) and March–April (spring cleaning). "Before and after" style titles dramatically outperform generic cleaning tips. Create boards by room ("Bathroom Organization", "Pantry Makeover", "Under Sink Storage"). Robot vacuum and mop system affiliate links have high cart values — prioritize them. Post Monday mornings when people are motivated to tackle household tasks.`,
+  "Hair Care": `💇 Curly hair and natural hair communities are the most engaged on Pinterest — highly specific boards outperform general ones. Create boards like "4C Hair Growth Tips", "Curly Girl Method", "Damaged Hair Recovery". Tutorial-style titles ("How I Grew My Hair 3 Inches in 90 Days") dramatically outperform product-only pins. Post Thursday–Sunday when people are doing their wash day routines. High-ticket tools (shower filters, blow dry brushes) convert well.`,
+  "Supplements & Nutrition": `💊 January and September are peak months — coincide with fitness resolutions and fall resets. Specific result-focused titles ("I took magnesium for 30 days and...") outperform generic health tips 3:1. Create boards by goal ("Gut Health", "Energy Supplements", "Keto Supplements", "Postpartum Recovery"). FTC requires clear disclosure for supplement claims — keep language experiential, not medical. Amazon commission on supplements is low — link to brand direct pages where possible.`,
+  "Home Office": `💻 WFH content is evergreen — post year-round. Desk setup and aesthetic pins get 5x more saves than pure productivity content. Create boards by budget and style ("Minimal Desk Setup", "Home Office on a Budget", "Aesthetic WFH Setup"). Ergonomic products (chairs, monitor arms, standing desks) have high cart values and high intent — buyers are in pain and ready to spend. Post Monday mornings when WFH frustration peaks.`,
+  "Candles & Home Fragrance": `🕯️ Peak season is October–December — holiday gifting drives massive traffic. Create boards like "Cozy Home Aesthetic", "Fall Candle Vibes", "Gift Ideas for Her". Aesthetic and mood-based titles ("This candle made my apartment feel like a luxury hotel") outperform product descriptions. Candles photograph beautifully — descriptions that paint a sensory picture convert better than feature lists. Weekend posts perform best when people are nesting at home.`,
+  "Jewelry & Accessories": `💍 Gift-giving seasons (Valentine's Day, Mother's Day, Christmas) are peak traffic periods — plan content 6–8 weeks in advance. "Dupe" and "affordable alternative" framing ("Looks like a $500 necklace, costs $28") consistently goes viral. Create boards by metal type, occasion, and style. High-quality product photos are critical in this niche. Stackable jewelry and gift sets have the highest conversion because buyers are shopping for others, not just themselves.`,
+  "Stationery & Journaling": `📓 January and September peak — new year and back to school planning seasons. The bullet journal and ADHD planning communities are the most engaged audiences in this niche. Create boards like "Bullet Journal Ideas", "ADHD Planner System", "Aesthetic Stationery". Tutorial-style pins ("How I set up my weekly spread") get far more saves than product-only pins. Post Sunday evenings when people are planning the upcoming week.`,
+  "Vintage & Thrift": `👗 Sustainable fashion content grows fastest on Pinterest among Gen Z and millennial women. Thrift flip and styling content gets 3–5x more saves than resale tips. Create boards like "Thrift Flip Ideas", "Vintage Outfit Inspo", "Sustainable Fashion Finds". The community responds strongly to authenticity — raw, unfiltered content outperforms polished product photography. Post Thursday–Saturday when people are planning weekend thrift runs.`
 };
 
 function toggleTheme() {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
 }
 
 function updateTabLabels() {
@@ -1294,7 +1294,7 @@ function updateTabLabels() {
   const tabsContainer = document.querySelector('.tabs');
   if (pricingTab && tabsContainer) {
     if (isPro) {
-      pricingTab.innerHTML = 'âœ¦ Pro';
+      pricingTab.innerHTML = '✦ Pro';
       pricingTab.style.color = 'var(--red)';
       // Move to end
       tabsContainer.appendChild(pricingTab);
@@ -1424,7 +1424,7 @@ async function autoDetectNicheAI(product) {
   if (autoTag) { autoTag.textContent = 'Detecting...'; autoTag.style.display = 'inline-block'; autoTag.style.opacity = '0.6'; }
   try {
     const email = getGateEmail() || 'autofill@pinlo.internal';
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5-20251001',max_tokens:20,system:'Pinterest niche classifier. Output exactly one niche name from the provided list â€” copy it character-for-character. No quotes, no punctuation, no commentary. Your output is read directly by a string parser; any extra characters break the match.',messages:[{role:'user',content:'Product: "'+product+'"\n\nChoose the single best niche:\n'+nicheList+'\n\nOutput only the niche name, nothing else.'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5-20251001',max_tokens:20,system:'Pinterest niche classifier. Output exactly one niche name from the provided list — copy it character-for-character. No quotes, no punctuation, no commentary. Your output is read directly by a string parser; any extra characters break the match.',messages:[{role:'user',content:'Product: "'+product+'"\n\nChoose the single best niche:\n'+nicheList+'\n\nOutput only the niche name, nothing else.'}]})});
     if (!res.ok) { console.log('Niche detect skipped: server error', res.status); return; }
     // If a newer request has been fired, discard this stale result
     if (mySeq !== nicheDetectSeq) return;
@@ -1456,7 +1456,7 @@ function fuzzyMatchNiche(raw) {
   const niches = Object.keys(NICHE_PILL_LABELS);
   // exact match first
   for (const n of niches) { if (n.toLowerCase() === cleaned) return n; }
-  // partial match â€” response contains the niche or niche contains the response
+  // partial match — response contains the niche or niche contains the response
   for (const n of niches) {
     const nl = n.toLowerCase();
     if (cleaned.includes(nl) || nl.includes(cleaned)) return n;
@@ -1493,7 +1493,7 @@ function resolveToPillNiche(detected) {
     if (p.textContent.trim() === label) pillExists = true;
   });
   if (pillExists) return detected;
-  // No pill â€” try fallback
+  // No pill — try fallback
   const fallback = NICHE_FALLBACKS[detected];
   if (fallback && NICHE_PILL_LABELS[fallback]) return fallback;
   return null;
@@ -1583,7 +1583,7 @@ async function autoGeneratePains(product) {
       container.appendChild(pp);
     });
     const proChip = document.createElement('span');
-    proChip.innerHTML = 'ðŸ”’ AI suggestions';
+    proChip.innerHTML = '🔒 AI suggestions';
     proChip.style.cssText = 'font-size:12px;padding:7px 14px;border-radius:20px;border:1px dashed rgba(217,79,56,0.4);cursor:pointer;color:var(--red);background:rgba(217,79,56,0.05);font-family:Outfit,sans-serif;';
     proChip.onclick = () => showPaywall();
     container.appendChild(proChip);
@@ -1591,7 +1591,7 @@ async function autoGeneratePains(product) {
   }
   container.innerHTML = '<span style="font-size:12px;color:var(--text4);">Generating pain points...</span>';
   try {
-    const sys = 'Pinterest affiliate pain-point generator. Return a JSON array of exactly 5 pain points (3â€“6 words each) that this specific product solves. Each must be distinct and clearly tied to the product. Output only the JSON array â€” no markdown, no explanation, no wrapper text.';
+    const sys = 'Pinterest affiliate pain-point generator. Return a JSON array of exactly 5 pain points (3–6 words each) that this specific product solves. Each must be distinct and clearly tied to the product. Output only the JSON array — no markdown, no explanation, no wrapper text.';
     const rawData = await callClaude(sys, 'Product: "' + product + '"');
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
     container.innerHTML = '';
@@ -1643,7 +1643,7 @@ function addAudienceChip(text) {
   const chip = document.createElement('span');
   chip.className = 'audience-chip';
   chip.dataset.value = text.toLowerCase();
-  chip.innerHTML = text + ' <span class="chip-x" title="Remove">Ã—</span>';
+  chip.innerHTML = text + ' <span class="chip-x" title="Remove">×</span>';
   chip.querySelector('.chip-x').onclick = (e) => { e.stopPropagation(); chip.remove(); updateAudienceClear(); };
   container.insertBefore(chip, inp);
   inp.value = '';
@@ -1668,7 +1668,7 @@ function getAudienceValue() {
   const inp = document.getElementById('audience-input');
   if (!container) return '';
   const chips = Array.from(container.querySelectorAll('.audience-chip')).map(c => {
-    // Get text without the Ã— button text
+    // Get text without the × button text
     return c.childNodes[0].textContent.trim();
   });
   const typed = inp ? inp.value.trim().replace(/,/g,'') : '';
@@ -1698,7 +1698,7 @@ async function autoFillAudience(product) {
   // Clean product string - strip brand names, model numbers, years before sending to AI
   const cleanProduct = product.replace(/(20\d\d)/g,'').replace(/[A-Z]{2,}[0-9]+\w*/g,'').replace(/(upgraded|premium|pro|plus|ultra|deluxe|new|improved|original|authentic|genuine|official)/gi,'').replace(/\s+/g,' ').trim();
   try {
-    const sys = 'Pinterest buyer-persona detector. Return a plain comma-separated list of 3â€“5 specific audience types who buy this product. No intro text, no numbering, no explanation â€” just the list. If the product is too vague or nonsensical to classify, return exactly: INVALID';
+    const sys = 'Pinterest buyer-persona detector. Return a plain comma-separated list of 3–5 specific audience types who buy this product. No intro text, no numbering, no explanation — just the list. If the product is too vague or nonsensical to classify, return exactly: INVALID';
     const email = getGateEmail() || 'autofill@pinlo.internal';
     const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5-20251001',max_tokens:60,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'" | Niche: '+niche+'\nWho specifically buys this? Format: persona1, persona2, persona3'}]})});
     if (!res.ok) { console.log('Audience autofill skipped: server error', res.status); return; }
@@ -1706,7 +1706,7 @@ async function autoFillAudience(product) {
     const result = data.content.map(i=>i.text||'').join('').trim().replace(/^["']|["']$/g,'').replace(/^(Target audience:|Audience:)/i,'').trim();
     if (result === 'INVALID' || result.toLowerCase().includes('not a real') || result.toLowerCase().includes('invalid') || result.toLowerCase().includes('not enough context') || result.toLowerCase().includes('cannot provide') || result.toLowerCase().includes("don't have enough")) {
       inp.value = '';
-      inp.placeholder = 'âš ï¸ Try a more specific product name';
+      inp.placeholder = '⚠️ Try a more specific product name';
       const tagBox = document.getElementById('audience-tag-input');
       if (tagBox) tagBox.style.borderColor = 'var(--red)';
       tag.style.display = 'none';
@@ -1803,7 +1803,7 @@ function updateUsage() {
   if (fillEl) fillEl.style.width=pct+'%';
   if (textEl) textEl.textContent=pinsUsed+' of '+FREE_LIMIT+' free trial pins';
   const left=Math.max(FREE_LIMIT-pinsUsed,0);
-  if (badgeEl) { const leftText = left > 0 ? ('FREE â€” '+left+' TRIAL PIN'+(left!==1?'S':'')+' LEFT') : 'FREE TRIAL ENDED'; badgeEl.textContent = leftText; }
+  if (badgeEl) { const leftText = left > 0 ? ('FREE — '+left+' TRIAL PIN'+(left!==1?'S':'')+' LEFT') : 'FREE TRIAL ENDED'; badgeEl.textContent = leftText; }
 }
 
 function updateHistoryBadge() {
@@ -1822,16 +1822,16 @@ setTimeout(renderPricingTab, 200);
 }
 
 const PIN_ANGLES = [
-  'genuine question a real person would search â€” e.g. "Why does everyone with good skin use this?" or "Are you making this mistake with your routine?" â€” must end with ?',
-  'specific price or number lead â€” e.g. "The $24 oil that replaced my $90 serum" or "3 weeks with this and my skin finally calmed down" â€” number must be the very first character',
-  'first-person honest discovery â€” e.g. "I switched to this after years of trying everything" or "I bought this on a whim and now I reorder it every month" â€” start with "I"',
-  'comparison to a pricier or more common alternative â€” e.g. "Better than the expensive version and half the price" or "I stopped buying the $80 cream after finding this"',
-  'what most people get wrong â€” e.g. "The mistake I made with my skincare routine for years" or "Why your moisturizer isn\'t working the way you think it is"',
-  'specific outcome with timeframe â€” e.g. "Two weeks with this and I finally understood the hype" or "The one change that actually made a difference after 30 days"',
-  'what people with the desired result actually use â€” e.g. "The one thing every person with clear skin actually has in their routine" â€” must feel specific, not generic',
-  'curiosity without clickbait â€” tease a specific detail â€” e.g. "The thing in my routine everyone always asks about" or "What I reach for when I run out of the expensive stuff"',
-  'speed or ease with a specific relatable example â€” e.g. "Dinner on the table in 20 minutes and my family thinks I cooked all day" or "5 minutes and I get compliments all week"',
-  'honest contrarian take â€” e.g. "You don\'t need to spend $80 on this" or "I thought this was a gimmick until I actually tried it for a week"'
+  'genuine question a real person would search — e.g. "Why does everyone with good skin use this?" or "Are you making this mistake with your routine?" — must end with ?',
+  'specific price or number lead — e.g. "The $24 oil that replaced my $90 serum" or "3 weeks with this and my skin finally calmed down" — number must be the very first character',
+  'first-person honest discovery — e.g. "I switched to this after years of trying everything" or "I bought this on a whim and now I reorder it every month" — start with "I"',
+  'comparison to a pricier or more common alternative — e.g. "Better than the expensive version and half the price" or "I stopped buying the $80 cream after finding this"',
+  'what most people get wrong — e.g. "The mistake I made with my skincare routine for years" or "Why your moisturizer isn\'t working the way you think it is"',
+  'specific outcome with timeframe — e.g. "Two weeks with this and I finally understood the hype" or "The one change that actually made a difference after 30 days"',
+  'what people with the desired result actually use — e.g. "The one thing every person with clear skin actually has in their routine" — must feel specific, not generic',
+  'curiosity without clickbait — tease a specific detail — e.g. "The thing in my routine everyone always asks about" or "What I reach for when I run out of the expensive stuff"',
+  'speed or ease with a specific relatable example — e.g. "Dinner on the table in 20 minutes and my family thinks I cooked all day" or "5 minutes and I get compliments all week"',
+  'honest contrarian take — e.g. "You don\'t need to spend $80 on this" or "I thought this was a gimmick until I actually tried it for a week"'
 ];
 
 function validatePin(p) {
@@ -1857,8 +1857,8 @@ function buildSys(pinIndex) {
   const goal = goals[activeTemplate]||'get clicks';
   const season = activeSeason ? ' Season: '+activeSeason+'.' : '';
   const angle = pinIndex !== undefined ? PIN_ANGLES[pinIndex % PIN_ANGLES.length] : '';
-  const angleInstruction = angle ? ' REQUIRED HOOK STYLE FOR THIS PIN: '+angle+'. The title MUST use this specific angle â€” do not default to a generic hook.' : '';
-  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person â€” never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend â€” rewrite it.\n- Description: exactly 2 sentences, under 500 chars, problemâ†’solutionâ†’value flow, keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
+  const angleInstruction = angle ? ' REQUIRED HOOK STYLE FOR THIS PIN: '+angle+'. The title MUST use this specific angle — do not default to a generic hook.' : '';
+  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars, problem→solution→value flow, keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
 
 }
 
@@ -1888,7 +1888,7 @@ function buildMsg(product, niche, audience, benefit, extra) {
   m += ' | Niche: '+(niche||'lifestyle');
   if (audience) m += ' | Audience: '+audience;
   if (benefit) m += ' | Core pain point to solve: '+benefit+'. Make this pain point central to the copy.';
-  m += ' | IMPORTANT: The title and description must clearly relate to the specific product ("'+cleanProduct+'") â€” not just the pain point in isolation.';
+  m += ' | IMPORTANT: The title and description must clearly relate to the specific product ("'+cleanProduct+'") — not just the pain point in isolation.';
   if (extra) m += ' | '+extra;
   return m;
 }
@@ -1949,7 +1949,7 @@ function calculateSEOScore(pin) {
 
   const cliches = ['game-changer','game changer','transform your','elevate your','unlock your','level up','revolutionize','life-changing','incredible','amazing','must-have','must have','skyrocket','supercharge'];
 
-  // â”€â”€ Title (0â€“30 pts) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Title (0–30 pts) ──────────────────────────────────────
   let titleScore = 0;
   const tLen = title.length;
   if      (tLen >= 45 && tLen <= 75) titleScore = 28; // sweet spot
@@ -1959,11 +1959,11 @@ function calculateSEOScore(pin) {
   else                               titleScore = 6;
   // Bonus: starts with a number (listicle performs well)
   if (/^\d/.test(title)) titleScore = Math.min(titleScore + 4, 30);
-  // ClichÃ© penalty
+  // Cliché penalty
   if (cliches.some(c => tl.includes(c))) titleScore = Math.max(titleScore - 14, 4);
   titleScore = Math.min(titleScore, 30);
 
-  // â”€â”€ Description (0â€“30 pts) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Description (0–30 pts) ────────────────────────────────
   let descScore = 0;
   const dLen = desc.length;
   if      (dLen >= 150 && dLen <= 380) descScore = 22;
@@ -1976,11 +1976,11 @@ function calculateSEOScore(pin) {
   const overlap  = keyWords.filter(w => dl.includes(w.toLowerCase())).length;
   if      (overlap >= 3) descScore += 8;
   else if (overlap >= 1) descScore += 4;
-  // Problemâ†’solution signal
+  // Problem→solution signal
   if (/\b(because|so you|helps you|which means|so that|perfect for|ideal for|great for)\b/i.test(desc)) descScore += 2;
   descScore = Math.min(descScore, 30);
 
-  // â”€â”€ Hashtags (0â€“20 pts) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Hashtags (0–20 pts) ───────────────────────────────────
   let tagScore = 0;
   const tc = tags.length;
   if      (tc === 12)              tagScore = 20;
@@ -1992,7 +1992,7 @@ function calculateSEOScore(pin) {
   const avgTagLen = tags.reduce((s,t) => s + t.replace('#','').length, 0) / (tc || 1);
   if (avgTagLen >= 8 && avgTagLen <= 16) tagScore = Math.min(tagScore + 2, 20);
 
-  // â”€â”€ Hook strength (0â€“20 pts) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Hook strength (0–20 pts) ──────────────────────────────
   let hookScore = 11; // baseline
   const isQuestion = /^(who|what|when|where|why|how(?!\s+to\b)|can|could|should|would|are|is|do|does|did)\b/i.test(title);
   const hasNumber  = /^\d/.test(title);
@@ -2015,9 +2015,9 @@ function calculateSEOScore(pin) {
 
   const weakest = breakdown.reduce((a, b) => (a.raw / a.max < b.raw / b.max ? a : b));
   const tips = {
-    'Title':       'Best titles are 45â€“75 characters and open with a searchable keyword or a specific number.',
-    'Description': 'Aim for 150â€“380 characters. Echo a keyword from your title and include a problemâ†’solution phrase.',
-    'Hashtags':    'Use exactly 12 hashtags â€” a mix of short broad tags and longer niche-specific ones.',
+    'Title':       'Best titles are 45–75 characters and open with a searchable keyword or a specific number.',
+    'Description': 'Aim for 150–380 characters. Echo a keyword from your title and include a problem→solution phrase.',
+    'Hashtags':    'Use exactly 12 hashtags — a mix of short broad tags and longer niche-specific ones.',
     'Hook':        'The strongest hooks open with a number, a genuine question, or a direct "you/stop/never" phrase.',
   };
 
@@ -2032,7 +2032,7 @@ function renderScore(pin) {
   const cls = total >= 80 ? 'high' : total >= 60 ? 'mid' : 'low';
 
   if (!isPro) {
-    // Blurred teaser â€” show real structure but locked
+    // Blurred teaser — show real structure but locked
     wrap.innerHTML = `
       <div class="score-locked">
         <div style="pointer-events:none;user-select:none;filter:blur(5px);">
@@ -2040,13 +2040,13 @@ function renderScore(pin) {
           <div class="score-track"><div class="score-fill ${cls}" style="width:${total}%"></div></div>
           <div class="score-breakdown">${breakdown.map(r=>`<div class="score-row"><span class="score-row-label">${r.label}</span><div class="score-row-track"><div class="score-row-fill ${r.raw/r.max>=0.8?'high':r.raw/r.max>=0.6?'mid':'low'}" style="width:${Math.round(r.raw/r.max*100)}%"></div></div><span class="score-row-num">${Math.round(r.raw/r.max*100)}</span></div>`).join('')}</div>
         </div>
-        <div class="score-locked-overlay"><span class="score-locked-cta" onclick="showPaywall('seo')">Unlock SEO score â†’</span></div>
+        <div class="score-locked-overlay"><span class="score-locked-cta" onclick="showPaywall('seo')">Unlock SEO score →</span></div>
       </div>`;
     return;
   }
 
-  // Full score for Pro â€” ring layout
-  const circumference = 150.8; // 2Ï€ Ã— 24
+  // Full score for Pro — ring layout
+  const circumference = 150.8; // 2π × 24
   wrap.innerHTML = `
     <div class="score-pro-layout">
       <div class="score-ring-wrap">
@@ -2144,9 +2144,9 @@ function renderPin(p) {
     tipWrap.style.display='block';
     if (!isPro) {
       const fallback = NICHE_TIPS[niche]||'';
-      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+niche+' tip ðŸ”’</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+(fallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips â†’</span></div></div>';
+      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+niche+' tip 🔒</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+(fallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips →</span></div></div>';
     } else {
-      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+niche+' tip</div><div class="niche-tip-text" id="niche-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this productâ€¦</div></div>';
+      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+niche+' tip</div><div class="niche-tip-text" id="niche-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this product…</div></div>';
       fetchNicheTip(product, niche, document.getElementById('niche-tip-text'));
     }
   } else { tipWrap.style.display='none'; }
@@ -2161,7 +2161,7 @@ async function fetchNicheTip(product, niche, el) {
     const email = getEmail()||'anonymous';
     const sys = `Pinterest affiliate tip writer. Write ONE specific, actionable tip for the exact product given.
 Rules:
-- Must reference the specific product type â€” no generic niche advice
+- Must reference the specific product type — no generic niche advice
 - Pick whichever is most useful for this product: best posting time, board naming, title angle, or conversion tactic
 - Max 2 sentences. Direct and specific. No bullet points.
 - No opener phrases ("Great tip:", "For this product:", "Here's a tip:")
@@ -2181,7 +2181,7 @@ Rules:
 
 async function generatePin() {
   if (pinsUsed>=FREE_LIMIT&&!isPro) { showPaywall('limit'); return; }
-  // Email gate â€” show before first generation if not gated yet
+  // Email gate — show before first generation if not gated yet
   if (!isPro && !isEmailGated()) {
     showEmailGate();
     return;
@@ -2250,15 +2250,15 @@ async function generatePin() {
         const copyBtn = item.querySelector('.bulk-copy-btn');
         copyBtn.addEventListener('click',()=>{
           const text = p.title+'\n\n'+p.description+'\n\n'+(p.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ')+'\n\nThis post contains affiliate links. If you purchase through my link, I may earn a small commission at no extra cost to you.';
-          navigator.clipboard.writeText(text).then(()=>{copyBtn.textContent='âœ“ Copied!';copyBtn.style.background='var(--green-bg)';copyBtn.style.color='var(--green-text)';copyBtn.style.border='1px solid var(--green)';setTimeout(()=>{copyBtn.textContent='Copy all';copyBtn.style.background='';copyBtn.style.color='';copyBtn.style.border='';},1800);});
+          navigator.clipboard.writeText(text).then(()=>{copyBtn.textContent='✓ Copied!';copyBtn.style.background='var(--green-bg)';copyBtn.style.color='var(--green-text)';copyBtn.style.border='1px solid var(--green)';setTimeout(()=>{copyBtn.textContent='Copy all';copyBtn.style.background='';copyBtn.style.color='';copyBtn.style.border='';},1800);});
         });
         const copyTitleBtn = item.querySelector('.bulk-copy-title');
         if(copyTitleBtn) copyTitleBtn.addEventListener('click',()=>{
-          navigator.clipboard.writeText(p.title||'').then(()=>{copyTitleBtn.textContent='âœ“ Copied!';copyTitleBtn.style.background='var(--green-bg)';copyTitleBtn.style.color='var(--green-text)';copyTitleBtn.style.borderColor='var(--green)';setTimeout(()=>{copyTitleBtn.textContent='Copy title';copyTitleBtn.style.background='';copyTitleBtn.style.color='';copyTitleBtn.style.borderColor='';},1800);});
+          navigator.clipboard.writeText(p.title||'').then(()=>{copyTitleBtn.textContent='✓ Copied!';copyTitleBtn.style.background='var(--green-bg)';copyTitleBtn.style.color='var(--green-text)';copyTitleBtn.style.borderColor='var(--green)';setTimeout(()=>{copyTitleBtn.textContent='Copy title';copyTitleBtn.style.background='';copyTitleBtn.style.color='';copyTitleBtn.style.borderColor='';},1800);});
         });
         const copyDescBtn = item.querySelector('.bulk-copy-desc');
         if(copyDescBtn) copyDescBtn.addEventListener('click',()=>{
-          navigator.clipboard.writeText(p.description||'').then(()=>{copyDescBtn.textContent='âœ“ Copied!';copyDescBtn.style.background='var(--green-bg)';copyDescBtn.style.color='var(--green-text)';copyDescBtn.style.borderColor='var(--green)';setTimeout(()=>{copyDescBtn.textContent='Copy description';copyDescBtn.style.background='';copyDescBtn.style.color='';copyDescBtn.style.borderColor='';},1800);});
+          navigator.clipboard.writeText(p.description||'').then(()=>{copyDescBtn.textContent='✓ Copied!';copyDescBtn.style.background='var(--green-bg)';copyDescBtn.style.color='var(--green-text)';copyDescBtn.style.borderColor='var(--green)';setTimeout(()=>{copyDescBtn.textContent='Copy description';copyDescBtn.style.background='';copyDescBtn.style.color='';copyDescBtn.style.borderColor='';},1800);});
         });
         bulkContainer.appendChild(item);
         // Animate in
@@ -2280,11 +2280,11 @@ async function generatePin() {
       for (let i = 0; i < qty; i += BATCH) {
         const batchSize = Math.min(BATCH, qty - i);
         const batchNums = Array.from({length: batchSize}, (_, j) => i + j);
-        document.getElementById('loading-text').textContent = 'Generating pins ' + (i+1) + 'â€“' + (i+batchSize) + ' of ' + qty + '...';
+        document.getElementById('loading-text').textContent = 'Generating pins ' + (i+1) + '–' + (i+batchSize) + ' of ' + qty + '...';
         const batchResults = await Promise.all(
           batchNums.map(async n => {
             try {
-              const r = await callClaude(buildSys(n), buildMsg(product, niche, audience, benefit, 'This is pin '+(n+1)+' â€” use the required hook style above and make it feel distinct from other pins about this topic.'));
+              const r = await callClaude(buildSys(n), buildMsg(product, niche, audience, benefit, 'This is pin '+(n+1)+' — use the required hook style above and make it feel distinct from other pins about this topic.'));
               return (r && r.title) ? r : null;
             } catch(e) { return null; }
           })
@@ -2314,9 +2314,9 @@ async function generatePin() {
         tipDiv.style.gridColumn = '1 / -1';
         const bulkFallback = NICHE_TIPS[bulkNiche]||'';
         if (!isPro) {
-          tipDiv.innerHTML = '<div class="niche-tip-label">'+bulkNiche+' tip ðŸ”’</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+(bulkFallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips â†’</span></div>';
+          tipDiv.innerHTML = '<div class="niche-tip-label">'+bulkNiche+' tip 🔒</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+(bulkFallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips →</span></div>';
         } else {
-          tipDiv.innerHTML = '<div class="niche-tip-label">'+bulkNiche+' tip</div><div class="niche-tip-text bulk-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this productâ€¦</div>';
+          tipDiv.innerHTML = '<div class="niche-tip-label">'+bulkNiche+' tip</div><div class="niche-tip-text bulk-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this product…</div>';
           bulkContainer.appendChild(tipDiv);
           fetchNicheTip(product, bulkNiche, tipDiv.querySelector('.bulk-tip-text'));
         }
@@ -2338,10 +2338,10 @@ async function generatePin() {
 async function regenField(field) {
   if (!lastPinData) return;
   const {p,product,niche,audience,benefit}=lastPinData;
-  const sys='Pinterest SEO copywriter. Return ONLY valid JSON â€” no markdown, no backticks, no explanation.';
+  const sys='Pinterest SEO copywriter. Return ONLY valid JSON — no markdown, no backticks, no explanation.';
   const msg=field==='title'
     ?'Write a new Pinterest title different from: "'+p.title+'". Product: '+product+'. Niche: '+niche+'. Tone: '+getTone()+'. Under 100 chars. No product name, no brand names, no hyphens, no colons. If phrased as a question it must end with ?. Return: {"title":"..."}'
-    :'Write a new Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+'. Audience: '+audience+'. Pain point: '+benefit+'. 2 sentences, under 500 chars, keyword-rich, problemâ†’solutionâ†’value. No product name, no brand names. Return: {"description":"..."}';
+    :'Write a new Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+'. Audience: '+audience+'. Pain point: '+benefit+'. 2 sentences, under 500 chars, keyword-rich, problem→solution→value. No product name, no brand names. Return: {"description":"..."}';
   try {
     const result=await callClaude(sys,msg);
     if (field==='title'&&result.title) { typeText(document.getElementById('result-title'),result.title); updateCharBar('title-bar','title-char',result.title.length,100); lastPinData.p.title=result.title; }
@@ -2354,11 +2354,11 @@ function copyAll() {
   const desc=document.getElementById('result-desc').textContent;
   const tags=Array.from(document.querySelectorAll('#result-tags .tag')).map(t=>{const v=t.textContent.trim();return v.startsWith('#')?v:'#'+v;}).join(' ');
   const disclaimer=document.getElementById('result-disclaimer').textContent;
-  navigator.clipboard.writeText(title+'\n\n'+desc+'\n\n'+tags+'\n\n'+disclaimer).then(()=>{const btn=document.getElementById('copy-all-btn');btn.textContent='âœ“ Copied!';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy all';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);});
+  navigator.clipboard.writeText(title+'\n\n'+desc+'\n\n'+tags+'\n\n'+disclaimer).then(()=>{const btn=document.getElementById('copy-all-btn');btn.textContent='✓ Copied!';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy all';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);});
 }
 
-function copyField(id,label,btn) { navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='âœ“ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent=label;btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
-function copyTags(btn) { const t=Array.from(document.querySelectorAll('#result-tags .tag')).map(x=>{const v=x.textContent.trim();return v.startsWith('#')?v:'#'+v;}).join(' '); navigator.clipboard.writeText(t).then(()=>{btn.textContent='âœ“ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy hashtags';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
+function copyField(id,label,btn) { navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='✓ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent=label;btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
+function copyTags(btn) { const t=Array.from(document.querySelectorAll('#result-tags .tag')).map(x=>{const v=x.textContent.trim();return v.startsWith('#')?v:'#'+v;}).join(' '); navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy hashtags';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
 
 function formatPinDate(dateStr) {
   if (!dateStr) return '';
@@ -2379,7 +2379,7 @@ function formatPinDate(dateStr) {
 
 function renderHistory() {
   const container=document.getElementById('history-container');
-  if (pinHistory.length===0) { container.innerHTML='<div class="history-empty" style="text-align:center;padding:4rem 2rem;"><div style="font-size:36px;opacity:0.15;margin-bottom:1rem;">âœ¦</div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:600;color:var(--text);opacity:0.4;margin-bottom:8px;">No pins yet</div><div style="font-size:13px;color:var(--text4);line-height:1.6;">Generate your first pin and it will appear here automatically</div></div>'; return; }
+  if (pinHistory.length===0) { container.innerHTML='<div class="history-empty" style="text-align:center;padding:4rem 2rem;"><div style="font-size:36px;opacity:0.15;margin-bottom:1rem;">✦</div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:600;color:var(--text);opacity:0.4;margin-bottom:8px;">No pins yet</div><div style="font-size:13px;color:var(--text4);line-height:1.6;">Generate your first pin and it will appear here automatically</div></div>'; return; }
   const list=document.createElement('div'); list.className='history-list';
   pinHistory.forEach((pin,i)=>{
     const item=document.createElement('div'); item.className='history-item';
@@ -2417,7 +2417,7 @@ function toggleBilling() {
   monthlyLabel.style.fontWeight = isAnnual ? '400' : '600';
   if (price) price.textContent = isAnnual ? '$6.58' : '$11.99';
   if (period) period.textContent = isAnnual ? '/month' : '/month';
-  if (note) note.textContent = isAnnual ? 'Billed $89.99/year Â· Cancel anytime' : 'Billed monthly Â· Cancel anytime';
+  if (note) note.textContent = isAnnual ? 'Billed $89.99/year · Cancel anytime' : 'Billed monthly · Cancel anytime';
 }
 
 function submitSupport() {
@@ -2442,7 +2442,7 @@ function submitSupport() {
 }
 
 
-// â”€â”€ EMAIL GATE â”€â”€
+// ── EMAIL GATE ──
 function getGateEmail() {
   return localStorage.getItem('pinlo_gate_email') || null;
 }
@@ -2454,7 +2454,7 @@ function setGateEmail(email) {
   updateSignedInDisplay();
 }
 
-// Shows "Signed in as X Â· Switch" in the footer when an email is set
+// Shows "Signed in as X · Switch" in the footer when an email is set
 function updateSignedInDisplay() {
   const row = document.getElementById('signed-in-row');
   const emailSpan = document.getElementById('signed-in-email');
@@ -2579,7 +2579,7 @@ async function submitEmailGate() {
       error.textContent = data.error || 'Failed to send code. Try again.';
       error.style.display = 'block';
       btn.disabled = false;
-      btn.textContent = 'Send login code â†’';
+      btn.textContent = 'Send login code →';
       return;
     }
     // Show OTP step
@@ -2591,7 +2591,7 @@ async function submitEmailGate() {
     error.textContent = 'Something went wrong. Please try again.';
     error.style.display = 'block';
     btn.disabled = false;
-    btn.textContent = 'Send login code â†’';
+    btn.textContent = 'Send login code →';
   }
 }
 
@@ -2623,12 +2623,12 @@ async function submitOTP() {
       otpError.textContent = data.error || 'Invalid code. Please try again.';
       otpError.style.display = 'block';
       btn.disabled = false;
-      btn.textContent = 'Verify code â†’';
+      btn.textContent = 'Verify code →';
       otpInput.value = '';
       otpInput.focus();
       return;
     }
-    // Verified â€” log them in
+    // Verified — log them in
     setGateEmail(email);
     localStorage.setItem('pinlo_verified', 'true');
     // Sync usage from server (so they can't bypass by clearing localStorage)
@@ -2646,7 +2646,7 @@ async function submitOTP() {
     otpError.textContent = 'Something went wrong. Please try again.';
     otpError.style.display = 'block';
     btn.disabled = false;
-    btn.textContent = 'Verify code â†’';
+    btn.textContent = 'Verify code →';
   }
 }
 
@@ -2656,11 +2656,11 @@ function resetToEmailStep() {
   document.getElementById('otp-input').value = '';
   document.getElementById('otp-error').style.display = 'none';
   const btn = document.getElementById('email-gate-btn');
-  if (btn) { btn.disabled = false; btn.textContent = 'Send login code â†’'; }
+  if (btn) { btn.disabled = false; btn.textContent = 'Send login code →'; }
   setTimeout(() => { const i = document.getElementById('email-gate-input'); if (i) i.focus(); }, 100);
 }
 
-// Validate pin count is honest â€” reset if hash missing or mismatched
+// Validate pin count is honest — reset if hash missing or mismatched
 (function validateGateIntegrity() {
   // Clean up any stale Pro tokens from older versions - Pro status now lives in the database
   localStorage.removeItem('pinlo_pro_token');
@@ -2668,16 +2668,16 @@ function resetToEmailStep() {
   const hash = localStorage.getItem('pinlo_gate_hash');
   const storedPins = parseInt(localStorage.getItem('pinlo_pins_used') || '0');
   if (storedPins > 0 && (!email || !hash || btoa(email).slice(0,12) !== hash)) {
-    // Someone tried to clear storage partially â€” reset everything
+    // Someone tried to clear storage partially — reset everything
     localStorage.removeItem('pinlo_pins_used');
     pinsUsed = 0;
   }
 })();
 
-// â”€â”€ ADMIN MODE â€” secret keysequence triggers password gate â”€â”€
+// ── ADMIN MODE — secret keysequence triggers password gate ──
 (function() {
   const SECRET = 'pinloadmin';
-  // SHA-256 of "pinlo@admin1" â€” change password by updating this hash
+  // SHA-256 of "pinlo@admin1" — change password by updating this hash
   const PASS_HASH = '6c5129843b01945b67473099a272c1ab4fb39d1bb2572cbc3eb3faaded658443';
   let buffer = '';
   let adminUnlocked = false;
@@ -2697,7 +2697,7 @@ function resetToEmailStep() {
     }
   });
 
-  // â”€â”€ PASSWORD GATE â”€â”€
+  // ── PASSWORD GATE ──
   function showPasswordGate() {
     if (document.getElementById('admin-gate')) return;
     const overlay = document.createElement('div');
@@ -2706,7 +2706,7 @@ function resetToEmailStep() {
     overlay.innerHTML = `
       <div style="background:#1A0D08;border:1.5px solid rgba(217,79,56,0.4);border-radius:20px;padding:32px 36px;width:340px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,0.6);">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-          <div style="width:32px;height:32px;background:linear-gradient(135deg,#D94F38,#F5924A);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">âš™</div>
+          <div style="width:32px;height:32px;background:linear-gradient(135deg,#D94F38,#F5924A);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">⚙</div>
           <div>
             <div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.3px;">Admin Access</div>
             <div style="font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;">Pinlo Internal</div>
@@ -2732,7 +2732,7 @@ function resetToEmailStep() {
       const val = input.value;
       if (!val) return;
       const btn = document.getElementById('admin-gate-submit');
-      btn.textContent = 'â€¦'; btn.style.opacity = '0.6';
+      btn.textContent = '…'; btn.style.opacity = '0.6';
       const hash = await sha256(val);
       btn.textContent = 'Unlock'; btn.style.opacity = '1';
       if (hash === PASS_HASH) {
@@ -2751,18 +2751,18 @@ function resetToEmailStep() {
     input.addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); if (e.key === 'Escape') overlay.remove(); });
   }
 
-  // â”€â”€ ADMIN PANEL â”€â”€
+  // ── ADMIN PANEL ──
   function adminStateHTML() {
-    const email = getGateEmail() || 'â€”';
+    const email = getGateEmail() || '—';
     const pins = localStorage.getItem('pinlo_pins_used') || '0';
     const proExpiry = localStorage.getItem('pinlo_pro_expiry');
-    const expiryStr = proExpiry ? new Date(parseInt(proExpiry)).toLocaleDateString() : 'â€”';
+    const expiryStr = proExpiry ? new Date(parseInt(proExpiry)).toLocaleDateString() : '—';
     return `
       <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
         <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:10px;">Current State</div>
         <div style="display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12px;">
           <span style="color:rgba(255,255,255,0.35);">Plan</span>
-          <span id="adm-plan" style="color:#fff;font-weight:600;">${isPro ? 'âœ¦ PRO (' + (proPlan||'?') + ')' : 'FREE'}</span>
+          <span id="adm-plan" style="color:#fff;font-weight:600;">${isPro ? '✦ PRO (' + (proPlan||'?') + ')' : 'FREE'}</span>
           <span style="color:rgba(255,255,255,0.35);">Email</span>
           <span style="color:rgba(255,255,255,0.7);word-break:break-all;">${email}</span>
           <span style="color:rgba(255,255,255,0.35);">Pins used</span>
@@ -2788,13 +2788,13 @@ function resetToEmailStep() {
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;background:linear-gradient(135deg,#D94F38,#F5924A);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">âš™</div>
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,#D94F38,#F5924A);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">⚙</div>
             <div>
               <div style="font-size:15px;font-weight:700;color:#fff;">Admin Panel</div>
               <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;">Pinlo Internal</div>
             </div>
           </div>
-          <button onclick="document.getElementById('admin-panel-overlay').remove();" style="width:32px;height:32px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">Ã—</button>
+          <button onclick="document.getElementById('admin-panel-overlay').remove();" style="width:32px;height:32px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">×</button>
         </div>
 
         <div id="adm-state-block">${adminStateHTML()}</div>
@@ -2802,8 +2802,8 @@ function resetToEmailStep() {
         <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:10px;">Plan Control</div>
 
         <div style="display:flex;gap:8px;margin-bottom:8px;">
-          <button onclick="window._adminSetPro(true,'monthly')" style="flex:1;padding:10px;background:linear-gradient(135deg,#D94F38,#F5924A);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">âœ¦ Set PRO Monthly</button>
-          <button onclick="window._adminSetPro(true,'yearly')" style="flex:1;padding:10px;background:linear-gradient(135deg,#a33820,#c4682e);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">âœ¦ Set PRO Yearly</button>
+          <button onclick="window._adminSetPro(true,'monthly')" style="flex:1;padding:10px;background:linear-gradient(135deg,#D94F38,#F5924A);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">✦ Set PRO Monthly</button>
+          <button onclick="window._adminSetPro(true,'yearly')" style="flex:1;padding:10px;background:linear-gradient(135deg,#a33820,#c4682e);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">✦ Set PRO Yearly</button>
         </div>
         <button onclick="window._adminSetPro(false)" style="width:100%;padding:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;margin-bottom:18px;">Downgrade to FREE</button>
 
@@ -2818,15 +2818,15 @@ function resetToEmailStep() {
           />
           <button onclick="window._adminSetPins()" style="padding:9px 16px;background:rgba(255,255,255,0.08);color:#fff;border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;white-space:nowrap;">Set Pins Used</button>
         </div>
-        <button onclick="window._adminResetPins()" style="width:100%;padding:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;margin-bottom:18px;">â†º Reset Pins to 0</button>
+        <button onclick="window._adminResetPins()" style="width:100%;padding:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;margin-bottom:18px;">↺ Reset Pins to 0</button>
 
         <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:18px;"></div>
 
         <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:10px;">Storage & Debug</div>
 
         <div style="display:flex;gap:8px;margin-bottom:8px;">
-          <button onclick="window._adminCopyDebug()" style="flex:1;padding:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">ðŸ“‹ Copy Debug Info</button>
-          <button onclick="window._adminClearStorage()" style="flex:1;padding:10px;background:rgba(180,30,30,0.15);color:#F06548;border:1.5px solid rgba(240,101,72,0.25);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">ðŸ—‘ Clear All Data</button>
+          <button onclick="window._adminCopyDebug()" style="flex:1;padding:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">📋 Copy Debug Info</button>
+          <button onclick="window._adminClearStorage()" style="flex:1;padding:10px;background:rgba(180,30,30,0.15);color:#F06548;border:1.5px solid rgba(240,101,72,0.25);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">🗑 Clear All Data</button>
         </div>
 
         <div id="adm-toast" style="font-size:12px;color:#4ade80;min-height:18px;margin-top:6px;text-align:center;"></div>
@@ -2856,7 +2856,7 @@ function resetToEmailStep() {
     } else {
       isPro = false; proPlan = null;
       const badge = document.getElementById('plan-badge');
-      if (badge) { badge.textContent = 'FREE â€” 5 PINS LEFT'; badge.style.background=''; badge.style.color=''; badge.style.border=''; }
+      if (badge) { badge.textContent = 'FREE — 5 PINS LEFT'; badge.style.background=''; badge.style.color=''; badge.style.border=''; }
       const proBtn = document.querySelector('.pro-btn');
       if (proBtn) { proBtn.textContent='Upgrade to Pro'; proBtn.style.background=''; proBtn.style.color=''; proBtn.style.border=''; }
       const freeBadge = document.querySelector('.free-badge');
@@ -2866,7 +2866,7 @@ function resetToEmailStep() {
       pinsUsed = 0; updateUsage(); updateQtyControls();
     }
     refreshAdminState();
-    adminToast(setPro ? `âœ¦ Switched to PRO (${plan||'monthly'})` : 'Switched to FREE');
+    adminToast(setPro ? `✦ Switched to PRO (${plan||'monthly'})` : 'Switched to FREE');
   };
 
   window._adminSetPins = function() {
@@ -2900,7 +2900,7 @@ function resetToEmailStep() {
     };
     navigator.clipboard.writeText(JSON.stringify(info, null, 2))
       .then(() => adminToast('Debug info copied to clipboard!'))
-      .catch(() => adminToast('Copy failed â€” check console', '#F06548'));
+      .catch(() => adminToast('Copy failed — check console', '#F06548'));
     console.log('[Pinlo Admin Debug]', info);
   };
 
@@ -2915,7 +2915,7 @@ function resetToEmailStep() {
 })();
 
 
-// â”€â”€ RENDER PRICING TAB BASED ON PRO STATUS â”€â”€
+// ── RENDER PRICING TAB BASED ON PRO STATUS ──
 function renderPricingTab() {
   const wrap = document.getElementById('pricing-view-content');
   if (!wrap) return;
@@ -2933,11 +2933,11 @@ function renderPricingTab() {
             <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:0.5px;margin-bottom:4px;">Unlimited pins</div>
             <div style="font-size:13px;color:rgba(255,255,255,0.55);">No cap. Generate as many as you want, whenever you want.</div>
           </div>
-          <div style="font-size:42px;flex-shrink:0;opacity:0.9;">âˆž</div>
+          <div style="font-size:42px;flex-shrink:0;opacity:0.9;">∞</div>
         </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Bulk generate</div>
-          <div style="font-size:12px;color:var(--text3);line-height:1.5;">Up to 10 pins at once â€” batch a full week in one sitting.</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.5;">Up to 10 pins at once — batch a full week in one sitting.</div>
         </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">SEO score</div>
@@ -2949,7 +2949,7 @@ function renderPricingTab() {
         </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Niche strategy tips</div>
-          <div style="font-size:12px;color:var(--text3);line-height:1.5;">Specific to your product â€” best times, board names, what converts.</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.5;">Specific to your product — best times, board names, what converts.</div>
         </div>
       </div>
 
@@ -2958,7 +2958,7 @@ function renderPricingTab() {
           <div style="font-size:14px;font-weight:600;color:var(--text);">Manage subscription</div>
           <div style="font-size:12px;color:var(--text3);margin-top:2px;">Update billing or cancel anytime</div>
         </div>
-        <a href="#" onclick="openManageModal();return false;" style="font-size:13px;font-weight:600;padding:10px 20px;border:1.5px solid var(--border);border-radius:10px;color:var(--text2);text-decoration:none;background:var(--bg);transition:all 0.15s;cursor:pointer;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">Manage â†’</a>
+        <a href="#" onclick="openManageModal();return false;" style="font-size:13px;font-weight:600;padding:10px 20px;border:1.5px solid var(--border);border-radius:10px;color:var(--text2);text-decoration:none;background:var(--bg);transition:all 0.15s;cursor:pointer;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">Manage →</a>
       </div>
     `;
   } else {
@@ -2985,20 +2985,20 @@ function renderPricingTab() {
               <span style="font-size:15px;color:rgba(255,255,255,0.7);padding-bottom:8px;" id="period-display">/month</span>
             </div>
           </div>
-          <button onclick="showPaywall()" style="padding:14px 24px;background:#fff;color:var(--red);border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.15);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Get Pro â†’</button>
+          <button onclick="showPaywall()" style="padding:14px 24px;background:#fff;color:var(--red);border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.15);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Get Pro →</button>
         </div>
         <div style="padding:1.5rem 1.75rem;">
-          <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem;" id="billing-note">Billed monthly Â· Cancel anytime</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem;" id="billing-note">Billed monthly · Cancel anytime</div>
           <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">âœ“</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Unlimited pins</strong> â€” no daily cap, ever</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">âœ“</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Bulk generate up to 10 pins</strong> â€” batch a full week in one session</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">âœ“</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Full SEO score</strong> â€” see exactly how well-optimized each pin is</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">âœ“</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Pain point suggestions</strong> â€” tailored to your exact product</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">âœ“</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Niche strategy tips</strong> â€” specific to what you're promoting, not generic advice</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Unlimited pins</strong> — no daily cap, ever</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Bulk generate up to 10 pins</strong> — batch a full week in one session</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Full SEO score</strong> — see exactly how well-optimized each pin is</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Pain point suggestions</strong> — tailored to your exact product</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Niche strategy tips</strong> — specific to what you're promoting, not generic advice</div></div>
           </div>
         </div>
         <div style="background:var(--bg3);padding:1rem 1.75rem;border-top:1px solid var(--border);">
-          <div style="font-size:13px;color:var(--text3);text-align:center;">ðŸ”’ Secure checkout via Stripe Â· Cancel anytime Â· No contracts</div>
+          <div style="font-size:13px;color:var(--text3);text-align:center;">🔒 Secure checkout via Stripe · Cancel anytime · No contracts</div>
         </div>
       </div>
 
@@ -3006,7 +3006,7 @@ function renderPricingTab() {
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:0.3px;">Common questions</div>
         <div style="border-top:1px solid var(--border);padding:1rem 0;"><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Can I cancel anytime?</div><div style="font-size:13px;color:var(--text3);line-height:1.6;">Yes. Cancel from billing settings whenever you want. You keep access until the end of the period you paid for.</div></div>
         <div style="border-top:1px solid var(--border);padding:1rem 0;"><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">What happens to my history after I upgrade?</div><div style="font-size:13px;color:var(--text3);line-height:1.6;">Everything stays. Your pin history from the free plan carries over intact.</div></div>
-        <div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 0;"><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Do I need any other tools?</div><div style="font-size:13px;color:var(--text3);line-height:1.6;">No integrations needed. Generate here, paste into Pinterest â€” or any scheduler you use.</div></div>
+        <div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 0;"><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Do I need any other tools?</div><div style="font-size:13px;color:var(--text3);line-height:1.6;">No integrations needed. Generate here, paste into Pinterest — or any scheduler you use.</div></div>
       </div>
     `;
   }
