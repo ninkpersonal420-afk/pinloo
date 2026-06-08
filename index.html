@@ -352,18 +352,19 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
-  // 2 sub-columns per side, pushed well into the margins, 6 tags each with large gaps
+  // 2 sub-columns per side — right columns use `right` property so they don't bleed off screen
   const cols = [
-    { tags: shuffled.slice(0,  6), x: '0.5%', dur: 20, dir: 'Up'   },
-    { tags: shuffled.slice(6,  12), x: '8%',   dur: 26, dir: 'Up'   },
-    { tags: shuffled.slice(12, 18), x: 'calc(100% - 2%)',  dur: 23, dir: 'Down' },
-    { tags: shuffled.slice(18, 24), x: 'calc(100% - 10%)', dur: 18, dir: 'Down' },
+    { tags: shuffled.slice(0,  6),  side: 'left',  x: '0.5%', dur: 22, dir: 'Up'   },
+    { tags: shuffled.slice(6,  12), side: 'left',  x: '9%',   dur: 28, dir: 'Up'   },
+    { tags: shuffled.slice(12, 18), side: 'right', x: '0.5%', dur: 25, dir: 'Down' },
+    { tags: shuffled.slice(18, 24), side: 'right', x: '9%',   dur: 20, dir: 'Down' },
   ];
 
-  cols.forEach(({ tags, x, dur, dir }) => {
+  cols.forEach(({ tags, side, x, dur, dir }) => {
     const col = document.createElement('div');
     col.className = 'tag-col';
-    col.style.left = x;
+    if (side === 'right') { col.style.right = x; col.style.alignItems = 'flex-end'; }
+    else col.style.left = x;
     col.style.animation = `col${dir} ${dur}s linear infinite`;
     if (dir === 'Down') col.style.animationDelay = `calc(-${dur}s / 2)`;
 
