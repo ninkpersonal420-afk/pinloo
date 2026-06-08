@@ -51,7 +51,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:
 .hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
 .hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
 @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
-.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:28px;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 88%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 88%,transparent 100%);}
+.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:56px;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 15%,black 85%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 15%,black 85%,transparent 100%);}
 @keyframes colUp{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
 @keyframes colDown{0%{transform:translateY(-50%)}100%{transform:translateY(0)}}
 .hashtag-float{display:inline-block;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;}
@@ -352,13 +352,12 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
-  // Each side gets 2 sub-columns at different x positions and speeds
-  // This breaks the straight-line look while keeping flow clean
+  // 2 sub-columns per side, pushed well into the margins, 6 tags each with large gaps
   const cols = [
-    { tags: shuffled.slice(0,  9), x: '2%',  dur: 18, dir: 'Up'   },
-    { tags: shuffled.slice(9,  18), x: '10%', dur: 24, dir: 'Up'   },
-    { tags: shuffled.slice(18, 27), x: 'calc(100% - 4%)',  dur: 21, dir: 'Down' },
-    { tags: shuffled.slice(27, 36), x: 'calc(100% - 12%)', dur: 16, dir: 'Down' },
+    { tags: shuffled.slice(0,  6), x: '0.5%', dur: 20, dir: 'Up'   },
+    { tags: shuffled.slice(6,  12), x: '8%',   dur: 26, dir: 'Up'   },
+    { tags: shuffled.slice(12, 18), x: 'calc(100% - 2%)',  dur: 23, dir: 'Down' },
+    { tags: shuffled.slice(18, 24), x: 'calc(100% - 10%)', dur: 18, dir: 'Down' },
   ];
 
   cols.forEach(({ tags, x, dur, dir }) => {
