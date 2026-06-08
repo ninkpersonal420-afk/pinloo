@@ -51,9 +51,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:
 .hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
 .hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
 @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
-.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:22px;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 10%,black 90%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 10%,black 90%,transparent 100%);}
-.tag-col-left{left:3%;animation:colUp 20s linear infinite;}
-.tag-col-right{right:3%;animation:colDown 20s linear infinite;align-items:flex-end;}
+.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:28px;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 88%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 88%,transparent 100%);}
 @keyframes colUp{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
 @keyframes colDown{0%{transform:translateY(-50%)}100%{transform:translateY(0)}}
 .hashtag-float{display:inline-block;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;}
@@ -335,7 +333,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   });
 })();
 
-// Hashtag columns — vertical ticker, no overlap possible
+// Hashtag columns — 2 sub-columns per side for scattered look
 (function() {
   const allTags = [
     '#skincare','#affiliatemarketing','#beautytips','#workfromhome','#selfcare',
@@ -351,16 +349,26 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   ];
 
   const shuffled = allTags.slice().sort(() => Math.random() - 0.5);
-  const leftTags  = shuffled.slice(0, 16);
-  const rightTags = shuffled.slice(16, 32);
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
-  function makeCol(tags, side) {
+  // Each side gets 2 sub-columns at different x positions and speeds
+  // This breaks the straight-line look while keeping flow clean
+  const cols = [
+    { tags: shuffled.slice(0,  9), x: '2%',  dur: 18, dir: 'Up'   },
+    { tags: shuffled.slice(9,  18), x: '10%', dur: 24, dir: 'Up'   },
+    { tags: shuffled.slice(18, 27), x: 'calc(100% - 4%)',  dur: 21, dir: 'Down' },
+    { tags: shuffled.slice(27, 36), x: 'calc(100% - 12%)', dur: 16, dir: 'Down' },
+  ];
+
+  cols.forEach(({ tags, x, dur, dir }) => {
     const col = document.createElement('div');
-    col.className = 'tag-col tag-col-' + side;
-    // Pre-compute rotations so original + duplicate are identical → seamless loop
-    const rotations = tags.map(() => (Math.random() - 0.5) * 6);
+    col.className = 'tag-col';
+    col.style.left = x;
+    col.style.animation = `col${dir} ${dur}s linear infinite`;
+    if (dir === 'Down') col.style.animationDelay = `calc(-${dur}s / 2)`;
+
+    const rotations = tags.map(() => (Math.random() - 0.5) * 7);
     [...tags, ...tags].forEach((tag, i) => {
       const el = document.createElement('div');
       el.className = 'hashtag-float';
@@ -369,10 +377,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
       col.appendChild(el);
     });
     bg.appendChild(col);
-  }
-
-  makeCol(leftTags,  'left');
-  makeCol(rightTags, 'right');
+  });
 })();
 </script>
 
