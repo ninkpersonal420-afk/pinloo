@@ -273,7 +273,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
         <a href="#how" onclick="smoothScroll('how');return false;" class="btn-ghost">See how it works</a>
       </div>
       <p class="hero-note">No credit card required · 5 free pins</p>
-      <p class="hero-counter" id="pin-counter-wrap" style="opacity:0;transition:opacity 0.6s;">✦ <span id="pin-counter">0</span> pins generated and counting</p>
+      <p class="hero-counter" id="pin-counter-wrap" style="opacity:0;transition:opacity 0.6s;"><span id="pin-counter">✦ 0 pins generated and counting</span></p>
     </div>
     <div class="hero-right">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
@@ -692,12 +692,12 @@ function toggleFaq(el) {
   if (!el) return;
 
   // Seed offset — increase this to bump the displayed number above the raw KV count
-  const SEED = 5000;
+  const SEED = 200;
 
   function formatCount(n) {
-    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-    return n.toLocaleString();
+    if (n >= 1000000) return '✦ ' + (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M pins generated and counting';
+    if (n >= 1000) return '✦ ' + (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k pins generated and counting';
+    return '✦ ' + n.toLocaleString() + ' pins generated and counting';
   }
 
   function animateTo(target) {
