@@ -49,11 +49,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:
 .hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
 .hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
 @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
-@keyframes driftUp{0%{transform:translateY(520px) rotate(var(--rot));}100%{transform:translateY(-520px) rotate(var(--rot));}}
-@keyframes driftDown{0%{transform:translateY(-520px) rotate(var(--rot));}100%{transform:translateY(520px) rotate(var(--rot));}}
-.hashtag-float{position:absolute;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;}
-.hashtag-float.drift-up{animation:driftUp var(--dur) linear infinite;}
-.hashtag-float.drift-down{animation:driftDown var(--dur) linear infinite;}
+.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:20px;pointer-events:none;}
+.tag-col-left{left:3%;animation:colUp 18s linear infinite;}
+.tag-col-right{right:3%;animation:colDown 18s linear infinite;align-items:flex-end;}
+@keyframes colUp{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+@keyframes colDown{0%{transform:translateY(-50%)}100%{transform:translateY(0)}}
+.hashtag-float{display:inline-block;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;}
 .hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);color:var(--red);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:2rem;animation:fadeUp 0.7s ease both;}
 h1{font-family:'Playfair Display',serif;font-size:clamp(42px,6.5vw,84px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:1.75rem;animation:fadeUp 0.7s 0.1s ease both;}
@@ -331,7 +332,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   });
 })();
 
-// Floating hashtag pills — static scatter, no animation loop
+// Hashtag columns — vertical ticker, no overlap possible
 (function() {
   const allTags = [
     '#skincare','#affiliatemarketing','#beautytips','#workfromhome','#selfcare',
@@ -345,42 +346,29 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     '#weddinginspo','#crafting','#studymotivation','#minimalism','#capsulewardrobe',
     '#foodphotography','#homeofficedecor','#weightloss','#selfcaresunday','#amazonfinds'
   ];
-  // Shuffle and split into two distinct halves
+
   const shuffled = allTags.slice().sort(() => Math.random() - 0.5);
-  const leftTags  = shuffled.slice(0, 14);
-  const rightTags = shuffled.slice(14, 28);
+  const leftTags  = shuffled.slice(0, 16);
+  const rightTags = shuffled.slice(16, 32);
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
-  // Pre-defined positions so they scatter naturally rather than forming a line
-  // Left side: x 1-13%, right side: x 83-97%
-  const leftPositions = [
-    {x:2,  y:4},  {x:9,  y:11}, {x:1,  y:19}, {x:10, y:27},
-    {x:3,  y:35}, {x:8,  y:43}, {x:2,  y:51}, {x:11, y:58},
-    {x:4,  y:66}, {x:7,  y:73}, {x:1,  y:80}, {x:10, y:87},
-    {x:3,  y:93}, {x:8,  y:99}
-  ];
-  const rightPositions = [
-    {x:88, y:4},  {x:83, y:11}, {x:91, y:19}, {x:85, y:27},
-    {x:93, y:35}, {x:84, y:43}, {x:90, y:51}, {x:86, y:58},
-    {x:92, y:66}, {x:83, y:73}, {x:89, y:80}, {x:85, y:87},
-    {x:92, y:93}, {x:87, y:99}
-  ];
-
-  function place(tag, pos, direction) {
-    const el = document.createElement('div');
-    el.className = 'hashtag-float ' + direction;
-    el.textContent = tag;
-    const rot = (Math.random() - 0.5) * 10;
-    const durVal = 12 + Math.random() * 6;
-    const dur = durVal + 's';
-    const delay = -(Math.random() * durVal) + 's'; // random start so each pill is at a different point — snap always off-screen
-    el.style.cssText = `left:${pos.x}%;top:${pos.y}%;--rot:${rot}deg;--dur:${dur};animation-delay:${delay};`;
-    bg.appendChild(el);
+  function makeCol(tags, side) {
+    const col = document.createElement('div');
+    col.className = 'tag-col tag-col-' + side;
+    // Duplicate for seamless loop — when first set exits, second fills in
+    [...tags, ...tags].forEach(tag => {
+      const el = document.createElement('div');
+      el.className = 'hashtag-float';
+      el.textContent = tag;
+      el.style.transform = `rotate(${(Math.random() - 0.5) * 6}deg)`;
+      col.appendChild(el);
+    });
+    bg.appendChild(col);
   }
 
-  leftTags.forEach((tag, i)  => place(tag, leftPositions[i],  'drift-up'));
-  rightTags.forEach((tag, i) => place(tag, rightPositions[i], 'drift-down'));
+  makeCol(leftTags,  'left');
+  makeCol(rightTags, 'right');
 })();
 </script>
 
