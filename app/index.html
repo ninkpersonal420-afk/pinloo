@@ -75,7 +75,7 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .tab{font-size:12px;font-weight:500;padding:13px 15px;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all 0.15s;letter-spacing:0.3px;font-family:'Outfit',sans-serif;white-space:nowrap;flex-shrink:0;}
 .tab:hover{color:var(--text2);}
 .tab.active{color:var(--red) !important;border-bottom-color:var(--red);font-weight:700;transition:border-color 0.2s ease,color 0.2s ease;}
-.main{max-width:1140px;margin:0 auto;padding:1.5rem;}
+.main{max-width:860px;margin:0 auto;padding:1.5rem;}
 .view{display:none;background:var(--bg);min-height:calc(100vh - 120px);}
 .view.active{display:block;}
 .usage-row{display:flex;align-items:center;gap:1.5rem;padding:1rem 1.25rem;background:linear-gradient(135deg,rgba(217,79,56,0.07),rgba(245,146,74,0.05));border:1px solid rgba(245,146,74,0.25);border-radius:12px;margin-bottom:1.75rem;flex-wrap:wrap;}
@@ -205,15 +205,15 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* SPLIT LAYOUT */
-.split-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;}
-.result-col{position:sticky;top:80px;}
-.result-col .bulk-results{grid-template-columns:1fr;}
-
 /* PIN PREVIEW HEADER */
 .pin-preview-bar{background:var(--gradient);margin:-1.75rem -1.75rem 1.5rem;padding:0.85rem 1.75rem;border-radius:17px 17px 0 0;display:flex;align-items:center;justify-content:space-between;}
 .pin-preview-bar-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;}
 .pin-preview-bar-niche{font-size:11px;font-weight:600;color:#fff;background:rgba(255,255,255,0.18);padding:3px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.25);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* PIN IMAGE PLACEHOLDER */
+.pin-img-strip{margin:-1.75rem -1.75rem 0;height:88px;background:linear-gradient(135deg,rgba(217,79,56,0.1),rgba(245,146,74,0.07));display:flex;align-items:center;justify-content:center;border-radius:17px 17px 0 0;border-bottom:1px solid rgba(217,79,56,0.1);position:relative;overflow:hidden;}
+.pin-img-strip::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(217,79,56,0.03) 12px,rgba(217,79,56,0.03) 13px);}
+.pin-img-strip-icon{font-size:28px;opacity:0.18;position:relative;}
 
 /* STAGGERED RESULT REVEAL */
 @keyframes blockIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -223,11 +223,40 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .result-panel.show .result-block:nth-of-type(3){animation-delay:0.26s;}
 .result-panel.show .result-block:nth-of-type(4){animation-delay:0.35s;}
 
-@media(max-width:960px){
-  .split-layout{grid-template-columns:1fr;}
-  .result-col{position:static;}
-  .result-col .bulk-results{grid-template-columns:repeat(2,1fr);}
-}
+/* GENERATE BUTTON PULSE + PRESS */
+@keyframes btnGlow{0%,100%{box-shadow:0 6px 24px rgba(217,79,56,0.35)}50%{box-shadow:0 8px 40px rgba(217,79,56,0.65),0 0 0 8px rgba(217,79,56,0.08)}}
+.gen-btn:not(:disabled):hover{transform:translateY(-2px);animation:btnGlow 1.8s ease infinite;}
+.gen-btn:not(:disabled):active{transform:translateY(1px) scale(0.982);box-shadow:0 3px 12px rgba(217,79,56,0.3) !important;animation:none;transition:transform 0.08s,box-shadow 0.08s;}
+
+/* BACKGROUND TEXTURE */
+[data-theme="light"] body{background:radial-gradient(ellipse at 18% 8%,rgba(217,79,56,0.06) 0%,transparent 42%),radial-gradient(ellipse at 84% 92%,rgba(245,146,74,0.05) 0%,transparent 40%),var(--bg);}
+[data-theme="dark"] body{background:radial-gradient(ellipse at 18% 8%,rgba(255,107,82,0.07) 0%,transparent 42%),radial-gradient(ellipse at 84% 92%,rgba(255,158,88,0.05) 0%,transparent 40%),var(--bg);}
+
+/* NICHE PILL COLOR DOTS */
+.pill::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:5px;vertical-align:middle;flex-shrink:0;opacity:0.75;}
+.pill[onclick*="Beauty"]::before,.pill[onclick*="Hair"]::before{background:#E91E63;}
+.pill[onclick*="Fitness"]::before,.pill[onclick*="Health"]::before,.pill[onclick*="Supplement"]::before,.pill[onclick*="Outdoor"]::before{background:#43A047;}
+.pill[onclick*="Tech"]::before,.pill[onclick*="Gaming"]::before,.pill[onclick*="Photography"]::before,.pill[onclick*="Travel"]::before{background:#1E88E5;}
+.pill[onclick*="Fashion"]::before,.pill[onclick*="Vintage"]::before,.pill[onclick*="Self"]::before,.pill[onclick*="Books"]::before{background:#8E24AA;}
+.pill[onclick*="Candles"]::before,.pill[onclick*="Kitchen"]::before,.pill[onclick*="Food"]::before,.pill[onclick*="DIY"]::before{background:#F57C00;}
+.pill[onclick*="Home"]::before{background:#00897B;}
+.pill[onclick*="Pets"]::before,.pill[onclick*="Wedding"]::before,.pill[onclick*="Mom"]::before{background:#E53935;}
+.pill[onclick*="Finance"]::before,.pill[onclick*="Stationery"]::before{background:#3949AB;}
+.pill.active::before{opacity:1;}
+
+/* SEO SCORE RING */
+.score-pro-layout{display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:14px;}
+.score-ring-wrap{position:relative;width:76px;height:76px;flex-shrink:0;}
+.score-ring-svg{width:76px;height:76px;transform:rotate(-90deg);}
+.score-ring-bg-c{fill:none;stroke:var(--border);stroke-width:5;}
+.score-ring-fill-c{fill:none;stroke-width:5;stroke-linecap:round;stroke-dasharray:150.8;stroke-dashoffset:150.8;transition:stroke-dashoffset 1.1s cubic-bezier(0.4,0,0.2,1);}
+.score-ring-fill-c.high{stroke:#66BB6A;}
+.score-ring-fill-c.mid{stroke:#FBBF24;}
+.score-ring-fill-c.low{stroke:var(--red);}
+.score-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
+.score-ring-num{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;line-height:1;}
+.score-ring-sub{font-size:9px;color:var(--text4);line-height:1;margin-top:2px;}
+.score-ring-right{flex:1;min-width:0;padding-top:2px;}
 .result-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--bg3);flex-wrap:wrap;gap:8px;}
 .result-panel-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);}
 .header-btns{display:flex;gap:8px;flex-wrap:wrap;}
@@ -362,7 +391,8 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
   .main{padding:0.875rem 0.875rem;}
   .input-panel{padding:1.1rem 0.875rem;border-radius:10px;margin-bottom:0.875rem;}
   .result-panel{padding:1.1rem 0.875rem;}
-  .pin-preview-bar{margin:-1.1rem -0.875rem 1.1rem;padding:0.75rem 0.875rem;}
+  .pin-img-strip{margin:-1.1rem -0.875rem 0;border-radius:9px 9px 0 0;}
+  .pin-preview-bar{margin:0 -0.875rem 1.1rem;padding:0.75rem 0.875rem;}
   .panel-title{font-size:16px;margin-bottom:1rem;}
   .tone-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
   .template-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
@@ -466,8 +496,6 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <button class="usage-cta" onclick="showPaywall()">Unlock unlimited</button>
     </div>
 
-    <div class="split-layout">
-    <div class="form-col">
     <div class="input-panel">
       <div class="panel-title">What are you promoting?</div>
 
@@ -621,9 +649,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div class="loading-bar"><div class="loading-fill"></div></div>
       <div class="loading-text" id="loading-text">Crafting your pin</div>
     </div>
-    </div><!-- /form-col -->
 
-    <div class="result-col">
     <div class="empty-state" id="empty-state">
       <div style="font-size:40px;margin-bottom:1rem;opacity:0.15;">✦</div>
       <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;opacity:0.5;">Your next viral pin starts here</div>
@@ -631,7 +657,8 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
 
     <div class="result-panel" id="result-panel">
-      <div class="pin-preview-bar">
+      <div class="pin-img-strip"><span class="pin-img-strip-icon">📌</span></div>
+      <div class="pin-preview-bar" style="border-radius:0;margin-top:0;">
         <span class="pin-preview-bar-label">📌 Pin preview</span>
         <span class="pin-preview-bar-niche" id="pin-niche-chip">—</span>
       </div>
@@ -713,8 +740,6 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
 
     <div class="bulk-results" id="bulk-results"></div>
-    </div><!-- /result-col -->
-    </div><!-- /split-layout -->
   </div>
 
   <div class="view" id="view-history">
@@ -1988,18 +2013,35 @@ function renderScore(pin) {
     return;
   }
 
-  // Full score for Pro
-  const num = document.getElementById('score-num');
-  const fill = document.getElementById('score-fill');
+  // Full score for Pro — ring layout
+  const circumference = 150.8; // 2π × 24
+  wrap.innerHTML = `
+    <div class="score-pro-layout">
+      <div class="score-ring-wrap">
+        <svg class="score-ring-svg" viewBox="0 0 60 60">
+          <circle class="score-ring-bg-c" cx="30" cy="30" r="24"/>
+          <circle class="score-ring-fill-c ${cls}" id="score-ring-fill" cx="30" cy="30" r="24"/>
+        </svg>
+        <div class="score-ring-center">
+          <span class="score-ring-num ${cls==='high'?'':''}'" style="color:${cls==='high'?'#5a9e3a':cls==='mid'?'var(--amber-text)':'var(--red)'}">${total}</span>
+          <span class="score-ring-sub">/ 100</span>
+        </div>
+      </div>
+      <div class="score-ring-right">
+        <span class="score-label">SEO Score</span>
+        <div class="score-breakdown" id="score-breakdown" style="margin-top:10px;"></div>
+      </div>
+    </div>
+    <div class="score-tip" id="score-tip"></div>`;
+
+  // Animate ring
+  requestAnimationFrame(() => {
+    const ring = document.getElementById('score-ring-fill');
+    if (ring) ring.style.strokeDashoffset = circumference * (1 - total / 100);
+  });
+
   const breakdownEl = document.getElementById('score-breakdown');
   const tipEl = document.getElementById('score-tip');
-
-  num.className = 'score-num ' + cls;
-  num.textContent = total + '/100';
-  fill.className = 'score-fill ' + cls;
-
-  // Animate bar after a tick
-  requestAnimationFrame(() => { fill.style.width = total + '%'; });
 
   breakdownEl.innerHTML = breakdown.map(r => {
     const pct = Math.round(r.raw / r.max * 100);
