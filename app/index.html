@@ -464,7 +464,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
   </div>
   <div class="header-right">
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">ðŸŒ™</button>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     <button class="signin-btn" id="header-signin-btn" onclick="showEmailGate()" style="display:none;">Sign in</button>
     <button class="pro-btn" id="header-pro-btn" onclick="showPaywall()">Upgrade to Pro</button>
     <div class="avatar-wrap" id="avatar-wrap" style="display:none;">
@@ -800,7 +800,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
       <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">ðŸŽ¨</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">🎨</div>
           <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Tone</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;padding-left:42px;">
@@ -1286,7 +1286,7 @@ const NICHE_TIPS = {
 function toggleTheme() {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  document.getElementById('theme-btn').textContent = isDark ? 'ðŸŒ™' : 'â˜€ï¸';
+  document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
 }
 
 function updateTabLabels() {
