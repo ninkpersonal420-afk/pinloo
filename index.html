@@ -51,10 +51,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:
 .hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
 .hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
 @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
-.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:56px;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 15%,black 85%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 15%,black 85%,transparent 100%);}
-@keyframes colUp{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
-@keyframes colDown{0%{transform:translateY(-50%)}100%{transform:translateY(0)}}
-.hashtag-float{display:inline-block;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;}
+@keyframes gentleFloat{0%{transform:translateY(0) rotate(var(--rot))}100%{transform:translateY(-18px) rotate(var(--rot))}}
+.hashtag-float{position:absolute;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.75;animation:gentleFloat var(--dur) ease-in-out infinite alternate;}
 .hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);color:var(--red);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:2rem;animation:fadeUp 0.7s ease both;}
 h1{font-family:'Playfair Display',serif;font-size:clamp(42px,6.5vw,84px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:1.75rem;animation:fadeUp 0.7s 0.1s ease both;}
@@ -333,7 +331,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   });
 })();
 
-// Hashtag columns — 2 sub-columns per side for scattered look
+// Scattered hashtag pills — zigzag positions, gentle float, no columns
 (function() {
   const allTags = [
     '#skincare','#affiliatemarketing','#beautytips','#workfromhome','#selfcare',
@@ -343,41 +341,42 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     '#productivity','#budgetbeauty','#cleanbeauty','#gymlife','#wellnessjourney',
     '#fashionfinds','#skincareroutine','#homestyle','#affordablebeauty','#healthyrecipes',
     '#interiordesign','#plantmom','#crochet','#giftideas','#travelfinds',
-    '#lowcarbrecipes','#morningroutine','#bookrecommendations','#desksetup','#petcare',
-    '#weddinginspo','#crafting','#studymotivation','#minimalism','#capsulewardrobe',
-    '#foodphotography','#homeofficedecor','#weightloss','#selfcaresunday','#amazonfinds'
+    '#lowcarbrecipes','#morningroutine','#bookrecommendations','#desksetup','#petcare'
   ];
 
   const shuffled = allTags.slice().sort(() => Math.random() - 0.5);
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
-  // 2 sub-columns per side — right columns use `right` property so they don't bleed off screen
-  const cols = [
-    { tags: shuffled.slice(0,  6),  side: 'left',  x: '0.5%', dur: 22, dir: 'Up'   },
-    { tags: shuffled.slice(6,  12), side: 'left',  x: '9%',   dur: 28, dir: 'Up'   },
-    { tags: shuffled.slice(12, 18), side: 'right', x: '0.5%', dur: 25, dir: 'Down' },
-    { tags: shuffled.slice(18, 24), side: 'right', x: '9%',   dur: 20, dir: 'Down' },
+  // Zigzag left positions — alternates between near and far from edge so it's not a straight line
+  const leftPos  = [
+    {x:'1%', y:'7%'}, {x:'12%',y:'15%'}, {x:'3%', y:'24%'}, {x:'9%', y:'33%'},
+    {x:'1%', y:'42%'}, {x:'14%',y:'51%'}, {x:'5%', y:'60%'}, {x:'11%',y:'69%'},
+    {x:'2%', y:'78%'}, {x:'13%',y:'87%'}, {x:'4%', y:'95%'}
+  ];
+  // Zigzag right positions — same idea, anchored right
+  const rightPos = [
+    {r:'1%', y:'5%'}, {r:'12%',y:'13%'}, {r:'3%', y:'22%'}, {r:'8%', y:'31%'},
+    {r:'1%', y:'40%'}, {r:'13%',y:'49%'}, {r:'4%', y:'58%'}, {r:'10%',y:'67%'},
+    {r:'2%', y:'76%'}, {r:'12%',y:'85%'}, {r:'5%', y:'93%'}
   ];
 
-  cols.forEach(({ tags, side, x, dur, dir }) => {
-    const col = document.createElement('div');
-    col.className = 'tag-col';
-    if (side === 'right') { col.style.right = x; col.style.alignItems = 'flex-end'; }
-    else col.style.left = x;
-    col.style.animation = `col${dir} ${dur}s linear infinite`;
-    if (dir === 'Down') col.style.animationDelay = `calc(-${dur}s / 2)`;
+  const leftTags  = shuffled.slice(0, 11);
+  const rightTags = shuffled.slice(11, 22);
 
-    const rotations = tags.map(() => (Math.random() - 0.5) * 7);
-    [...tags, ...tags].forEach((tag, i) => {
-      const el = document.createElement('div');
-      el.className = 'hashtag-float';
-      el.textContent = tag;
-      el.style.transform = `rotate(${rotations[i % tags.length]}deg)`;
-      col.appendChild(el);
-    });
-    bg.appendChild(col);
-  });
+  function place(tag, pos, fromRight) {
+    const el = document.createElement('div');
+    el.className = 'hashtag-float';
+    el.textContent = tag;
+    const rot = (Math.random() - 0.5) * 8;
+    const dur = (7 + Math.random() * 6).toFixed(1) + 's';
+    const delay = -(Math.random() * 7).toFixed(1) + 's';
+    el.style.cssText = `top:${pos.y};${fromRight ? 'right:'+pos.r : 'left:'+pos.x};--rot:${rot}deg;--dur:${dur};animation-delay:${delay};`;
+    bg.appendChild(el);
+  }
+
+  leftTags.forEach((tag, i)  => place(tag, leftPos[i],  false));
+  rightTags.forEach((tag, i) => place(tag, rightPos[i], true));
 })();
 </script>
 
