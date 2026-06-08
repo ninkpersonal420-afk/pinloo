@@ -48,8 +48,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 2.5rem;displa
 .hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
 .hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
 @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
-@keyframes tagFadeIn{to{opacity:0.85;}}
-.hashtag-float{position:absolute;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0;animation:tagFadeIn 0.6s ease forwards;}
+@keyframes driftUp{0%{transform:translateY(60px) rotate(var(--rot));}100%{transform:translateY(-60px) rotate(var(--rot));}}
+@keyframes driftDown{0%{transform:translateY(-60px) rotate(var(--rot));}100%{transform:translateY(60px) rotate(var(--rot));}}
+.hashtag-float{position:absolute;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;}
+.hashtag-float.drift-up{animation:driftUp var(--dur) linear infinite;}
+.hashtag-float.drift-down{animation:driftDown var(--dur) linear infinite;}
 .hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);color:var(--red);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:2rem;animation:fadeUp 0.7s ease both;}
 h1{font-family:'Playfair Display',serif;font-size:clamp(42px,6.5vw,84px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:1.75rem;animation:fadeUp 0.7s 0.1s ease both;}
@@ -339,17 +342,19 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     {x:93, y:51}, {x:84, y:62}, {x:90, y:72}, {x:86, y:82}, {x:92, y:91}
   ];
 
-  function place(tag, pos, delay) {
+  function place(tag, pos, direction) {
     const el = document.createElement('div');
-    el.className = 'hashtag-float';
+    el.className = 'hashtag-float ' + direction;
     el.textContent = tag;
     const rot = (Math.random() - 0.5) * 10;
-    el.style.cssText = `left:${pos.x}%;top:${pos.y}%;transform:rotate(${rot}deg);animation-delay:${delay}s;`;
+    const dur = (22 + Math.random() * 12) + 's';
+    const delay = -(Math.random() * 22) + 's'; // random start point in cycle
+    el.style.cssText = `left:${pos.x}%;top:${pos.y}%;--rot:${rot}deg;--dur:${dur};animation-delay:${delay};`;
     bg.appendChild(el);
   }
 
-  leftTags.forEach((tag, i)  => place(tag, leftPositions[i],  i * 0.08));
-  rightTags.forEach((tag, i) => place(tag, rightPositions[i], i * 0.08 + 0.04));
+  leftTags.forEach((tag, i)  => place(tag, leftPositions[i],  'drift-up'));
+  rightTags.forEach((tag, i) => place(tag, rightPositions[i], 'drift-down'));
 })();
 </script>
 
