@@ -39,6 +39,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:
 .nav-right{display:flex;align-items:center;gap:8px;}
 .nav-signin{font-size:14px;font-weight:500;color:var(--text3);text-decoration:none;padding:8px 14px;border-radius:8px;transition:color 0.15s;}
 .nav-signin:hover{color:var(--text);}
+.nav-open-app{font-size:14px;font-weight:600;color:var(--text2);text-decoration:none;padding:9px 18px;border-radius:100px;border:1.5px solid var(--border2);transition:all 0.15s;}
+.nav-open-app:hover{border-color:var(--red);color:var(--red);}
 .nav-cta{background:var(--gradient);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:10px 22px;border-radius:100px;box-shadow:0 4px 14px rgba(217,79,56,0.3);transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(217,79,56,0.42);}
 
@@ -49,9 +51,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:
 .hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
 .hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
 @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
-.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:20px;pointer-events:none;}
-.tag-col-left{left:3%;animation:colUp 18s linear infinite;}
-.tag-col-right{right:3%;animation:colDown 18s linear infinite;align-items:flex-end;}
+.tag-col{position:absolute;top:0;display:flex;flex-direction:column;gap:22px;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 10%,black 90%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 10%,black 90%,transparent 100%);}
+.tag-col-left{left:3%;animation:colUp 20s linear infinite;}
+.tag-col-right{right:3%;animation:colDown 20s linear infinite;align-items:flex-end;}
 @keyframes colUp{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
 @keyframes colDown{0%{transform:translateY(-50%)}100%{transform:translateY(0)}}
 .hashtag-float{display:inline-block;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;}
@@ -271,6 +273,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   </ul>
   <div class="nav-right">
     <a href="/app?signin" class="nav-signin">Sign in</a>
+    <a href="/app" class="nav-open-app">Open app</a>
     <a href="/app" class="nav-cta">Try free →</a>
   </div>
 </nav>
@@ -356,12 +359,13 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   function makeCol(tags, side) {
     const col = document.createElement('div');
     col.className = 'tag-col tag-col-' + side;
-    // Duplicate for seamless loop — when first set exits, second fills in
-    [...tags, ...tags].forEach(tag => {
+    // Pre-compute rotations so original + duplicate are identical → seamless loop
+    const rotations = tags.map(() => (Math.random() - 0.5) * 6);
+    [...tags, ...tags].forEach((tag, i) => {
       const el = document.createElement('div');
       el.className = 'hashtag-float';
       el.textContent = tag;
-      el.style.transform = `rotate(${(Math.random() - 0.5) * 6}deg)`;
+      el.style.transform = `rotate(${rotations[i % tags.length]}deg)`;
       col.appendChild(el);
     });
     bg.appendChild(col);
