@@ -1822,17 +1822,35 @@ setTimeout(renderPricingTab, 200);
 }
 
 const PIN_ANGLES = [
-  'question-based hook (start with a question)',
-  'number-based hook (start with a number or stat)',
-  'secret or trick angle (use words like secret, trick, method)',
-  'transformation angle (before vs after framing)',
-  'warning or mistake angle (what people get wrong)',
-  'social proof angle (what experts or pros do)',
-  'speed or ease angle (how fast or simple it is)',
-  'curiosity gap angle (tease the answer without giving it)',
-  'emotional benefit angle (focus on how it makes you feel)',
-  'contrarian angle (challenge a common assumption)'
+  'genuine question a real person would search — e.g. "Why does everyone with good skin use this?" or "Are you making this mistake with your routine?" — must end with ?',
+  'specific price or number lead — e.g. "The $24 oil that replaced my $90 serum" or "3 weeks with this and my skin finally calmed down" — number must be the very first character',
+  'first-person honest discovery — e.g. "I switched to this after years of trying everything" or "I bought this on a whim and now I reorder it every month" — start with "I"',
+  'comparison to a pricier or more common alternative — e.g. "Better than the expensive version and half the price" or "I stopped buying the $80 cream after finding this"',
+  'what most people get wrong — e.g. "The mistake I made with my skincare routine for years" or "Why your moisturizer isn\'t working the way you think it is"',
+  'specific outcome with timeframe — e.g. "Two weeks with this and I finally understood the hype" or "The one change that actually made a difference after 30 days"',
+  'what people with the desired result actually use — e.g. "The one thing every person with clear skin actually has in their routine" — must feel specific, not generic',
+  'curiosity without clickbait — tease a specific detail — e.g. "The thing in my routine everyone always asks about" or "What I reach for when I run out of the expensive stuff"',
+  'speed or ease with a specific relatable example — e.g. "Dinner on the table in 20 minutes and my family thinks I cooked all day" or "5 minutes and I get compliments all week"',
+  'honest contrarian take — e.g. "You don\'t need to spend $80 on this" or "I thought this was a gimmick until I actually tried it for a week"'
 ];
+
+function validatePin(p) {
+  const title = p.title || '';
+  const desc  = p.description || '';
+  const tags  = p.hashtags || [];
+  if (title.length < 15 || title.length > 105) return false;
+  if (desc.length < 50) return false;
+  if (tags.length < 8) return false;
+  // Catch unnatural passive-discovery phrasings
+  const badPatterns = [
+    /found .{0,25} in my \w+/i,
+    /discovered .{0,20} (in|inside|at) my/i,
+    /\b(dermatologist|doctor|nutritionist|trainer|expert|specialist)\s+(found|discovered|left|put|placed|spotted)/i,
+    /\bthis .{0,15} (was found|got found|were found)/i,
+  ];
+  if (badPatterns.some(r => r.test(title))) return false;
+  return true;
+}
 
 function buildSys(pinIndex) {
   const goals = {drive_clicks:'get clicks',get_saves:'get saves',sell_product:'sell',inspire:'inspire'};
@@ -1840,7 +1858,7 @@ function buildSys(pinIndex) {
   const season = activeSeason ? ' Season: '+activeSeason+'.' : '';
   const angle = pinIndex !== undefined ? PIN_ANGLES[pinIndex % PIN_ANGLES.length] : '';
   const angleInstruction = angle ? ' REQUIRED HOOK STYLE FOR THIS PIN: '+angle+'. The title MUST use this specific angle — do not default to a generic hook.' : '';
-  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Description: exactly 2 sentences, under 500 chars, problem→solution→value flow, keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
+  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars, problem→solution→value flow, keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
 
 }
 
@@ -2192,7 +2210,10 @@ async function generatePin() {
   try {
     if (qty===1) {
       document.getElementById('loading-text').textContent='Crafting your pin';
-      const p=await callClaude(buildSys(0),buildMsg(product,niche,audience,benefit,''));
+      let p=await callClaude(buildSys(0),buildMsg(product,niche,audience,benefit,''));
+      if (!validatePin(p)) {
+        p = await callClaude(buildSys(3), buildMsg(product,niche,audience,benefit,'Make the title feel like something a real person would genuinely say.'));
+      }
       lastPinData={p,product,niche,audience,benefit};
       renderPin(p);
       const nc=document.getElementById('pin-niche-chip');
