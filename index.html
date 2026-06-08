@@ -321,39 +321,41 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   });
 })();
 
-// Floating hashtag pills
+// Floating hashtag pills — evenly distributed, no overlap
 (function() {
-  const tags = [
-    '#skincare','#homedecor','#fitness','#mealprep','#travelhacks',
-    '#affiliatemarketing','#beautytips','#homegym','#pinterestmarketing',
-    '#selfcare','#budgetbeauty','#kitchengadgets','#outdoorliving',
-    '#haircare','#productivity','#veganrecipes','#cleanbeauty',
-    '#workfromhome','#fashionfinds','#wellnessjourney','#organization',
-    '#gymlife','#cozyhome','#naturalbeauty','#momlife'
-  ];
+  const leftTags  = ['#skincare','#affiliatemarketing','#beautytips','#workfromhome','#selfcare','#haircare','#fitness','#homegym','#mealprep'];
+  const rightTags = ['#pinterestmarketing','#kitchengadgets','#homedecor','#veganrecipes','#travelhacks','#outdoorliving','#productivity','#budgetbeauty','#cleanbeauty'];
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
-  const leftZones  = [{x:2,xv:6},{x:4,xv:9},{x:1,xv:5},{x:6,xv:10}];
-  const rightZones = [{x:72,xv:8},{x:78,xv:6},{x:68,xv:10},{x:74,xv:7}];
-  const zones = [...leftZones, ...rightZones];
+  const count = 9;
+  // Spread evenly from 8% to 88% vertically with slight jitter
+  function getYPositions(n) {
+    const step = 80 / (n - 1);
+    return Array.from({length: n}, (_, i) => 8 + i * step + (Math.random() - 0.5) * (step * 0.4));
+  }
 
-  let tagIndex = 0;
-  function spawnTag() {
-    const zone  = zones[Math.floor(Math.random() * zones.length)];
-    const tag   = tags[tagIndex++ % tags.length];
-    const el    = document.createElement('div');
+  const leftYs  = getYPositions(count);
+  const rightYs = getYPositions(count);
+
+  function place(tag, xBase, xJitter, y, dur, delay) {
+    const el = document.createElement('div');
     el.className = 'hashtag-float';
     el.textContent = tag;
-    const xPct  = zone.x + Math.random() * zone.xv;
-    const yPct  = 55 + Math.random() * 35;
-    const dur   = 18 + Math.random() * 14;
-    const delay = Math.random() * -dur;
-    el.style.cssText = `left:${xPct}%;top:${yPct}%;animation-duration:${dur}s;animation-delay:${delay}s;transform:rotate(${(Math.random()-0.5)*10}deg);`;
+    const x = xBase + (Math.random() - 0.5) * xJitter;
+    const rot = (Math.random() - 0.5) * 8;
+    el.style.cssText = `left:${x}%;top:${y}%;animation-duration:${dur}s;animation-delay:${delay}s;transform:rotate(${rot}deg);`;
     bg.appendChild(el);
   }
 
-  for (let i = 0; i < 18; i++) spawnTag();
+  leftTags.forEach((tag, i) => {
+    const dur = 22 + Math.random() * 10;
+    place(tag, 4, 4, leftYs[i], dur, -(Math.random() * dur));
+  });
+  rightTags.forEach((tag, i) => {
+    const dur = 22 + Math.random() * 10;
+    place(tag, 85, 4, rightYs[i], dur, -(Math.random() * dur));
+  });
 })();
 </script>
 
