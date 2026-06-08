@@ -57,7 +57,7 @@ h1 em{font-style:italic;color:var(--red);}
 .btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--text2);text-decoration:none;font-size:15px;font-weight:500;padding:17px 26px;border-radius:100px;border:1.5px solid var(--border2);background:var(--white);transition:border-color 0.2s,color 0.2s;}
 .btn-ghost:hover{border-color:var(--red);color:var(--red);}
 .hero-note{margin-top:1.25rem;font-size:13px;color:var(--text4);animation:fadeUp 0.7s 0.4s ease both;}
-.hero-counter{margin-top:0.6rem;font-size:13px;font-weight:600;color:var(--red);letter-spacing:0.2px;}
+.hero-counter{margin-top:1rem;font-size:15px;font-weight:700;color:var(--red);letter-spacing:0.2px;display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);padding:8px 18px;border-radius:100px;}
 .hero-right{display:flex;flex-direction:column;gap:14px;position:relative;}
 .pin-card{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 8px 32px rgba(22,12,7,0.1);border:1px solid var(--border);}
 .pin-niche{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
@@ -72,6 +72,7 @@ h1 em{font-style:italic;color:var(--red);}
 .ticker-item{font-size:13px;font-weight:600;color:#fff;letter-spacing:0.4px;padding:0 2rem;}
 .ticker-sep{font-size:13px;color:rgba(255,255,255,0.45);padding:0 0.25rem;}
 @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 
 /* STATS BAR */
 .stats-bar{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2.5rem 2rem;}
@@ -274,7 +275,13 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
       <p class="hero-note">No credit card required · 5 free pins</p>
       <p class="hero-counter" id="pin-counter-wrap" style="opacity:0;transition:opacity 0.6s;">✦ <span id="pin-counter">0</span> pins generated and counting</p>
     </div>
-    <div class="hero-right" id="hero-pins"></div>
+    <div class="hero-right">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#43A047;box-shadow:0 0 0 3px rgba(67,160,71,0.2);animation:pulse 2s ease infinite;flex-shrink:0;"></div>
+        <span style="font-size:13px;font-weight:600;color:var(--text3);">Generated in ~3 seconds each</span>
+      </div>
+      <div id="hero-pins"></div>
+    </div>
   </div>
 </section>
 <script>
@@ -303,7 +310,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     card.className = 'pin-card';
     card.style.transform = 'rotate('+rotations[i]+')';
     card.style.marginTop = offsets[i];
-    card.innerHTML = '<div class="pin-niche">'+p.niche+'</div><div class="pin-title">'+p.title+'</div><div class="pin-desc">'+p.desc+' <span style="color:var(--red);font-size:12px;">'+p.tags+'</span></div>'+(i===0?'<div class="pin-badge">⚡ Generated in 3s</div>':'');
+    card.innerHTML = '<div class="pin-niche">'+p.niche+'</div><div class="pin-title">'+p.title+'</div><div class="pin-desc">'+p.desc+' <span style="color:var(--red);font-size:12px;">'+p.tags+'</span></div>';
     container.appendChild(card);
   });
 })();
