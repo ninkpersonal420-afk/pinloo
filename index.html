@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinlo — Pinterest Pin Generator for Affiliate Marketers</title>
+<meta name="description" content="Generate Pinterest pin titles, descriptions, and hashtags in seconds. Built for affiliate marketers who want more clicks, saves, and commissions. Try free.">
+<meta name="keywords" content="Pinterest pin generator, Pinterest tool, affiliate marketing Pinterest, Pinterest description generator, Pinterest SEO tool">
+<meta property="og:title" content="Pinlo — Pinterest Pin Generator">
+<meta property="og:description" content="Stop writing Pinterest descriptions by hand. Pinlo generates pin copy in seconds for affiliate marketers.">
+<meta property="og:url" content="https://getpinlo.com">
+<link rel="canonical" href="https://getpinlo.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --red:#D94F38;--orange:#F5924A;
+  --gradient:linear-gradient(135deg,#D94F38,#F5924A);
+  --cream:#FBF6F1;--white:#FFFFFF;
+  --dark:#160C07;--dark2:#1E1109;
+  --text:#160C07;--text2:#4A2E22;--text3:#8A6255;--text4:#B89485;
+  --border:#E8D5CC;--border2:#D4B8AC;
+  --shadow:0 4px 24px rgba(22,12,7,0.08);
+  --shadow-lg:0 12px 48px rgba(22,12,7,0.14);
+  --shadow-xl:0 24px 80px rgba(22,12,7,0.18);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(251,246,241,0.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(232,213,204,0.6);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
+.nav-links{display:flex;align-items:center;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--text2);font-size:14px;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--red);}
+.nav-signin{color:var(--text3) !important;font-size:14px;font-weight:500 !important;padding-left:2rem;margin-left:0.5rem;border-left:1px solid var(--border) !important;}
+.nav-signin:hover{color:var(--red) !important;}
+.nav-open{background:var(--cream) !important;color:var(--text) !important;padding:10px 20px;border-radius:100px;font-weight:600 !important;border:1.5px solid var(--border) !important;transition:border-color 0.2s,color 0.2s !important;}
+.nav-open:hover{border-color:var(--red) !important;color:var(--red) !important;}
+.nav-cta{background:var(--gradient) !important;color:#fff !important;padding:10px 22px;border-radius:100px;font-weight:600 !important;box-shadow:0 4px 16px rgba(217,79,56,0.3);transition:transform 0.2s,box-shadow 0.2s !important;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(217,79,56,0.4) !important;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:9rem 2rem 5rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;pointer-events:none;}
+.hero-bg::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:1000px;height:1000px;background:radial-gradient(circle,rgba(217,79,56,0.07) 0%,transparent 65%);}
+.hero-bg::after{content:'';position:absolute;bottom:-100px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(245,146,74,0.05) 0%,transparent 65%);}
+.hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);color:var(--red);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:2rem;animation:fadeUp 0.7s ease both;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(42px,6.5vw,84px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:1.75rem;animation:fadeUp 0.7s 0.1s ease both;}
+h1 em{font-style:italic;color:var(--red);}
+.hero-sub{font-size:clamp(16px,1.8vw,19px);color:var(--text2);line-height:1.8;margin-bottom:2.75rem;font-weight:400;animation:fadeUp 0.7s 0.2s ease both;max-width:480px;}
+.hero-btns{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;animation:fadeUp 0.7s 0.3s ease both;}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--gradient);color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:17px 38px;border-radius:100px;box-shadow:0 8px 32px rgba(217,79,56,0.35);transition:transform 0.2s,box-shadow 0.2s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 44px rgba(217,79,56,0.45);}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--text2);text-decoration:none;font-size:15px;font-weight:500;padding:17px 26px;border-radius:100px;border:1.5px solid var(--border2);background:var(--white);transition:border-color 0.2s,color 0.2s;}
+.btn-ghost:hover{border-color:var(--red);color:var(--red);}
+.hero-note{margin-top:1.25rem;font-size:13px;color:var(--text4);animation:fadeUp 0.7s 0.4s ease both;}
+.hero-counter{margin-top:0.6rem;font-size:13px;font-weight:600;color:var(--red);letter-spacing:0.2px;}
+.hero-right{display:flex;flex-direction:column;gap:14px;position:relative;}
+.pin-card{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 8px 32px rgba(22,12,7,0.1);border:1px solid var(--border);}
+.pin-niche{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
+.pin-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:8px;}
+.pin-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+.pin-badge{display:inline-flex;align-items:center;gap:5px;margin-top:12px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);color:var(--red);font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;}
+
+/* TICKER */
+.ticker-wrap{background:var(--red);overflow:hidden;padding:13px 0;white-space:nowrap;}
+.ticker-track{display:inline-flex;animation:ticker 32s linear infinite;}
+.ticker-track:hover{animation-play-state:paused;}
+.ticker-item{font-size:13px;font-weight:600;color:#fff;letter-spacing:0.4px;padding:0 2rem;}
+.ticker-sep{font-size:13px;color:rgba(255,255,255,0.45);padding:0 0.25rem;}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* STATS BAR */
+.stats-bar{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2.5rem 2rem;}
+.stats-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:2rem;}
+.stat{text-align:center;}
+.stat strong{display:block;font-family:'Playfair Display',serif;font-size:40px;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.stat span{font-size:13px;color:var(--text3);font-weight:500;margin-top:4px;display:block;}
+.stat-divider{width:1px;height:48px;background:var(--border);}
+
+/* SECTIONS */
+.section{padding:7rem 2rem;}
+.section-inner{max-width:1100px;margin:0 auto;}
+.section-header{text-align:center;margin-bottom:4rem;}
+.eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--red);margin-bottom:1.25rem;padding:4px 14px;background:rgba(217,79,56,0.07);border-radius:100px;border:1px solid rgba(217,79,56,0.15);}
+h2{font-family:'Playfair Display',serif;font-size:clamp(30px,4.5vw,52px);font-weight:900;line-height:1.08;letter-spacing:-1px;margin-bottom:1rem;}
+h2 em{font-style:italic;color:var(--red);}
+
+/* PROBLEM */
+.problem-section{background:var(--white);}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;max-width:960px;margin:0 auto;}
+.problem-text p{font-size:17px;color:var(--text2);line-height:1.8;margin-bottom:1.5rem;}
+.problem-list{display:flex;flex-direction:column;gap:1rem;}
+.problem-item{display:flex;align-items:flex-start;gap:12px;font-size:15px;color:var(--text2);line-height:1.6;}
+.x-icon{width:22px;height:22px;border-radius:50%;background:rgba(217,79,56,0.1);display:flex;align-items:center;justify-content:center;color:var(--red);font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.problem-card{background:var(--cream);border:1.5px solid var(--border);border-radius:20px;padding:2.5rem;position:relative;overflow:hidden;}
+.problem-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(217,79,56,0.08),transparent);}
+.problem-quote{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);line-height:1.55;margin-bottom:1.5rem;}
+.problem-quote-mark{font-size:60px;line-height:1;color:rgba(217,79,56,0.15);font-family:'Playfair Display',serif;margin-bottom:-1rem;display:block;}
+
+/* CHATGPT COMPARISON */
+.compare-section{background:var(--dark);}
+.compare-section h2{color:#fff;}
+.compare-section .eyebrow{color:var(--orange);background:rgba(245,146,74,0.1);border-color:rgba(245,146,74,0.2);}
+.compare-table{width:100%;border-collapse:collapse;margin-top:1rem;}
+.compare-table th{padding:1.25rem 1.5rem;text-align:left;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);border-bottom:1px solid rgba(255,255,255,0.08);}
+.compare-table th:first-child{width:38%;}
+.compare-table th.pinlo-col{color:var(--orange);}
+.compare-table td{padding:1.25rem 1.5rem;font-size:15px;color:rgba(255,255,255,0.7);border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.55;}
+.compare-table td:first-child{color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;letter-spacing:0.3px;}
+.compare-table td.pinlo-val{color:#fff;font-weight:500;}
+.compare-table td.chatgpt-val{color:rgba(255,255,255,0.4);}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02);}
+.check{color:#66BB6A;font-weight:700;margin-right:6px;}
+.cross{color:rgba(255,255,255,0.25);margin-right:6px;}
+.compare-wrapper{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;}
+.compare-cta{text-align:center;margin-top:3rem;}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.feature-card{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:2rem;transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;border-top:3px solid transparent;}
+.feature-card:hover{border-color:rgba(217,79,56,0.25);border-top-color:var(--red);transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.feature-num{display:block;font-size:10px;font-weight:800;letter-spacing:3px;color:rgba(217,79,56,0.35);margin-bottom:1.25rem;}
+.feature-title{font-size:17px;font-weight:700;margin-bottom:10px;color:var(--text);}
+.feature-desc{font-size:14px;color:var(--text2);line-height:1.75;}
+
+/* HOW IT WORKS */
+.how-section{background:var(--white);}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;position:relative;}
+.steps-grid::before{content:'';position:absolute;top:28px;left:calc(16.6% + 1rem);right:calc(16.6% + 1rem);height:1px;background:var(--border);}
+.step{padding-top:0.5rem;}
+.step-marker{width:56px;height:56px;border-radius:14px;background:var(--gradient);color:#fff;font-family:'Playfair Display',serif;font-size:22px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 0 1.75rem;box-shadow:0 6px 20px rgba(217,79,56,0.25);}
+.step h3{font-size:18px;font-weight:700;margin-bottom:10px;color:var(--text);}
+.step p{font-size:14px;color:var(--text2);line-height:1.75;}
+
+/* PRICING */
+.pricing-section{background:var(--cream);}
+.pricing-toggle-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:3rem;}
+.toggle-label{font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;transition:color 0.2s;}
+.toggle-label.active{color:var(--text);}
+.toggle-switch{width:48px;height:26px;background:var(--gradient);border-radius:100px;position:relative;cursor:pointer;box-shadow:0 2px 8px rgba(217,79,56,0.25);}
+.toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.18);}
+.toggle-switch.yearly .toggle-knob{transform:translateX(22px);}
+.save-pill{font-size:11px;font-weight:700;background:var(--gradient);color:#fff;padding:3px 10px;border-radius:100px;letter-spacing:0.5px;}
+.pricing-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:820px;margin:0 auto;}
+.pricing-card{background:var(--white);border:1.5px solid var(--border);border-radius:22px;padding:2.5rem;position:relative;transition:transform 0.2s;}
+.pricing-card:hover{transform:translateY(-2px);}
+.pricing-card.pro{border:none;padding:0;overflow:hidden;box-shadow:0 24px 64px rgba(217,79,56,0.18);transform:translateY(-6px);}
+.pricing-card.pro:hover{transform:translateY(-8px);}
+.pro-card-header{background:var(--gradient);padding:2.25rem 2.5rem 1.75rem;color:#fff;position:relative;}
+.pro-badge{display:inline-block;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);color:#fff;font-size:10px;font-weight:700;padding:4px 14px;border-radius:100px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1.1rem;}
+.pro-card-header .plan-name{color:rgba(255,255,255,0.75);margin-bottom:0.75rem;}
+.pro-card-header .plan-price .amount{color:#fff;}
+.pro-card-header .plan-price .currency{color:rgba(255,255,255,0.7);}
+.pro-card-header .plan-price .period{color:rgba(255,255,255,0.6);}
+.pro-card-header .plan-desc{color:rgba(255,255,255,0.6);margin-bottom:0;}
+.pro-card-body{padding:1.75rem 2.5rem 2.5rem;}
+.plan-name{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:1rem;}
+.plan-price{display:flex;align-items:flex-end;gap:4px;margin-bottom:6px;}
+.plan-price .amount{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;line-height:1;color:var(--text);}
+.plan-price .currency{font-size:20px;font-weight:600;color:var(--text2);padding-bottom:8px;}
+.plan-price .period{font-size:14px;color:var(--text3);padding-bottom:10px;}
+.plan-desc{font-size:13px;color:var(--text3);margin-bottom:2rem;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;}
+.plan-features li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--text2);line-height:1.45;}
+.plan-features li::before{content:'✓';color:var(--red);font-weight:700;flex-shrink:0;margin-top:1px;}
+.plan-features li.dim{color:var(--text4);text-decoration:line-through;}
+.plan-features li.dim::before{content:'—';color:var(--text4);}
+.pro-card-body .plan-features li::before{color:var(--red);}
+.plan-btn{display:block;width:100%;text-align:center;padding:15px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.plan-btn.free{background:var(--cream);color:var(--text);border:1.5px solid var(--border);}
+.plan-btn.free:hover{border-color:var(--red);color:var(--red);}
+.plan-btn.paid{background:var(--gradient);color:#fff;box-shadow:0 8px 24px rgba(217,79,56,0.3);}
+.plan-btn.paid:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(217,79,56,0.4);}
+
+/* FAQ */
+.faq-section{background:var(--white);}
+.faq-list{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:0;}
+.faq-item{border-bottom:1px solid var(--border);padding:1.5rem 0;cursor:pointer;}
+.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:600;color:var(--text);gap:1rem;user-select:none;}
+.faq-icon{width:28px;height:28px;border-radius:50%;background:var(--cream);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--red);font-size:16px;flex-shrink:0;transition:transform 0.2s,background 0.2s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:rgba(217,79,56,0.08);}
+.faq-a{font-size:14px;color:var(--text2);line-height:1.8;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;}
+.faq-item.open .faq-a{max-height:300px;padding-top:1rem;}
+
+/* FINAL CTA */
+.cta-section{padding:8rem 2rem;background:var(--dark);text-align:center;position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(217,79,56,0.1) 0%,transparent 65%);pointer-events:none;}
+.cta-section h2{color:#fff;margin-bottom:1rem;position:relative;}
+.cta-section p{color:rgba(255,255,255,0.5);font-size:18px;margin-bottom:3rem;position:relative;}
+.cta-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;position:relative;}
+.btn-primary-dark{display:inline-flex;align-items:center;gap:8px;background:var(--gradient);color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:18px 40px;border-radius:100px;box-shadow:0 8px 32px rgba(217,79,56,0.4);transition:transform 0.2s,box-shadow 0.2s;}
+.btn-primary-dark:hover{transform:translateY(-2px);box-shadow:0 16px 48px rgba(217,79,56,0.5);}
+
+/* FOOTER */
+footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,0.05);}
+.footer-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.25rem;}
+.footer-links{display:flex;justify-content:center;gap:2rem;list-style:none;margin-bottom:1.5rem;flex-wrap:wrap;}
+.footer-links a{text-decoration:none;color:rgba(255,255,255,0.3);font-size:13px;transition:color 0.2s;}
+.footer-links a:hover{color:rgba(255,255,255,0.65);}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.18);}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:0.1s;}
+.reveal-delay-2{transition-delay:0.2s;}
+.reveal-delay-3{transition-delay:0.3s;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .hero{text-align:center;}
+  .hero-sub{max-width:540px;margin-left:auto;margin-right:auto;}
+  .hero-btns{justify-content:center;}
+  .problem-grid{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .steps-grid{grid-template-columns:1fr;gap:3rem;}
+  .steps-grid::before{display:none;}
+  .pricing-cards{grid-template-columns:1fr;max-width:440px;}
+  .pricing-card.pro{transform:none;}
+  .pricing-card.pro:hover{transform:translateY(-2px);}
+  .compare-table td,.compare-table th{padding:1rem;}
+}
+@media(max-width:600px){
+  nav{padding:1rem 1.25rem;}
+  .nav-links{display:none;}
+  .features-grid{grid-template-columns:1fr;}
+  .stats-inner{gap:1.5rem;}
+  .stat-divider{display:none;}
+  h1{letter-spacing:-1.5px;}
+}
+</style>
+<script>
+  // If already signed in, skip the landing page and go straight to the app
+  if (localStorage.getItem('pinlo_verified') === 'true' && localStorage.getItem('pinlo_gate_email')) {
+    window.location.replace('/app');
+  }
+</script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Pinlo</div>
+  <ul class="nav-links">
+    <li><a href="#features" onclick="smoothScroll('features');return false;">Features</a></li>
+    <li><a href="#how" onclick="smoothScroll('how');return false;">How it works</a></li>
+    <li><a href="#pricing" onclick="smoothScroll('pricing');return false;">Pricing</a></li>
+    <li><a href="/app?signin" class="nav-signin">Sign in</a></li>
+    <li><a href="/app" class="nav-open">Open app</a></li>
+    <li><a href="/app" class="nav-cta">Try free →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Built for affiliate marketers</div>
+      <h1>Your Pinterest copy<br>in <em>seconds</em></h1>
+      <p class="hero-sub">Type a product. Hit generate. Walk away with a title, description, and hashtags that are actually worth posting — not something you'd rewrite anyway.</p>
+      <div class="hero-btns">
+        <a href="/app" class="btn-primary">Generate your first pin free →</a>
+        <a href="#how" onclick="smoothScroll('how');return false;" class="btn-ghost">See how it works</a>
+      </div>
+      <p class="hero-note">No credit card required · 5 free pins</p>
+      <p class="hero-counter" id="pin-counter-wrap" style="opacity:0;transition:opacity 0.6s;">✦ <span id="pin-counter">0</span> pins generated and counting</p>
+    </div>
+    <div class="hero-right" id="hero-pins"></div>
+  </div>
+</section>
+<script>
+(function() {
+  const pool = [
+    { niche:'Fitness', title:'The $40 foam roller that finally fixed my tight hips', desc:'Two years in and I still use it every morning. Nothing else worked on my IT band.', tags:'#fitness #recovery #foamrolling', badge:true },
+    { niche:'Home', title:"Underbed storage that doesn't look like you gave up", desc:'Cleared out my whole closet with four of these. Holds way more than it looks.', tags:'#homeorganization #smallspace #declutter' },
+    { niche:'Kitchen', title:'The blender my smoothies actually taste better in', desc:"It's not the ingredients — I was just using a bad blender. This one changed that.", tags:'#kitchenfinds #smoothie #mealprep' },
+    { niche:'Skincare', title:'Dermatologist found this $18 cleanser in my bathroom and asked where I got it', desc:"I've tried the expensive ones. This one is the only thing that didn't break me out.", tags:'#skincare #cleanser #affordablebeauty' },
+    { niche:'Tech', title:'I stopped losing my keys the day I bought this', desc:'Costs less than one locksmith call. I have recommended it to everyone I know.', tags:'#techfinds #organization #everyday' },
+    { niche:'Pets', title:'The only dog toy that survived three months with a lab', desc:'Everything else lasted a week. This one is still going strong.', tags:'#dogtoys #petfinds #labrador' },
+    { niche:'Travel', title:'This packing cube set is why I never check a bag anymore', desc:"Fits a week's worth of clothes in a carry-on. I don't know how I traveled without these.", tags:'#travelhacks #packingtips #carryon' },
+    { niche:'Fitness', title:'Why I cancelled my gym membership after finding this at home', desc:'Takes up less space than a kitchen chair. Gets used more than anything else I own.', tags:'#homegym #workoutequipment #fitness' },
+    { niche:'Beauty', title:"I've repurchased this mascara six times. That's all I'll say.", desc:"Doesn't smudge, doesn't flake, and comes off easily at the end of the day.", tags:'#mascara #beautyfinds #makeuptips' },
+    { niche:'Home', title:'The air fryer that actually fits a whole chicken', desc:"Most are too small. This one doesn't have that problem — and it cleans up in minutes.", tags:'#airfryer #kitchengadgets #easydinners' },
+    { niche:'Outdoors', title:'What I wish I had on every camping trip before this one', desc:"It's not glamorous. It's just the thing you don't know you need until you need it.", tags:'#camping #outdoorfinds #hikingessentials' },
+    { niche:'Skincare', title:'The SPF I actually remember to wear because it feels like nothing', desc:'No white cast, no greasy residue. Just protection that fits into a real routine.', tags:'#sunscreen #skincareroutine #spf' },
+  ];
+
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 3);
+  const rotations = ['-1.5deg', '0.8deg', '-0.6deg'];
+  const offsets = ['0px', '-8px', '-4px'];
+  const container = document.getElementById('hero-pins');
+  shuffled.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'pin-card';
+    card.style.transform = 'rotate('+rotations[i]+')';
+    card.style.marginTop = offsets[i];
+    card.innerHTML = '<div class="pin-niche">'+p.niche+'</div><div class="pin-title">'+p.title+'</div><div class="pin-desc">'+p.desc+' <span style="color:var(--red);font-size:12px;">'+p.tags+'</span></div>'+(i===0?'<div class="pin-badge">⚡ Generated in 3s</div>':'');
+    container.appendChild(card);
+  });
+})();
+</script>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item">FTC Disclaimer Auto-Added</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">25 Niches</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Pain Point Suggestions</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Pin History</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Under 30 Seconds</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">SEO Hashtags</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Keyword-Rich Titles</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Works With Any Affiliate Program</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">4 Pin Goals</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Bulk Generation</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Niche Strategy Tips</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Auto-Detected Audience</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">FTC Disclaimer Auto-Added</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">25 Niches</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Pain Point Suggestions</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Pin History</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Under 30 Seconds</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">SEO Hashtags</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Keyword-Rich Titles</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Works With Any Affiliate Program</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">4 Pin Goals</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Bulk Generation</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Niche Strategy Tips</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Auto-Detected Audience</span><span class="ticker-sep">·</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar reveal">
+  <div class="stats-inner">
+    <div class="stat"><strong>~3s</strong><span>Per pin, start to finish</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><strong>10</strong><span>Pins at once on Pro</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><strong>25</strong><span>Niches covered</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><strong>$0</strong><span>To start — no card</span></div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="section problem-section">
+  <div class="section-inner">
+    <div class="problem-grid">
+      <div class="problem-text reveal">
+        <div class="eyebrow">Sound familiar?</div>
+        <h2>The copy part is<br><em>the hard part.</em></h2>
+        <p>Pinning is easy. Writing something compelling, keyword-rich, and different for every single product — that's where most people either get stuck or start cutting corners.</p>
+        <div class="problem-list">
+          <div class="problem-item"><span class="x-icon">✕</span>You write the same description with minor tweaks and hope nobody notices</div>
+          <div class="problem-item"><span class="x-icon">✕</span>Generic copy doesn't rank — Pinterest search is competitive and keyword placement actually matters</div>
+          <div class="problem-item"><span class="x-icon">✕</span>Reusing descriptions across pins tanks your reach — Pinterest flags duplicate content</div>
+          <div class="problem-item"><span class="x-icon">✕</span>The more products you promote, the more time disappears into writing copy instead of posting</div>
+        </div>
+      </div>
+      <div class="problem-card reveal reveal-delay-1">
+        <span class="problem-quote-mark">"</span>
+        <p class="problem-quote">I was spending more time writing descriptions than actually building the business.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHATGPT COMPARISON -->
+<section class="section compare-section">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Why not ChatGPT?</div>
+      <h2>ChatGPT is a general tool.<br><em>This isn't.</em></h2>
+      <p style="color:rgba(255,255,255,0.55);font-size:17px;max-width:600px;margin:1rem auto 0;line-height:1.75;">You can use ChatGPT for this. People do. But you'll spend more time prompting it than you will actually posting. Here's what the difference looks like in practice.</p>
+    </div>
+    <div class="compare-wrapper reveal">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="pinlo-col">Pinlo</th>
+            <th>ChatGPT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pinterest SEO knowledge</td>
+            <td class="pinlo-val"><span class="check">✓</span>Already built in — every output is written around how Pinterest search actually works</td>
+            <td class="chatgpt-val"><span class="cross">—</span>You explain Pinterest SEO from scratch every session — it doesn't remember anything</td>
+          </tr>
+          <tr>
+            <td>Niche detection</td>
+            <td class="pinlo-val"><span class="check">✓</span>Type the product name — Pinlo figures out the niche, audience, and pain points on its own</td>
+            <td class="chatgpt-val"><span class="cross">—</span>You specify everything manually, every time — no memory between chats</td>
+          </tr>
+          <tr>
+            <td>Affiliate disclaimer</td>
+            <td class="pinlo-val"><span class="check">✓</span>Added automatically to every pin — you never have to think about it</td>
+            <td class="chatgpt-val"><span class="cross">—</span>You remember to add it, or you don't</td>
+          </tr>
+          <tr>
+            <td>Title character limits</td>
+            <td class="pinlo-val"><span class="check">✓</span>Enforced — titles stay under 100 characters so Pinterest doesn't cut them off</td>
+            <td class="chatgpt-val"><span class="cross">—</span>Goes over constantly unless you remind it every single time</td>
+          </tr>
+          <tr>
+            <td>Bulk generation</td>
+            <td class="pinlo-val"><span class="check">✓</span>One click generates up to 10 pins — each with a different angle and hook</td>
+            <td class="chatgpt-val"><span class="cross">—</span>One at a time — copy, re-prompt, repeat for every variation you want</td>
+          </tr>
+          <tr>
+            <td>Pin history</td>
+            <td class="pinlo-val"><span class="check">✓</span>Every pin saves automatically — go back and grab anything you've generated, anytime</td>
+            <td class="chatgpt-val"><span class="cross">—</span>Buried in your chat history — good luck finding it later</td>
+          </tr>
+          <tr>
+            <td>Niche strategy tips</td>
+            <td class="pinlo-val"><span class="check">✓</span>Specific to your product — best days to post, board names, what actually converts</td>
+            <td class="chatgpt-val"><span class="cross">—</span>Generic unless you ask exactly the right question, and even then it's surface level</td>
+          </tr>
+          <tr>
+            <td>Time to first pin</td>
+            <td class="pinlo-val"><span class="check">✓</span>Type your product, hit generate — done in under 30 seconds</td>
+            <td class="chatgpt-val"><span class="cross">—</span>A few minutes of back-and-forth before you get anything worth using</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="compare-cta reveal">
+      <a href="/app" class="btn-primary-dark">Try it free →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">What's inside</div>
+      <h2>Built for one thing.<br><em>Does it well.</em></h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-num">01</span>
+        <div class="feature-title">Figures it out for you</div>
+        <p class="feature-desc">Type the product name. Pinlo detects the niche, the audience, and what problem it solves. You don't have to explain any of it — just hit generate.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <span class="feature-num">02</span>
+        <div class="feature-title">10 pins at once</div>
+        <p class="feature-desc">Generate up to 10 pins in one go, each with a different angle. Do your whole week on Sunday and don't think about copy again until next week.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <span class="feature-num">03</span>
+        <div class="feature-title">Disclaimer included</div>
+        <p class="feature-desc">Every pin gets an FTC-compliant affiliate disclosure added automatically. One less thing to forget every time you post.</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-num">04</span>
+        <div class="feature-title">Tips for your product</div>
+        <p class="feature-desc">After you generate, you get a specific tip based on what you're actually promoting — not generic niche advice, but something relevant to that product.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <span class="feature-num">05</span>
+        <div class="feature-title">Everything you've made</div>
+        <p class="feature-desc">Every pin saves automatically. Go back and grab anything — title, description, hashtags — without having to generate it again.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <span class="feature-num">06</span>
+        <div class="feature-title">Knows what hurts</div>
+        <p class="feature-desc">Pinlo suggests pain points specific to your product — not a generic list of guesses. The copy lands better when the hook is actually relevant to what you're promoting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how-section" id="how">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">How it works</div>
+      <h2>Thirty seconds from now,<br><em>you'll have a pin.</em></h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step reveal">
+        <div class="step-marker">1</div>
+        <h3>Type your product</h3>
+        <p>Just the product name. Pinlo detects the niche, fills in the audience, and suggests the pain point — you can accept it or change it, but most of the time you won't need to.</p>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-marker">2</div>
+        <h3>Set the goal</h3>
+        <p>Tell it what you want the pin to do — drive clicks, get saves, inspire, or push a sale. Choose how many pins you want. Then hit generate.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-marker">3</div>
+        <h3>Copy and post</h3>
+        <p>Ready in a few seconds. Grab the title, the description, the hashtags, or everything at once — paste into Pinterest and you're done.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section pricing-section" id="pricing">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Pricing</div>
+      <h2>Try it free.<br><em>Upgrade if you love it.</em></h2>
+      <p style="color:var(--text2);margin-top:0.75rem;font-size:16px;">No card needed to start. If it saves you time on a few posts, Pro pays for itself.</p>
+    </div>
+    <div class="pricing-toggle-row reveal">
+      <span class="toggle-label active" id="monthly-label">Monthly</span>
+      <div class="toggle-switch" id="billing-toggle" onclick="toggleBilling()">
+        <div class="toggle-knob"></div>
+      </div>
+      <span class="toggle-label" id="yearly-label">Annual <span class="save-pill">Save 37%</span></span>
+    </div>
+    <div class="pricing-cards reveal">
+      <div class="pricing-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">
+          <span class="currency">CA$</span>
+          <span class="amount">0</span>
+          <span class="period">/forever</span>
+        </div>
+        <p class="plan-desc">No card. No catch.</p>
+        <ul class="plan-features">
+          <li>5 pins to try it out</li>
+          <li>All 25 niches</li>
+          <li>Pin history</li>
+          <li class="dim">SEO score</li>
+          <li class="dim">Pain point suggestions</li>
+          <li class="dim">Niche strategy tips</li>
+          <li class="dim">Bulk generation</li>
+        </ul>
+        <a href="/app" class="plan-btn free">Get started free</a>
+      </div>
+      <div class="pricing-card pro">
+        <div class="pro-card-header">
+          <div class="pro-badge">Most popular</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">
+            <span class="currency">CA$</span>
+            <span class="amount" id="price-amount">11.99</span>
+            <span class="period" id="price-period">/month</span>
+          </div>
+          <p class="plan-desc" id="price-desc">Cancel anytime. No questions asked.</p>
+        </div>
+        <div class="pro-card-body">
+          <ul class="plan-features">
+            <li>Unlimited pins — no cap</li>
+            <li>Bulk generation up to 10 pins</li>
+            <li>Full SEO score on every pin</li>
+            <li>Pain point suggestions</li>
+            <li>Niche strategy tips</li>
+            <li>All 25 niches</li>
+            <li>Full pin history</li>
+          </ul>
+          <a href="/app" class="plan-btn paid" id="pro-cta">Start Pro — CA$11.99/mo →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section faq-section" id="faq">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">FAQ</div>
+      <h2>Common questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal" onclick="toggleFaq(this)">
+        <div class="faq-q">How is this different from just using ChatGPT? <span class="faq-icon">+</span></div>
+        <div class="faq-a">ChatGPT works, but you're doing most of the work. You have to explain Pinterest SEO, your niche, the character limits, and the tone you want — every single session. Pinlo already knows all of that. Type the product, get the pin. The output is built around how Pinterest actually ranks content, not just what sounds good to a language model.</div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFaq(this)">
+        <div class="faq-q">Will Pinterest penalize generated descriptions? <span class="faq-icon">+</span></div>
+        <div class="faq-a">No. Pinterest ranks pins on keywords, engagement, and freshness — it doesn't care how the copy was written. What matters is whether people click and save it. That's exactly what Pinlo's output is built to do.</div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFaq(this)">
+        <div class="faq-q">Can I cancel Pro anytime? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Yes — cancel from your account settings whenever you want. You keep access until the end of the billing period and nothing gets charged after that.</div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFaq(this)">
+        <div class="faq-q">What affiliate programs does Pinlo work with? <span class="faq-icon">+</span></div>
+        <div class="faq-a">All of them. Pinlo generates the copy — you add your own link. Amazon Associates, ShareASale, Impact, LTK, whatever you're using — it doesn't matter.</div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFaq(this)">
+        <div class="faq-q">What happens after my 5 free pins? <span class="faq-icon">+</span></div>
+        <div class="faq-a">You'll see an option to upgrade to Pro — CA$11.99/month or CA$89.99/year. That gets you unlimited pins, bulk generation up to 10 at once, niche strategy tips, pain point suggestions, and a full SEO score on every pin.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <h2>Your next pin is<br><em>30 seconds away.</em></h2>
+  <p>Type a product. That's the hard part.</p>
+  <div class="cta-btns">
+    <a href="/app" class="btn-primary-dark">Generate your first pin →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Pinlo</div>
+  <ul class="footer-links">
+    <li><a href="/app">Try free</a></li>
+    <li><a href="#pricing" onclick="smoothScroll('pricing');return false;">Pricing</a></li>
+    <li><a href="#faq" onclick="smoothScroll('faq');return false;">FAQ</a></li>
+    <li><a href="mailto:pinlosupport@proton.me">Support</a></li>
+  </ul>
+  <p class="footer-copy">© 2026 Pinlo. All rights reserved.</p>
+</footer>
+
+<script>
+function smoothScroll(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+reveals.forEach(el => observer.observe(el));
+
+let isYearly = false;
+function toggleBilling() {
+  isYearly = !isYearly;
+  const toggle = document.getElementById('billing-toggle');
+  const amount = document.getElementById('price-amount');
+  const period = document.getElementById('price-period');
+  const desc = document.getElementById('price-desc');
+  const cta = document.getElementById('pro-cta');
+  const mLabel = document.getElementById('monthly-label');
+  const yLabel = document.getElementById('yearly-label');
+  if (isYearly) {
+    toggle.classList.add('yearly');
+    amount.textContent = '89.99';
+    period.textContent = '/year';
+    desc.textContent = 'CA$89.99/year billed annually · Cancel anytime';
+    cta.textContent = 'Start Pro — CA$89.99/yr →';
+    mLabel.classList.remove('active');
+    yLabel.classList.add('active');
+  } else {
+    toggle.classList.remove('yearly');
+    amount.textContent = '11.99';
+    period.textContent = '/month';
+    desc.textContent = 'Less than one lost commission · Cancel anytime';
+    cta.textContent = 'Start Pro — CA$11.99/mo →';
+    mLabel.classList.add('active');
+    yLabel.classList.remove('active');
+  }
+}
+
+function toggleFaq(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+// Live pin counter
+(async function() {
+  const el = document.getElementById('pin-counter');
+  if (!el) return;
+
+  // Seed offset — increase this to bump the displayed number above the raw KV count
+  const SEED = 5000;
+
+  function formatCount(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+    return n.toLocaleString();
+  }
+
+  function animateTo(target) {
+    const duration = 1400;
+    const start = performance.now();
+    const from = 0;
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(from + (target - from) * ease);
+      el.textContent = formatCount(current);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  try {
+    const res = await fetch('/pin-count');
+    const { count } = await res.json();
+    const display = (count || 0) + SEED;
+    animateTo(display);
+  } catch (_) {
+    el.textContent = formatCount(SEED);
+  } finally {
+    const wrap = document.getElementById('pin-counter-wrap');
+    if (wrap) wrap.style.opacity = '1';
+  }
+})();
+</script>
+</body>
+</html>

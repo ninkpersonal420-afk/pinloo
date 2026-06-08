@@ -1,0 +1,93 @@
+{
+  "routes": [
+    {
+      "routePath": "/check-pro",
+      "mountPath": "/",
+      "method": "OPTIONS",
+      "module": [
+        "check-pro.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/check-pro",
+      "mountPath": "/",
+      "method": "POST",
+      "module": [
+        "check-pro.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/claude",
+      "mountPath": "/",
+      "method": "OPTIONS",
+      "module": [
+        "claude.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/claude",
+      "mountPath": "/",
+      "method": "POST",
+      "module": [
+        "claude.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/send-otp",
+      "mountPath": "/",
+      "method": "OPTIONS",
+      "module": [
+        "send-otp.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/send-otp",
+      "mountPath": "/",
+      "method": "POST",
+      "module": [
+        "send-otp.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/stripe-webhook",
+      "mountPath": "/",
+      "method": "POST",
+      "module": [
+        "stripe-webhook.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/verify-otp",
+      "mountPath": "/",
+      "method": "OPTIONS",
+      "module": [
+        "verify-otp.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/verify-otp",
+      "mountPath": "/",
+      "method": "POST",
+      "module": [
+        "verify-otp.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/verify-stripe",
+      "mountPath": "/",
+      "method": "OPTIONS",
+      "module": [
+        "verify-stripe.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/verify-stripe",
+      "mountPath": "/",
+      "method": "POST",
+      "module": [
+        "verify-stripe.js:onRequestPost"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}
