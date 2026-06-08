@@ -43,9 +43,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 2.5rem;displa
 
 /* HERO */
 .hero{min-height:100vh;display:flex;align-items:center;padding:9rem 2rem 5rem;position:relative;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;pointer-events:none;}
-.hero-bg::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:1000px;height:1000px;background:radial-gradient(circle,rgba(217,79,56,0.07) 0%,transparent 65%);}
-.hero-bg::after{content:'';position:absolute;bottom:-100px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(245,146,74,0.05) 0%,transparent 65%);}
+.hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.hero-bg::before{content:'';position:absolute;top:-300px;left:-200px;width:900px;height:900px;background:radial-gradient(circle,rgba(217,79,56,0.13) 0%,transparent 60%);animation:orbFloat 12s ease-in-out infinite alternate;}
+.hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
+.hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
+.hashtag-float{position:absolute;font-size:12px;font-weight:700;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;animation:tagDrift linear infinite;}
+@keyframes tagDrift{0%{opacity:0;transform:translateY(0);}8%{opacity:1;}88%{opacity:1;}100%{opacity:0;transform:translateY(-120px);}}
 .hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);color:var(--red);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:2rem;animation:fadeUp 0.7s ease both;}
 h1{font-family:'Playfair Display',serif;font-size:clamp(42px,6.5vw,84px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:1.75rem;animation:fadeUp 0.7s 0.1s ease both;}
@@ -262,7 +266,9 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg">
+    <div class="hero-orb-mid"></div>
+  </div>
   <div class="hero-inner">
     <div class="hero-left">
       <div class="hero-eyebrow">Built for affiliate marketers</div>
@@ -313,6 +319,41 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     card.innerHTML = '<div class="pin-niche">'+p.niche+'</div><div class="pin-title">'+p.title+'</div><div class="pin-desc">'+p.desc+' <span style="color:var(--red);font-size:12px;">'+p.tags+'</span></div>';
     container.appendChild(card);
   });
+})();
+
+// Floating hashtag pills
+(function() {
+  const tags = [
+    '#skincare','#homedecor','#fitness','#mealprep','#travelhacks',
+    '#affiliatemarketing','#beautytips','#homegym','#pinterestmarketing',
+    '#selfcare','#budgetbeauty','#kitchengadgets','#outdoorliving',
+    '#haircare','#productivity','#veganrecipes','#cleanbeauty',
+    '#workfromhome','#fashionfinds','#wellnessjourney','#organization',
+    '#gymlife','#cozyhome','#naturalbeauty','#momlife'
+  ];
+  const bg = document.querySelector('.hero-bg');
+  if (!bg) return;
+
+  const leftZones  = [{x:2,xv:6},{x:4,xv:9},{x:1,xv:5},{x:6,xv:10}];
+  const rightZones = [{x:72,xv:8},{x:78,xv:6},{x:68,xv:10},{x:74,xv:7}];
+  const zones = [...leftZones, ...rightZones];
+
+  let tagIndex = 0;
+  function spawnTag() {
+    const zone  = zones[Math.floor(Math.random() * zones.length)];
+    const tag   = tags[tagIndex++ % tags.length];
+    const el    = document.createElement('div');
+    el.className = 'hashtag-float';
+    el.textContent = tag;
+    const xPct  = zone.x + Math.random() * zone.xv;
+    const yPct  = 55 + Math.random() * 35;
+    const dur   = 18 + Math.random() * 14;
+    const delay = Math.random() * -dur;
+    el.style.cssText = `left:${xPct}%;top:${yPct}%;animation-duration:${dur}s;animation-delay:${delay}s;transform:rotate(${(Math.random()-0.5)*10}deg);`;
+    bg.appendChild(el);
+  }
+
+  for (let i = 0; i < 18; i++) spawnTag();
 })();
 </script>
 
