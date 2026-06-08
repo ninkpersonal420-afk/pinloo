@@ -366,7 +366,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     el.className = 'hashtag-float ' + direction;
     el.textContent = tag;
     const rot = (Math.random() - 0.5) * 10;
-    const dur = (22 + Math.random() * 12) + 's';
+    const dur = (5 + Math.random() * 4) + 's';
     const delay = -(Math.random() * 22) + 's'; // random start point in cycle
     el.style.cssText = `left:${pos.x}%;top:${pos.y}%;--rot:${rot}deg;--dur:${dur};animation-delay:${delay};`;
     bg.appendChild(el);
