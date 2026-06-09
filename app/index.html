@@ -523,8 +523,18 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div class="field">
         <div class="field-header">
           <label>Niche</label>
-          <span class="auto-tag" id="niche-auto-tag">Auto-detected</span>
-                  </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="auto-tag" id="niche-auto-tag">Auto-detected</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+              <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleNicheDetect()">
+                <span id="niche-detect-label" style="font-size:12px;color:#F4705A;font-weight:600;text-transform:none;">Auto-detect ON</span>
+                <div id="niche-detect-toggle" style="width:36px;height:20px;border-radius:10px;background:#F4705A;border:1px solid #F4705A;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
+                  <div id="niche-detect-knob" style="position:absolute;top:3px;left:17px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="niche-pills" id="niche-pills-row">
           <span class="pill" onclick="pickNiche(this,'Beauty & Skincare')">Beauty</span>
           <span class="pill" onclick="pickNiche(this,'Books & Education')">Books</span>
@@ -1354,6 +1364,19 @@ function applyNicheData(val) {
 
 let autoDetectEnabled = true;
 let audienceDetectEnabled = true;
+let nicheDetectEnabled = true;
+
+function toggleNicheDetect() {
+  nicheDetectEnabled = !nicheDetectEnabled;
+  const toggle = document.getElementById('niche-detect-toggle');
+  const knob = document.getElementById('niche-detect-knob');
+  const label = document.getElementById('niche-detect-label');
+  toggle.style.background = nicheDetectEnabled ? '#F4705A' : 'var(--border2)';
+  toggle.style.borderColor = nicheDetectEnabled ? '#F4705A' : 'var(--border2)';
+  knob.style.left = nicheDetectEnabled ? '17px' : '3px';
+  label.textContent = nicheDetectEnabled ? 'Auto-detect ON' : 'Auto-detect OFF';
+  label.style.color = nicheDetectEnabled ? '#F4705A' : 'var(--text4)';
+}
 
 function toggleAudienceDetect() {
   audienceDetectEnabled = !audienceDetectEnabled;
@@ -1396,7 +1419,7 @@ function onProductInput(val) {
   if (trimmed.length < 2) return;
   if (!autoDetectEnabled) return;
   const customNiche = document.getElementById('niche-custom-input').value.trim();
-  if (!customNiche) {
+  if (nicheDetectEnabled && !customNiche) {
     autoDetectTimer = setTimeout(() => {
       autoDetectNicheAI(trimmed);
     }, 300);
