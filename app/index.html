@@ -512,7 +512,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
                 <div id="autodetect-knob" style="position:absolute;top:3px;left:18px;width:15px;height:15px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
               </div>
             </div>
-            <span style="font-size:11px;color:var(--text4);text-transform:none;font-weight:400;">Auto-fills niche &amp; audience as you type</span>
+            <span style="font-size:11px;color:var(--text4);text-transform:none;font-weight:400;">Auto-detects product as you type</span>
           </div>
                   </div>
         <input type="text" id="product-input" placeholder="e.g. standing desk mat, collagen powder, fan..." oninput="onProductInput(this.value);"/>
@@ -532,6 +532,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
                   <div id="niche-detect-knob" style="position:absolute;top:3px;left:17px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
                 </div>
               </div>
+              <span style="font-size:11px;color:var(--text4);text-transform:none;font-weight:400;">Auto-detects niche as you type</span>
             </div>
           </div>
         </div>
@@ -1406,18 +1407,13 @@ function onProductInput(val) {
   clearTimeout(autoDetectTimer); clearTimeout(audienceTimer);
   const trimmed = val.trim();
   if (trimmed.length === 0) {
-    if (autoDetectEnabled) {
-      clearNicheSelection();
-      clearAudience();
-      document.getElementById('audience-auto-tag').style.display = 'none';
-    }
-    
+    if (nicheDetectEnabled) clearNicheSelection();
+    if (audienceDetectEnabled) { clearAudience(); document.getElementById('audience-auto-tag').style.display = 'none'; }
     document.getElementById('pain-pills').innerHTML = '';
     document.getElementById('benefit-input').value = '';
     return;
   }
   if (trimmed.length < 2) return;
-  if (!autoDetectEnabled) return;
   const customNiche = document.getElementById('niche-custom-input').value.trim();
   if (nicheDetectEnabled && !customNiche) {
     autoDetectTimer = setTimeout(() => {
