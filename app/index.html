@@ -1853,16 +1853,16 @@ setTimeout(renderPricingTab, 200);
 }
 
 const PIN_ANGLES = [
-  'genuine question a real person would search — e.g. "Why does everyone with good skin use this?" or "Are you making this mistake with your routine?" — must end with ?',
-  'specific price or number lead — e.g. "The $24 oil that replaced my $90 serum" or "3 weeks with this and my skin finally calmed down" — number must be the very first character',
-  'first-person honest discovery — e.g. "I switched to this after years of trying everything" or "I bought this on a whim and now I reorder it every month" — start with "I"',
-  'comparison to a pricier or more common alternative — e.g. "Better than the expensive version and half the price" or "I stopped buying the $80 cream after finding this"',
-  'what most people get wrong — e.g. "The mistake I made with my skincare routine for years" or "Why your moisturizer isn\'t working the way you think it is"',
-  'specific outcome with timeframe — e.g. "Two weeks with this and I finally understood the hype" or "The one change that actually made a difference after 30 days"',
-  'what people with the desired result actually use — e.g. "The one thing every person with clear skin actually has in their routine" — must feel specific, not generic',
-  'curiosity without clickbait — tease a specific detail — e.g. "The thing in my routine everyone always asks about" or "What I reach for when I run out of the expensive stuff"',
-  'speed or ease with a specific relatable example — e.g. "Dinner on the table in 20 minutes and my family thinks I cooked all day" or "5 minutes and I get compliments all week"',
-  'honest contrarian take — e.g. "You don\'t need to spend $80 on this" or "I thought this was a gimmick until I actually tried it for a week"'
+  'genuine question a real person would search — e.g. "Why does everyone who owns this swear by it?" or "Are you making this mistake before you buy?" — must end with ?',
+  'specific price or number lead — e.g. "The $30 find that replaced my $120 version" or "3 weeks using this every day and here\'s what changed" — number must be the very first character',
+  'first-person honest discovery — e.g. "I bought this on a whim and now I reorder it every month" or "I switched to this after years of trying everything else" — start with "I"',
+  'comparison to a pricier or more common alternative — e.g. "Better than the expensive version and half the price" or "I stopped buying the brand name after finding this"',
+  'what most people get wrong — e.g. "The mistake most people make when buying this type of product" or "Why the popular option isn\'t actually the best choice here"',
+  'specific outcome with timeframe — e.g. "Two weeks of using this and I finally understood the hype" or "The one change that actually made a difference after 30 days"',
+  'what people with the desired result actually use — e.g. "What people who actually get results always have" or "The thing everyone with [desired outcome] quietly uses" — must feel specific, not generic',
+  'curiosity without clickbait — tease a specific detail — e.g. "The thing everyone always asks me about" or "What I reach for when I want the best result without the price tag"',
+  'speed or ease with a specific relatable example — e.g. "10 minutes and it looks like I spent an hour on it" or "Takes 5 minutes and people think I put in way more effort"',
+  'honest contrarian take — e.g. "You don\'t need to spend $100 on this" or "I thought this was overhyped until I actually tried it for a week"'
 ];
 
 function validatePin(p) {
@@ -1889,7 +1889,7 @@ function buildSys(pinIndex) {
   const season = activeSeason ? ' Season: '+activeSeason+'.' : '';
   const angle = pinIndex !== undefined ? PIN_ANGLES[pinIndex % PIN_ANGLES.length] : '';
   const angleInstruction = angle ? ' REQUIRED HOOK STYLE FOR THIS PIN: '+angle+'. The title MUST use this specific angle — do not default to a generic hook.' : '';
-  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars. Sentence 1 MUST open with the problem or frustration the buyer feels BEFORE finding this product — written as a felt experience, not a feature statement. Sentence 2 delivers the solution and outcome. Keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag. Mix: 4 broad niche tags (e.g. #skincare), 5 mid-specificity tags (e.g. #dryskinfix), 3 product-type tags (e.g. #hyaluronicacidserum). All must be real searchable Pinterest tags.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
+  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars. Sentence 1 MUST open with the problem or frustration the buyer feels BEFORE finding this product — written as a felt experience, not a feature statement. Sentence 2 delivers the solution and outcome. Keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag. Mix: 4 broad niche tags (e.g. #homedecor, #fitness, #skincare), 5 mid-specificity tags that describe the problem or use case (e.g. #smallkitchenideas, #homegymsetup), 3 product-type tags (e.g. #standingdeskmat, #foamroller). All must be real searchable Pinterest tags relevant to the actual product — never reuse the skincare examples for non-beauty products.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
 
 
 }
@@ -1912,15 +1912,12 @@ function fixTitlePunctuation(title) {
   return t;
 }
 
-function stripBrand(product){return product.replace(/^[A-Z][a-z]+ /,'').replace(/ +/g,' ').trim();}
 function buildMsg(product, niche, audience, benefit, extra) {
-  // Keep product name but strip leading brand word for the prompt context
-  const cleanProduct = stripBrand(product);
-  let m = 'Product: "'+cleanProduct+'" | Write copy SPECIFICALLY about this product type and what it does, not generic category content.';
+  let m = 'Product: "'+product+'" | Write copy SPECIFICALLY about this product type and what it does, not generic category content.';
   m += ' | Niche: '+(niche||'lifestyle');
   if (audience) m += ' | Audience: '+audience;
   if (benefit) m += ' | Core pain point: '+benefit+'. The description MUST open with this as a felt frustration the buyer experiences — not a feature of the product.';
-  m += ' | IMPORTANT: The title and description must clearly relate to the specific product ("'+cleanProduct+'") — not just the pain point in isolation.';
+  m += ' | IMPORTANT: The title and description must clearly relate to the specific product ("'+product+'") — not just the pain point in isolation.';
   if (extra) m += ' | '+extra;
   return m;
 }
@@ -2371,7 +2368,7 @@ async function generatePin() {
 async function regenField(field) {
   if (!lastPinData) return;
   const {p,product,niche,audience,benefit}=lastPinData;
-  const sys='Pinterest SEO copywriter. Return ONLY valid JSON — no markdown, no backticks, no explanation.';
+  const sys='Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower. NO product name, NO brand names in output. Return ONLY valid JSON — no markdown, no backticks, no explanation.';
   const msg=field==='title'
     ?'Write a new Pinterest title different from: "'+p.title+'". Product: '+product+'. Niche: '+niche+'. Tone: '+getTone()+'. Under 100 chars. No product name, no brand names, no hyphens, no colons. If phrased as a question it must end with ?. Must sound like something a real person would search — not marketing copy. Return: {"title":"..."}'
     :'Write a new Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+'. Audience: '+audience+'. Pain point: '+benefit+'. Exactly 2 sentences under 500 chars. Sentence 1 MUST open with the felt problem or frustration the buyer has before finding this product. Sentence 2 delivers the solution and outcome. Keyword-rich, no brand names. Return: {"description":"..."}';
