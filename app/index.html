@@ -466,7 +466,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
   <div class="header-right">
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     <button class="signin-btn" id="header-signin-btn" onclick="showEmailGate()" style="display:none;">Sign in</button>
-    <button class="pro-btn" id="header-pro-btn" onclick="showPaywall()">Upgrade to Pro</button>
+    <button class="pro-btn" id="header-pro-btn" onclick="showPaywall()" style="display:none;">Upgrade to Pro</button>
     <div class="avatar-wrap" id="avatar-wrap" style="display:none;">
       <button class="avatar-btn" id="avatar-btn" onclick="toggleAvatarDropdown()" aria-label="Account menu" title="Account">?</button>
       <div class="avatar-dropdown" id="avatar-dropdown">
@@ -491,7 +491,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 <div class="main">
   <div class="view active" id="view-generate">
 
-    <div class="usage-row" id="usage-row">
+    <div class="usage-row" id="usage-row" style="display:none;">
       <div class="usage-info">
         <div class="usage-label" id="usage-text">0 of 5 free pins used</div>
         <div class="usage-track"><div class="usage-fill" id="usage-fill" style="width:0%"></div></div>
@@ -1203,7 +1203,11 @@ async function verifyStripeSession(sessionId) {
       const status = await checkProStatus(email);
       if (status.isPro) {
         activatePro(status.plan);
+      } else {
+        updateUsage();
       }
+    } else {
+      updateUsage();
     }
     updateQtyControls();
   });
@@ -1810,6 +1814,11 @@ function changeQty(d) {
 
 function updateUsage() {
   if (isPro) return;
+  // Reveal free-only UI now that we've confirmed the user is not Pro
+  const usageRow = document.getElementById('usage-row');
+  if (usageRow) usageRow.style.display = 'flex';
+  const proBtn = document.getElementById('header-pro-btn');
+  if (proBtn) proBtn.style.display = '';
   const pct = Math.min(Math.round((pinsUsed/FREE_LIMIT)*100),100);
   const fillEl = document.getElementById('usage-fill');
   const textEl = document.getElementById('usage-text');
