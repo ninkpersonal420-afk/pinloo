@@ -52,8 +52,8 @@ export async function onRequestPost(context) {
           <td align="center" style="padding-bottom:24px;">
             <table cellpadding="0" cellspacing="0">
               <tr>
-                <td style="background:linear-gradient(135deg,#D94F38,#F5924A);width:52px;height:52px;border-radius:14px;text-align:center;vertical-align:middle;">
-                  <span style="font-size:26px;line-height:52px;">📌</span>
+                <td style="vertical-align:middle;">
+                  <img src="https://getpinlo.com/logo.png" alt="Pinlo" width="52" height="52" style="border-radius:22%;display:block;"/>
                 </td>
                 <td style="padding-left:12px;vertical-align:middle;">
                   <p style="margin:0;font-size:24px;font-weight:800;color:#160C07;letter-spacing:-0.5px;">Pinlo</p>
@@ -68,45 +68,42 @@ export async function onRequestPost(context) {
         <tr>
           <td style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(22,12,7,0.1);">
 
-            <!-- Card header bar -->
+            <!-- Gradient header -->
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="background:linear-gradient(135deg,#D94F38,#F5924A);padding:6px 0;"></td>
+                <td style="background:linear-gradient(135deg,#D94F38,#F5924A);padding:32px 48px 28px;">
+                  <p style="margin:0;font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.3px;">Here's your sign-in code</p>
+                  <p style="margin:8px 0 0;font-size:14px;color:rgba(255,255,255,0.75);line-height:1.5;">Good for the next 10 minutes. Enter it in the app to get in.</p>
+                </td>
               </tr>
             </table>
 
             <!-- Card body -->
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="padding:44px 48px 16px;">
-                  <p style="margin:0 0 6px;font-size:22px;font-weight:700;color:#160C07;letter-spacing:-0.3px;">Your sign-in code</p>
-                  <p style="margin:0;font-size:15px;color:#6b5c55;line-height:1.65;">Enter this in Pinlo to sign in. It's only valid for 10 minutes.</p>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:24px 48px;">
+                <td style="padding:32px 48px 16px;">
                   <!-- OTP box -->
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="background:#FBF6F1;border:2px solid #E8D5CC;border-radius:14px;padding:28px 24px;text-align:center;">
-                        <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#8A6255;">Your code</p>
-                        <p style="margin:0;font-size:48px;font-weight:800;letter-spacing:12px;color:#D94F38;font-family:'Courier New',Courier,monospace;padding-left:12px;">${code}</p>
+                      <td style="background:linear-gradient(135deg,rgba(217,79,56,0.06),rgba(245,146,74,0.06));border:2px solid rgba(217,79,56,0.2);border-radius:14px;padding:28px 24px;text-align:center;">
+                        <p style="margin:0 0 10px;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#B89485;">Your code</p>
+                        <p style="margin:0;font-size:52px;font-weight:800;letter-spacing:14px;color:#D94F38;font-family:'Courier New',Courier,monospace;padding-left:14px;">${code}</p>
                       </td>
                     </tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td style="padding:0 48px 40px;">
-                  <p style="margin:0;font-size:13px;color:#b8a49c;line-height:1.7;">Didn't ask for this? No worries — just ignore it. Someone probably typed your email by accident. Your account is safe.</p>
+                <td style="padding:16px 48px 36px;">
+                  <p style="margin:0;font-size:13px;color:#B89485;line-height:1.7;">Not you? Just ignore this — nothing will happen to your account.</p>
                 </td>
               </tr>
             </table>
 
-            <!-- Footer inside card -->
+            <!-- Footer -->
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="border-top:1px solid #F0E8E0;padding:20px 48px;text-align:center;">
+                <td style="border-top:1px solid #F0E8E0;padding:18px 48px;text-align:center;">
                   <p style="margin:0;font-size:12px;color:#c4b0a8;">© 2026 Pinlo &nbsp;·&nbsp; <a href="https://getpinlo.com" style="color:#D94F38;text-decoration:none;">getpinlo.com</a></p>
                 </td>
               </tr>
