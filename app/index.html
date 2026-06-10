@@ -2685,8 +2685,8 @@ function resetToEmailStep() {
 // ── ADMIN MODE — secret keysequence triggers password gate ──
 (function() {
   const SECRET = 'pinloadmin';
-  // SHA-256 of "pinlo@admin1" — change password by updating this hash
-  const PASS_HASH = '6c5129843b01945b67473099a272c1ab4fb39d1bb2572cbc3eb3faaded658443';
+  // SHA-256 hash — change password by updating this hash
+  const PASS_HASH = 'd17c21fdd5ada88c909d9aaa690400ccb310d960b02fe9830ecca8a3c4e39db6';
   let buffer = '';
   let adminUnlocked = false;
 
