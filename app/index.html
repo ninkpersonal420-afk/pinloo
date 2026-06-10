@@ -1915,7 +1915,7 @@ function buildMsg(product, niche, audience, benefit, extra) {
 }
 
 async function callClaude(sys, msg) {
-  const email = getGateEmail() || (isPro ? 'admin@pinlo.internal' : '');
+  const email = isPro ? 'admin@pinlo.internal' : (getGateEmail() || '');
   const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,model:'claude-haiku-4-5-20251001',max_tokens:800,system:sys,messages:[{role:'user',content:msg}]})});
   if (res.status === 402) {
     const errData = await res.json();
