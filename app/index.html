@@ -1084,6 +1084,11 @@ let pinsUsed = parseInt(localStorage.getItem('pinlo_pins_used') || '0'), FREE_LI
 let isPro = false;
 let proPlan = null;
 
+// Apply cached pro state instantly to avoid flash — verified async below
+if (localStorage.getItem('pinlo_pro_cache') === '1') {
+  isPro = true;
+}
+
 // Pro status now lives in the database, keyed by email. The app calls /check-pro
 // to ask "is this email Pro?" instead of trusting a localStorage token.
 async function checkProStatus(email) {
@@ -1107,6 +1112,7 @@ function activatePro(plan) {
   proPlan = plan || null;
   pinsUsed = 0;
   localStorage.setItem('pinlo_pins_used', 0);
+  localStorage.setItem('pinlo_pro_cache', '1');
   setTimeout(updateTabLabels, 100);
   // Enable pain autofill for Pro users
   setTimeout(() => {
@@ -1204,6 +1210,8 @@ async function verifyStripeSession(sessionId) {
       if (status.isPro) {
         activatePro(status.plan);
       } else {
+        localStorage.removeItem('pinlo_pro_cache');
+        isPro = false;
         updateUsage();
       }
     } else {
