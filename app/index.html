@@ -1420,7 +1420,7 @@ function onProductInput(val) {
     document.getElementById('benefit-input').value = '';
     return;
   }
-  if (trimmed.length < 2) return;
+  if (trimmed.length < 6) return;
   const customNiche = document.getElementById('niche-custom-input').value.trim();
   if (nicheDetectEnabled && !customNiche) {
     autoDetectTimer = setTimeout(() => {
@@ -1724,7 +1724,7 @@ async function autoFillAudience(product) {
   // Clean product string - strip brand names, model numbers, years before sending to AI
   const cleanProduct = product.replace(/(20\d\d)/g,'').replace(/[A-Z]{2,}[0-9]+\w*/g,'').replace(/(upgraded|premium|pro|plus|ultra|deluxe|new|improved|original|authentic|genuine|official)/gi,'').replace(/\s+/g,' ').trim();
   try {
-    const sys = 'Pinterest buyer-persona detector. Return a plain comma-separated list of 3–5 audience types who DIRECTLY purchase this product. Critical rules: (1) Only include people who would literally search for and buy this exact product — not people with a lifestyle tangentially related to it. A TV stand buyer is "homeowners" or "apartment renters", NOT "cord cutters" or "gamers". A yoga mat buyer is "beginners" or "home workout fans", NOT "vegans". (2) Each persona must be a short, natural everyday phrase (2–3 words max). (3) Never combine two descriptors into one label. No intro text, no numbering, no explanation. If too vague to classify, return exactly: INVALID';
+    const sys = 'Pinterest buyer-persona detector. Return a plain comma-separated list of 3–5 audience types who DIRECTLY purchase this product. Critical rules: (1) Only include people who would literally search for and buy this exact product — not people with a lifestyle tangentially related to it. (2) Each persona must be a short, natural everyday phrase (2–3 words max). (3) Never combine two descriptors into one label. (4) NEVER ask clarifying questions or explain your reasoning — if the product is too vague or ambiguous to classify confidently, return exactly the word INVALID and nothing else. No intro text, no numbering, no explanation.';
     const email = getGateEmail() || 'autofill@pinlo.internal';
     const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:60,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'" | Niche: '+niche+'\nWho would literally search for and buy this product? Short natural personas only. Format: persona1, persona2, persona3'}]})});
     if (!res.ok) { console.log('Audience autofill skipped: server error', res.status); return; }
