@@ -1445,7 +1445,7 @@ async function autoDetectNicheAI(product) {
   if (autoTag) { autoTag.textContent = 'Detecting...'; autoTag.style.display = 'inline-block'; autoTag.style.opacity = '0.6'; }
   try {
     const email = getGateEmail() || 'autofill@pinlo.internal';
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5-20251001',max_tokens:20,system:'Pinterest niche classifier. Output exactly one niche name from the provided list — copy it character-for-character. No quotes, no punctuation, no commentary. Your output is read directly by a string parser; any extra characters break the match.',messages:[{role:'user',content:'Product: "'+product+'"\n\nChoose the single best niche:\n'+nicheList+'\n\nOutput only the niche name, nothing else.'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:20,system:'Pinterest niche classifier. Output exactly one niche name from the provided list — copy it character-for-character. No quotes, no punctuation, no commentary. Your output is read directly by a string parser; any extra characters break the match.',messages:[{role:'user',content:'Product: "'+product+'"\n\nChoose the single best niche:\n'+nicheList+'\n\nOutput only the niche name, nothing else.'}]})});
     if (!res.ok) { console.log('Niche detect skipped: server error', res.status); return; }
     // If a newer request has been fired, discard this stale result
     if (mySeq !== nicheDetectSeq) return;
@@ -1721,7 +1721,7 @@ async function autoFillAudience(product) {
   try {
     const sys = 'Pinterest buyer-persona detector. Return a plain comma-separated list of 3–5 audience types who DIRECTLY purchase this product. Critical rules: (1) Only include people who would literally search for and buy this exact product — not people with a lifestyle tangentially related to it. A TV stand buyer is "homeowners" or "apartment renters", NOT "cord cutters" or "gamers". A yoga mat buyer is "beginners" or "home workout fans", NOT "vegans". (2) Each persona must be a short, natural everyday phrase (2–3 words max). (3) Never combine two descriptors into one label. No intro text, no numbering, no explanation. If too vague to classify, return exactly: INVALID';
     const email = getGateEmail() || 'autofill@pinlo.internal';
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5-20251001',max_tokens:60,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'" | Niche: '+niche+'\nWho would literally search for and buy this product? Short natural personas only. Format: persona1, persona2, persona3'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:60,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'" | Niche: '+niche+'\nWho would literally search for and buy this product? Short natural personas only. Format: persona1, persona2, persona3'}]})});
     if (!res.ok) { console.log('Audience autofill skipped: server error', res.status); return; }
     const data = await res.json();
     const result = data.content.map(i=>i.text||'').join('').trim().replace(/^["']|["']$/g,'').replace(/^(Target audience:|Audience:)/i,'').trim();
@@ -1916,7 +1916,7 @@ function buildMsg(product, niche, audience, benefit, extra) {
 
 async function callClaude(sys, msg) {
   const email = isPro ? 'admin@pinlo.internal' : (getGateEmail() || '');
-  const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,model:'claude-haiku-4-5-20251001',max_tokens:800,system:sys,messages:[{role:'user',content:msg}]})});
+  const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,model:'claude-haiku-4-5',max_tokens:800,system:sys,messages:[{role:'user',content:msg}]})});
   if (res.status === 402) {
     const errData = await res.json();
     if (errData.error === 'free_limit_reached') {
@@ -2187,7 +2187,7 @@ Rules:
 - Max 2 sentences. Direct and specific. No bullet points.
 - No opener phrases ("Great tip:", "For this product:", "Here's a tip:")
 - Do not open with the product name`;
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'niche-tip',model:'claude-haiku-4-5-20251001',max_tokens:120,system:sys,messages:[{role:'user',content:'Product: "'+product+'" | Niche: "'+niche+'"'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'niche-tip',model:'claude-haiku-4-5',max_tokens:120,system:sys,messages:[{role:'user',content:'Product: "'+product+'" | Niche: "'+niche+'"'}]})});
     if (!res.ok) throw new Error('api error');
     const data = await res.json();
     const tip = (data.content&&data.content[0]&&data.content[0].text)||'';
