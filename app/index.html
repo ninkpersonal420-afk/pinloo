@@ -1872,7 +1872,8 @@ function buildSys(pinIndex) {
   const season = activeSeason ? ' Season: '+activeSeason+'.' : '';
   const angle = pinIndex !== undefined ? PIN_ANGLES[pinIndex % PIN_ANGLES.length] : '';
   const angleInstruction = angle ? ' REQUIRED HOOK STYLE FOR THIS PIN: '+angle+'. The title MUST use this specific angle — do not default to a generic hook.' : '';
-  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars, problem→solution→value flow, keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
+  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower.\n\nRULES:\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars. Sentence 1 MUST open with the problem or frustration the buyer feels BEFORE finding this product — written as a felt experience, not a feature statement. Sentence 2 delivers the solution and outcome. Keyword-rich, human voice, no brand names.'+season+'\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag. Mix: 4 broad niche tags (e.g. #skincare), 5 mid-specificity tags (e.g. #dryskinfix), 3 product-type tags (e.g. #hyaluronicacidserum). All must be real searchable Pinterest tags.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
+
 
 }
 
@@ -1901,7 +1902,7 @@ function buildMsg(product, niche, audience, benefit, extra) {
   let m = 'Product: "'+cleanProduct+'" | Write copy SPECIFICALLY about this product type and what it does, not generic category content.';
   m += ' | Niche: '+(niche||'lifestyle');
   if (audience) m += ' | Audience: '+audience;
-  if (benefit) m += ' | Core pain point to solve: '+benefit+'. Make this pain point central to the copy.';
+  if (benefit) m += ' | Core pain point: '+benefit+'. The description MUST open with this as a felt frustration the buyer experiences — not a feature of the product.';
   m += ' | IMPORTANT: The title and description must clearly relate to the specific product ("'+cleanProduct+'") — not just the pain point in isolation.';
   if (extra) m += ' | '+extra;
   return m;
@@ -2179,7 +2180,8 @@ Rules:
 - Pick whichever is most useful for this product: best posting time, board naming, title angle, or conversion tactic
 - Max 2 sentences. Direct and specific. No bullet points.
 - No opener phrases ("Great tip:", "For this product:", "Here's a tip:")
-- Do not open with the product name`;
+- Do not open with the product name
+- NEVER give generic Pinterest advice like "use vertical images", "post consistently", "engage with your audience", or "use trending hashtags" — those apply to everything and help no one`;
     const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'niche-tip',model:'claude-haiku-4-5',max_tokens:120,system:sys,messages:[{role:'user',content:'Product: "'+product+'" | Niche: "'+niche+'"'}]})});
     if (!res.ok) throw new Error('api error');
     const data = await res.json();
@@ -2354,8 +2356,8 @@ async function regenField(field) {
   const {p,product,niche,audience,benefit}=lastPinData;
   const sys='Pinterest SEO copywriter. Return ONLY valid JSON — no markdown, no backticks, no explanation.';
   const msg=field==='title'
-    ?'Write a new Pinterest title different from: "'+p.title+'". Product: '+product+'. Niche: '+niche+'. Tone: '+getTone()+'. Under 100 chars. No product name, no brand names, no hyphens, no colons. If phrased as a question it must end with ?. Return: {"title":"..."}'
-    :'Write a new Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+'. Audience: '+audience+'. Pain point: '+benefit+'. 2 sentences, under 500 chars, keyword-rich, problem→solution→value. No product name, no brand names. Return: {"description":"..."}';
+    ?'Write a new Pinterest title different from: "'+p.title+'". Product: '+product+'. Niche: '+niche+'. Tone: '+getTone()+'. Under 100 chars. No product name, no brand names, no hyphens, no colons. If phrased as a question it must end with ?. Must sound like something a real person would search — not marketing copy. Return: {"title":"..."}'
+    :'Write a new Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+'. Audience: '+audience+'. Pain point: '+benefit+'. Exactly 2 sentences under 500 chars. Sentence 1 MUST open with the felt problem or frustration the buyer has before finding this product. Sentence 2 delivers the solution and outcome. Keyword-rich, no brand names. Return: {"description":"..."}';
   try {
     const result=await callClaude(sys,msg);
     if (field==='title'&&result.title) { typeText(document.getElementById('result-title'),result.title); updateCharBar('title-bar','title-char',result.title.length,100); lastPinData.p.title=result.title; }
