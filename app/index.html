@@ -1450,7 +1450,7 @@ async function autoDetectNicheAI(product) {
   if (autoTag) { autoTag.textContent = 'Detecting...'; autoTag.style.display = 'inline-block'; autoTag.style.opacity = '0.6'; }
   try {
     const email = getGateEmail() || 'autofill@pinlo.internal';
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:20,system:'Pinterest niche classifier. Output exactly one niche name from the provided list — copy it character-for-character. No quotes, no punctuation, no commentary. Your output is read directly by a string parser; any extra characters break the match.',messages:[{role:'user',content:'Product: "'+product+'"\n\nChoose the single best niche:\n'+nicheList+'\n\nOutput only the niche name, nothing else.'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:20,system:'Pinterest niche classifier. If the product name has a typo or misspelling, infer the most likely intended product before classifying. Output exactly one niche name from the provided list — copy it character-for-character. No quotes, no punctuation, no commentary. Your output is read directly by a string parser; any extra characters break the match.',messages:[{role:'user',content:'Product: "'+product+'"\n\nChoose the single best niche:\n'+nicheList+'\n\nOutput only the niche name, nothing else.'}]})});
     if (!res.ok) { console.log('Niche detect skipped: server error', res.status); return; }
     // If a newer request has been fired, discard this stale result
     if (mySeq !== nicheDetectSeq) return;
@@ -1617,7 +1617,7 @@ async function autoGeneratePains(product) {
   }
   container.innerHTML = '<span style="font-size:12px;color:var(--text4);">Generating pain points...</span>';
   try {
-    const sys = 'Pinterest affiliate pain-point generator. Return a JSON array of exactly 5 pain points (3–6 words each) that a buyer feels BEFORE finding this product — the problem they have, not the solution. Frame each as a symptom or frustration the user experiences (e.g. "skin feels dry after moisturizing" not "difficulty absorbing moisturizers"). Each must be distinct, specific to the product, and written from the customer\'s perspective. Output only the JSON array — no markdown, no explanation, no wrapper text.';
+    const sys = 'Pinterest affiliate pain-point generator. If the product name has a typo or misspelling, infer the most likely intended product before generating. Return a JSON array of exactly 5 pain points (3–6 words each) that a buyer feels BEFORE finding this product — the problem they have, not the solution. Frame each as a symptom or frustration the user experiences (e.g. "skin feels dry after moisturizing" not "difficulty absorbing moisturizers"). Each must be distinct, specific to the product, and written from the customer\'s perspective. Output only the JSON array — no markdown, no explanation, no wrapper text.';
     const rawData = await callClaude(sys, 'Product: "' + product + '"');
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
     container.innerHTML = '';
