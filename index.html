@@ -31,18 +31,21 @@ html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(250,247,242,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.85rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(251,246,241,0.8);backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%);border-bottom:1px solid rgba(232,213,204,0.6);}
 .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
-.nav-logo-svg{width:40px;height:40px;flex-shrink:0;}
-.nav-logo{font-family:'Playfair Display',serif;font-size:23px;font-weight:700;color:var(--ink);letter-spacing:-0.4px;}
-.nav-links{display:flex;align-items:center;gap:8px;list-style:none;}
-.nav-links a{text-decoration:none;color:var(--text2);font-size:14px;font-weight:500;padding:8px 14px;border-radius:8px;transition:color 0.15s;}
-.nav-links a:hover{color:var(--ink);}
-.nav-right{display:flex;align-items:center;gap:18px;}
+.nav-logo-svg{width:40px;height:40px;flex-shrink:0;border-radius:11px;box-shadow:0 4px 12px rgba(217,79,56,0.26);transition:transform 0.25s,box-shadow 0.25s;}
+.nav-brand:hover .nav-logo-svg{transform:rotate(-6deg) scale(1.05);box-shadow:0 6px 18px rgba(217,79,56,0.36);}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--ink);letter-spacing:-0.4px;line-height:1;}
+.nav-logo-tagline{font-size:9.5px;font-weight:600;color:var(--text3);letter-spacing:1.8px;text-transform:uppercase;margin-top:4px;}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none;}
+.nav-links a{position:relative;text-decoration:none;color:var(--text2);font-size:14px;font-weight:500;padding:8px 16px;border-radius:100px;transition:color 0.15s,background 0.15s;}
+.nav-links a:hover{color:var(--ink);background:rgba(217,79,56,0.06);}
+.nav-right{display:flex;align-items:center;gap:20px;}
 .nav-signin{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s;}
 .nav-signin:hover{color:var(--ink);}
-.nav-open-app{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s;}
-.nav-open-app:hover{color:var(--ink);}
+.nav-open-app{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;padding:9px 18px;border-radius:100px;border:1px solid var(--border2);transition:border-color 0.15s,color 0.15s;}
+.nav-open-app:hover{color:var(--ink);border-color:var(--text3);}
 .nav-cta{background:var(--gradient);background-size:160% 160%;color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:10px 24px;border-radius:100px;transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;box-shadow:0 4px 16px rgba(217,79,56,0.3);animation:gradientShift 6s ease infinite;}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(217,79,56,0.4);}
 
@@ -309,8 +312,11 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
 <!-- NAV -->
 <nav>
   <a href="/" class="nav-brand">
-    <img src="/logo.png" class="nav-logo-svg" alt="Pinlo"/>
-    <span class="nav-logo">Pinlo</span>
+    <img src="/logo-mark.png" class="nav-logo-svg" alt="Pinlo"/>
+    <span class="nav-logo-text">
+      <span class="nav-logo">Pinlo</span>
+      <span class="nav-logo-tagline">Pinterest Pin Generator</span>
+    </span>
   </a>
   <ul class="nav-links">
     <li><a href="#features" onclick="smoothScroll('features');return false;">Features</a></li>
