@@ -149,7 +149,10 @@ h2 em{font-style:italic;font-weight:600;background:var(--gradient);background-si
 .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:0;transition:opacity 0.25s;}
 .feature-card:hover{background:var(--blush);}
 .feature-card:hover::before{opacity:1;}
-.feature-num{display:block;font-family:'Playfair Display',serif;font-size:14px;font-style:italic;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1.5rem;}
+.feature-icon{width:48px;height:48px;border-radius:14px;background:rgba(217,79,56,0.08);display:flex;align-items:center;justify-content:center;margin-bottom:1.75rem;transition:background 0.25s,transform 0.25s;}
+.feature-card:hover .feature-icon{background:var(--gradient);transform:translateY(-2px);box-shadow:0 8px 20px rgba(217,79,56,0.28);}
+.feature-icon svg{width:24px;height:24px;fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.25s;}
+.feature-card:hover .feature-icon svg{stroke:#fff;}
 .feature-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:12px;color:var(--ink);letter-spacing:-0.2px;}
 .feature-desc{font-size:14px;color:var(--text2);line-height:1.8;}
 
@@ -559,32 +562,32 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
     </div>
     <div class="features-grid">
       <div class="feature-card reveal">
-        <span class="feature-num">No. 01</span>
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M18.5 15l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></div>
         <div class="feature-title">Figures it out for you</div>
         <p class="feature-desc">Type the product name. Pinlo detects the niche, the audience, and what problem it solves. You don't have to explain any of it — just hit generate.</p>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <span class="feature-num">No. 02</span>
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/></svg></div>
         <div class="feature-title">10 pins at once</div>
         <p class="feature-desc">Generate up to 10 pins in one go, each with a different angle. Do your whole week on Sunday and don't think about copy again until next week.</p>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <span class="feature-num">No. 03</span>
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
         <div class="feature-title">Disclaimer included</div>
         <p class="feature-desc">Every pin gets an FTC-compliant affiliate disclosure added automatically. One less thing to forget every time you post.</p>
       </div>
       <div class="feature-card reveal">
-        <span class="feature-num">No. 04</span>
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.2 1 2.5h6c0-1.3.3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></div>
         <div class="feature-title">Tips for your product</div>
         <p class="feature-desc">After you generate, you get a specific tip based on what you're actually promoting — not generic niche advice, but something relevant to that product.</p>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <span class="feature-num">No. 05</span>
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></div>
         <div class="feature-title">Everything you've made</div>
         <p class="feature-desc">Every pin saves automatically. Go back and grab anything — title, description, hashtags — without having to generate it again.</p>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <span class="feature-num">No. 06</span>
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></svg></div>
         <div class="feature-title">Knows what hurts</div>
         <p class="feature-desc">Pinlo suggests pain points specific to your product — not a generic list of guesses. The copy lands better when the hook is actually relevant to what you're promoting.</p>
       </div>
@@ -735,7 +738,7 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
     <li><a href="/app">Try free</a></li>
     <li><a href="#pricing" onclick="smoothScroll('pricing');return false;">Pricing</a></li>
     <li><a href="#faq" onclick="smoothScroll('faq');return false;">FAQ</a></li>
-    <li><a href="mailto:pinlosupport@proton.me">Support</a></li>
+    <li><a href="/app?tab=support">Support</a></li>
     <li><a href="/privacy.html">Privacy Policy</a></li>
     <li><a href="/terms.html">Terms &amp; Conditions</a></li>
   </ul>

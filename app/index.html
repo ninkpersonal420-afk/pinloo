@@ -1353,6 +1353,12 @@ function switchTab(tab) {
   }
 }
 
+// Allow deep-linking straight to a tab, e.g. /app?tab=support from the footer
+document.addEventListener('DOMContentLoaded', () => {
+  const t = new URLSearchParams(window.location.search).get('tab');
+  if (t && document.getElementById('view-' + t)) switchTab(t);
+});
+
 function pickNiche(el, val) {
   const nb = document.getElementById('niche-clear-btn');
   if (nb) nb.style.display = 'inline';
