@@ -283,6 +283,23 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   h1{letter-spacing:-1px;}
 }
 </style>
+<script>
+  // Signed-in users skip the marketing page and go straight to the app — unless
+  // they deliberately asked for the homepage (the in-app links use /?home).
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('home')) {
+      // Clean the ?home flag out of the URL without triggering a reload
+      params.delete('home');
+      const qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? '?' + qs : ''));
+      return;
+    }
+    if (localStorage.getItem('pinlo_verified') === 'true' && localStorage.getItem('pinlo_gate_email')) {
+      window.location.replace('/app');
+    }
+  })();
+</script>
 </head>
 <body>
 
