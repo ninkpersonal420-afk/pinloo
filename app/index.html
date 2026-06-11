@@ -1590,22 +1590,15 @@ async function autoGeneratePains(product) {
     const niche = document.querySelector('.pill.active')?.textContent || '';
     const pains = staticPains[niche] || ['Quality concerns','High costs','Limited options','Time constraints'];
     container.innerHTML = '';
+    const updateBenefitFromPills = () => {
+      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.textContent);
+      document.getElementById('benefit-input').value = selected.join('; ');
+    };
     pains.forEach(pain => {
       const pp = document.createElement('span');
       pp.className = 'pain-pill';
       pp.textContent = pain;
-      pp.onclick = () => {
-        const wasActive = pp.classList.contains('active');
-        document.querySelectorAll('.pain-pill').forEach(x => x.classList.remove('active'));
-        if (!wasActive) {
-          pp.classList.add('active');
-          document.getElementById('benefit-input').value = pain;
-          
-        } else {
-          document.getElementById('benefit-input').value = '';
-          
-        }
-      };
+      pp.onclick = () => { pp.classList.toggle('active'); updateBenefitFromPills(); };
       container.appendChild(pp);
     });
     const proChip = document.createElement('span');
@@ -1621,22 +1614,15 @@ async function autoGeneratePains(product) {
     const rawData = await callClaude(sys, 'Product: "' + product + '"');
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
     container.innerHTML = '';
+    const updateBenefitFromPillsPro = () => {
+      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.textContent);
+      document.getElementById('benefit-input').value = selected.join('; ');
+    };
     pains.forEach(pain => {
       const pp = document.createElement('span');
       pp.className = 'pain-pill';
       pp.textContent = pain;
-      pp.onclick = () => {
-        const wasActive = pp.classList.contains('active');
-        document.querySelectorAll('.pain-pill').forEach(x => x.classList.remove('active'));
-        if (!wasActive) {
-          pp.classList.add('active');
-          document.getElementById('benefit-input').value = pain;
-          
-        } else {
-          document.getElementById('benefit-input').value = '';
-          
-        }
-      };
+      pp.onclick = () => { pp.classList.toggle('active'); updateBenefitFromPillsPro(); };
       container.appendChild(pp);
     });
   } catch(e) {
