@@ -11,216 +11,248 @@
 <meta property="og:url" content="https://getpinlo.com">
 <link rel="canonical" href="https://getpinlo.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 :root{
-  --red:#D94F38;--orange:#F5924A;
-  --gradient:linear-gradient(135deg,#D94F38,#F5924A);
-  --cream:#FBF6F1;--white:#FFFFFF;
+  --accent:#D94F38;
+  --accent-deep:#B83E2A;
+  --orange:#F5924A;
+  --gradient:linear-gradient(120deg,#D94F38 0%,#E8633F 50%,#F5924A 100%);
+  --cream:#FBF6F1;--white:#FFFFFF;--paper:#FDF9F4;--blush:#FBE9DD;
   --dark:#160C07;--dark2:#1E1109;
-  --text:#160C07;--text2:#4A2E22;--text3:#8A6255;--text4:#B89485;
+  --ink:#160C07;--text2:#4A2E22;--text3:#8A6255;--text4:#B89485;
   --border:#E8D5CC;--border2:#D4B8AC;
-  --shadow:0 4px 24px rgba(22,12,7,0.08);
-  --shadow-lg:0 12px 48px rgba(22,12,7,0.14);
-  --shadow-xl:0 24px 80px rgba(22,12,7,0.18);
+  --shadow:0 2px 16px rgba(22,12,7,0.05);
+  --shadow-lg:0 16px 48px rgba(22,12,7,0.1);
 }
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;}
+::selection{background:rgba(217,79,56,0.16);}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.9rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(255,251,247,0.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(232,213,204,0.6);box-shadow:0 1px 12px rgba(217,79,56,0.06);}
-.nav-brand{display:flex;align-items:center;gap:13px;text-decoration:none;}
-.nav-logo-svg{width:54px;height:54px;flex-shrink:0;filter:drop-shadow(0 4px 10px rgba(217,79,56,0.3));}
-.nav-logo-text{display:flex;flex-direction:column;gap:2px;}
-.nav-logo-tagline{font-size:11px;color:var(--text3);font-weight:400;letter-spacing:0.2px;line-height:1;}
-.nav-logo{font-family:'Playfair Display',serif;font-size:25px;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
-.nav-links{display:flex;align-items:center;gap:2px;list-style:none;}
-.nav-links a{text-decoration:none;color:var(--text2);font-size:14px;font-weight:500;padding:8px 16px;border-radius:8px;transition:all 0.15s;}
-.nav-links a:hover{color:var(--text);background:rgba(217,79,56,0.06);}
-.nav-right{display:flex;align-items:center;gap:10px;}
-.nav-signin{font-size:14px;font-weight:500;color:var(--text3);text-decoration:none;padding:8px 14px;border-radius:8px;transition:color 0.15s;}
-.nav-signin:hover{color:var(--text);}
-.nav-open-app{font-size:14px;font-weight:600;color:var(--text2);text-decoration:none;padding:9px 20px;border-radius:100px;border:1.5px solid var(--border2);transition:all 0.15s;}
-.nav-open-app:hover{border-color:var(--red);color:var(--red);}
-.nav-cta{background:var(--gradient);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:11px 26px;border-radius:100px;box-shadow:0 4px 16px rgba(217,79,56,0.32);transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;}
-.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(217,79,56,0.44);}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(250,247,242,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.nav-logo-svg{width:40px;height:40px;flex-shrink:0;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:23px;font-weight:700;color:var(--ink);letter-spacing:-0.4px;}
+.nav-links{display:flex;align-items:center;gap:8px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--text2);font-size:14px;font-weight:500;padding:8px 14px;border-radius:8px;transition:color 0.15s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-right{display:flex;align-items:center;gap:18px;}
+.nav-signin{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s;}
+.nav-signin:hover{color:var(--ink);}
+.nav-open-app{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s;}
+.nav-open-app:hover{color:var(--ink);}
+.nav-cta{background:var(--gradient);background-size:160% 160%;color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:10px 24px;border-radius:100px;transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;box-shadow:0 4px 16px rgba(217,79,56,0.3);animation:gradientShift 6s ease infinite;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(217,79,56,0.4);}
 
 /* HERO */
-.hero{min-height:100vh;display:flex;align-items:center;padding:9rem 2rem 5rem;position:relative;overflow:hidden;}
+.hero{min-height:92vh;display:flex;align-items:center;padding:10rem 2rem 6rem;position:relative;overflow:hidden;}
 .hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
-.hero-bg::before{content:'';position:absolute;top:-300px;left:-200px;width:900px;height:900px;background:radial-gradient(circle,rgba(217,79,56,0.13) 0%,transparent 60%);animation:orbFloat 12s ease-in-out infinite alternate;}
-.hero-bg::after{content:'';position:absolute;bottom:-200px;right:-150px;width:800px;height:800px;background:radial-gradient(circle,rgba(245,146,74,0.12) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
-.hero-orb-mid{position:absolute;top:30%;right:30%;width:500px;height:500px;background:radial-gradient(circle,rgba(217,79,56,0.05) 0%,transparent 65%);pointer-events:none;}
-@keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.04);}}
-@keyframes gentleFloat{0%{transform:translateY(0) rotate(var(--rot))}100%{transform:translateY(-18px) rotate(var(--rot))}}
-.hashtag-float{position:absolute;font-size:12px;font-weight:600;color:var(--red);background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);padding:5px 13px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.75;animation:gentleFloat var(--dur) ease-in-out infinite alternate;}
-.hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);color:var(--red);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:2rem;animation:fadeUp 0.7s ease both;}
-h1{font-family:'Playfair Display',serif;font-size:clamp(42px,6.5vw,84px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:1.75rem;animation:fadeUp 0.7s 0.1s ease both;}
-h1 em{font-style:italic;color:var(--red);}
-.hero-sub{font-size:clamp(16px,1.8vw,19px);color:var(--text2);line-height:1.8;margin-bottom:2.75rem;font-weight:400;animation:fadeUp 0.7s 0.2s ease both;max-width:480px;}
-.hero-btns{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;animation:fadeUp 0.7s 0.3s ease both;}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--gradient);color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:17px 38px;border-radius:100px;box-shadow:0 8px 32px rgba(217,79,56,0.35);transition:transform 0.2s,box-shadow 0.2s;}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 44px rgba(217,79,56,0.45);}
-.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--text2);text-decoration:none;font-size:15px;font-weight:500;padding:17px 26px;border-radius:100px;border:1.5px solid var(--border2);background:var(--white);transition:border-color 0.2s,color 0.2s;}
-.btn-ghost:hover{border-color:var(--red);color:var(--red);}
-.hero-note{margin-top:1.25rem;font-size:13px;color:var(--text4);animation:fadeUp 0.7s 0.4s ease both;}
-.hero-counter{margin-top:1rem;font-size:15px;font-weight:700;color:var(--red);letter-spacing:0.2px;display:inline-flex;align-items:center;gap:8px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.18);padding:8px 18px;border-radius:100px;}
-.hero-right{display:flex;flex-direction:column;gap:14px;position:relative;}
-.pin-card{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 8px 32px rgba(22,12,7,0.1);border:1px solid var(--border);}
-.pin-niche{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
-.pin-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:8px;}
-.pin-desc{font-size:13px;color:var(--text2);line-height:1.6;}
-.pin-badge{display:inline-flex;align-items:center;gap:5px;margin-top:12px;background:rgba(217,79,56,0.07);border:1px solid rgba(217,79,56,0.15);color:var(--red);font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;}
+.hero-bg::before{content:'';position:absolute;top:-300px;left:-200px;width:900px;height:900px;background:radial-gradient(circle,rgba(217,79,56,0.16) 0%,transparent 60%);animation:orbFloat 12s ease-in-out infinite alternate;}
+.hero-bg::after{content:'';position:absolute;bottom:-220px;right:-160px;width:820px;height:820px;background:radial-gradient(circle,rgba(245,146,74,0.17) 0%,transparent 60%);animation:orbFloat 15s ease-in-out infinite alternate-reverse;}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1);}100%{transform:translate(34px,22px) scale(1.05);}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+@keyframes gentleFloat{0%{transform:translateY(0) rotate(var(--rot,0deg))}100%{transform:translateY(-16px) rotate(var(--rot,0deg))}}
+.hashtag-float{position:absolute;font-size:12px;font-weight:500;padding:6px 14px;border-radius:100px;pointer-events:none;white-space:nowrap;letter-spacing:0.3px;opacity:0.8;animation:gentleFloat var(--dur) ease-in-out infinite alternate;}
+.hashtag-float.c1{color:#C2412C;background:rgba(217,79,56,0.09);border:1px solid rgba(217,79,56,0.2);}
+.hashtag-float.c2{color:#D2622E;background:rgba(232,99,63,0.09);border:1px solid rgba(232,99,63,0.2);}
+.hashtag-float.c3{color:#C77E35;background:rgba(245,146,74,0.12);border:1px solid rgba(245,146,74,0.24);}
+@media(max-width:1440px){.hashtag-float{display:none;}}
+.hero-inner{max-width:1140px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.08fr 0.92fr;gap:5.5rem;align-items:center;}
+.hero-eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:2.25rem;animation:fadeUp 0.7s ease both;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(44px,6.2vw,82px);font-weight:700;line-height:1.04;letter-spacing:-1.5px;margin-bottom:2rem;animation:fadeUp 0.7s 0.1s ease both;}
+h1 em{font-style:italic;font-weight:600;background:var(--gradient);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gradientShift 5s ease infinite;}
+.hero-sub{font-size:clamp(16px,1.7vw,18px);color:var(--text2);line-height:1.85;margin-bottom:3rem;font-weight:400;animation:fadeUp 0.7s 0.2s ease both;max-width:460px;}
+.hero-btns{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;animation:fadeUp 0.7s 0.3s ease both;}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--gradient);background-size:160% 160%;color:#fff;text-decoration:none;font-size:15px;font-weight:500;padding:17px 36px;border-radius:100px;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 8px 28px rgba(217,79,56,0.32);animation:gradientShift 6s ease infinite;position:relative;overflow:hidden;}
+.btn-primary::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.35),transparent);animation:shimmer 3.6s ease infinite;}
+@keyframes shimmer{0%,60%{left:-80%;}100%{left:140%;}}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(217,79,56,0.42);}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-size:15px;font-weight:500;padding:17px 8px;border-bottom:1px solid var(--border2);border-radius:0;transition:border-color 0.2s,color 0.2s;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.hero-note{margin-top:1.5rem;font-size:13px;color:var(--text3);animation:fadeUp 0.7s 0.4s ease both;}
+.hero-counter{margin-top:2.5rem;font-size:13px;font-weight:500;color:var(--text2);letter-spacing:0.3px;display:inline-flex;align-items:center;gap:10px;border-top:1px solid var(--border);padding-top:1.5rem;}
+.hero-right{display:flex;flex-direction:column;gap:16px;position:relative;animation:fadeUp 0.9s 0.35s ease both;}
+.hero-live{display:flex;align-items:center;gap:9px;margin-bottom:6px;}
+.hero-live-dot{width:7px;height:7px;border-radius:50%;background:#3E8E50;animation:pulse 2.4s ease infinite;flex-shrink:0;}
+.hero-live span{font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
+.pin-card{background:var(--white);border-radius:14px;padding:1.75rem;box-shadow:var(--shadow);border:1px solid var(--border);transition:box-shadow 0.3s;animation:cardFloat var(--float-dur,7s) ease-in-out infinite alternate;}
+@keyframes cardFloat{0%{transform:translateY(0) rotate(var(--card-rot,0deg));}100%{transform:translateY(-10px) rotate(var(--card-rot,0deg));}}
+.pin-card:hover{box-shadow:var(--shadow-lg);}
+.pin-niche{font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+.pin-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1.4;margin-bottom:9px;letter-spacing:-0.2px;}
+.pin-desc{font-size:13.5px;color:var(--text2);line-height:1.7;}
+.pin-tags{color:var(--text3);font-size:12px;}
 
-/* TICKER */
-.ticker-wrap{background:var(--red);overflow:hidden;padding:13px 0;white-space:nowrap;}
-.ticker-track{display:inline-flex;animation:ticker 32s linear infinite;}
+/* CAPABILITY STRIP */
+.ticker-wrap{background:var(--gradient);background-size:200% 200%;animation:gradientShift 10s ease infinite;overflow:hidden;padding:15px 0;white-space:nowrap;}
+.ticker-track{display:inline-flex;align-items:center;animation:ticker 40s linear infinite;}
 .ticker-track:hover{animation-play-state:paused;}
-.ticker-item{font-size:13px;font-weight:600;color:#fff;letter-spacing:0.4px;padding:0 2rem;}
-.ticker-sep{font-size:13px;color:rgba(255,255,255,0.45);padding:0 0.25rem;}
+.ticker-item{font-size:12px;font-weight:600;color:#fff;letter-spacing:2px;text-transform:uppercase;padding:0 1.5rem;}
+.ticker-sep{font-size:9px;color:rgba(255,255,255,0.5);padding:0 0.25rem;}
 @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
 
 /* STATS BAR */
-.stats-bar{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2.5rem 2rem;}
-.stats-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:2rem;}
+.stats-bar{background:var(--cream);padding:4.5rem 2rem 1rem;}
+.stats-inner{max-width:1000px;margin:0 auto;display:flex;justify-content:space-around;align-items:flex-start;flex-wrap:wrap;gap:2.5rem;}
 .stat{text-align:center;}
-.stat strong{display:block;font-family:'Playfair Display',serif;font-size:40px;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
-.stat span{font-size:13px;color:var(--text3);font-weight:500;margin-top:4px;display:block;}
-.stat-divider{width:1px;height:48px;background:var(--border);}
+.stat strong{display:block;font-family:'Playfair Display',serif;font-size:44px;font-weight:700;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;letter-spacing:-1px;}
+.stat span{font-size:12px;color:var(--text3);font-weight:500;margin-top:10px;display:block;letter-spacing:1.2px;text-transform:uppercase;}
+.stat-divider{width:1px;height:52px;background:var(--border);align-self:center;}
 
 /* SECTIONS */
-.section{padding:7rem 2rem;}
+.section{padding:8.5rem 2rem;}
 .section-inner{max-width:1100px;margin:0 auto;}
-.section-header{text-align:center;margin-bottom:4rem;}
-.eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--red);margin-bottom:1.25rem;padding:4px 14px;background:rgba(217,79,56,0.07);border-radius:100px;border:1px solid rgba(217,79,56,0.15);}
-h2{font-family:'Playfair Display',serif;font-size:clamp(30px,4.5vw,52px);font-weight:900;line-height:1.08;letter-spacing:-1px;margin-bottom:1rem;}
-h2 em{font-style:italic;color:var(--red);}
+.section-header{text-align:center;margin-bottom:5rem;}
+.eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;}
+h2{font-family:'Playfair Display',serif;font-size:clamp(32px,4.4vw,54px);font-weight:700;line-height:1.1;letter-spacing:-1px;margin-bottom:1rem;}
+h2 em{font-style:italic;font-weight:600;background:var(--gradient);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gradientShift 5s ease infinite;}
 
 /* PROBLEM */
-.problem-section{background:var(--white);}
-.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;max-width:960px;margin:0 auto;}
-.problem-text p{font-size:17px;color:var(--text2);line-height:1.8;margin-bottom:1.5rem;}
-.problem-list{display:flex;flex-direction:column;gap:1rem;}
-.problem-item{display:flex;align-items:flex-start;gap:12px;font-size:15px;color:var(--text2);line-height:1.6;}
-.x-icon{width:22px;height:22px;border-radius:50%;background:rgba(217,79,56,0.1);display:flex;align-items:center;justify-content:center;color:var(--red);font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
-.problem-card{background:var(--cream);border:1.5px solid var(--border);border-radius:20px;padding:2.5rem;position:relative;overflow:hidden;}
-.problem-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(217,79,56,0.08),transparent);}
-.problem-quote{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);line-height:1.55;margin-bottom:1.5rem;}
-.problem-quote-mark{font-size:60px;line-height:1;color:rgba(217,79,56,0.15);font-family:'Playfair Display',serif;margin-bottom:-1rem;display:block;}
+.problem-section{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1000px;margin:0 auto;}
+.problem-text .eyebrow{margin-bottom:1.25rem;}
+.problem-text h2{margin-bottom:1.75rem;}
+.problem-text p{font-size:16.5px;color:var(--text2);line-height:1.85;margin-bottom:2rem;}
+.problem-list{display:flex;flex-direction:column;gap:1.4rem;}
+.problem-item{display:flex;align-items:flex-start;gap:16px;font-size:15px;color:var(--text2);line-height:1.7;}
+.x-icon{font-family:'Playfair Display',serif;color:var(--accent);font-size:15px;font-style:italic;flex-shrink:0;margin-top:1px;font-weight:600;}
+.problem-card{background:linear-gradient(150deg,var(--blush) 0%,var(--cream) 100%);border:1px solid var(--border);border-radius:18px;padding:3.5rem 3rem;position:relative;overflow:hidden;}
+.problem-card::before{content:'';position:absolute;top:-70px;right:-70px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(245,146,74,0.16),transparent 70%);}
+.problem-quote{font-family:'Playfair Display',serif;font-size:25px;font-style:italic;font-weight:600;color:var(--ink);line-height:1.55;letter-spacing:-0.3px;}
+.problem-quote-mark{font-size:72px;line-height:1;color:rgba(182,73,46,0.18);font-family:'Playfair Display',serif;margin-bottom:-0.75rem;display:block;}
 
 /* CHATGPT COMPARISON */
 .compare-section{background:var(--dark);}
-.compare-section h2{color:#fff;}
-.compare-section .eyebrow{color:var(--orange);background:rgba(245,146,74,0.1);border-color:rgba(245,146,74,0.2);}
-.compare-table{width:100%;border-collapse:collapse;margin-top:1rem;}
-.compare-table th{padding:1.25rem 1.5rem;text-align:left;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);border-bottom:1px solid rgba(255,255,255,0.08);}
-.compare-table th:first-child{width:38%;}
-.compare-table th.pinlo-col{color:var(--orange);}
-.compare-table td{padding:1.25rem 1.5rem;font-size:15px;color:rgba(255,255,255,0.7);border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.55;}
-.compare-table td:first-child{color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;letter-spacing:0.3px;}
-.compare-table td.pinlo-val{color:#fff;font-weight:500;}
-.compare-table td.chatgpt-val{color:rgba(255,255,255,0.4);}
+.compare-section h2{color:var(--cream);}
+.compare-section .eyebrow{color:#F5A164;}
+.compare-sub{color:rgba(250,247,242,0.5);font-size:16.5px;max-width:580px;margin:1.25rem auto 0;line-height:1.8;}
+.compare-table{width:100%;border-collapse:collapse;}
+.compare-table th{padding:1.4rem 1.6rem;text-align:left;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(250,247,242,0.35);border-bottom:1px solid rgba(250,247,242,0.08);}
+.compare-table th:first-child{width:36%;}
+.compare-table th.pinlo-col{color:#F5A164;}
+.compare-table td{padding:1.4rem 1.6rem;font-size:14.5px;color:rgba(250,247,242,0.65);border-bottom:1px solid rgba(250,247,242,0.05);vertical-align:top;line-height:1.65;}
+.compare-table td:first-child{color:rgba(250,247,242,0.4);font-size:13px;font-weight:500;letter-spacing:0.3px;}
+.compare-table td.pinlo-val{color:rgba(250,247,242,0.92);}
+.compare-table td.chatgpt-val{color:rgba(250,247,242,0.35);}
 .compare-table tr:last-child td{border-bottom:none;}
-.compare-table tr:hover td{background:rgba(255,255,255,0.02);}
-.check{color:#66BB6A;font-weight:700;margin-right:6px;}
-.cross{color:rgba(255,255,255,0.25);margin-right:6px;}
-.compare-wrapper{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;}
-.compare-cta{text-align:center;margin-top:3rem;}
+.check{color:#7FAF89;font-weight:600;margin-right:8px;}
+.cross{color:rgba(250,247,242,0.2);margin-right:8px;}
+.compare-wrapper{background:rgba(250,247,242,0.02);border:1px solid rgba(250,247,242,0.07);border-radius:16px;overflow:hidden;}
+.compare-cta{text-align:center;margin-top:3.5rem;}
 
 /* FEATURES */
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-.feature-card{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:2rem;transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;border-top:3px solid transparent;}
-.feature-card:hover{border-color:rgba(217,79,56,0.25);border-top-color:var(--red);transform:translateY(-3px);box-shadow:var(--shadow-lg);}
-.feature-num{display:block;font-size:10px;font-weight:800;letter-spacing:3px;color:rgba(217,79,56,0.35);margin-bottom:1.25rem;}
-.feature-title{font-size:17px;font-weight:700;margin-bottom:10px;color:var(--text);}
-.feature-desc{font-size:14px;color:var(--text2);line-height:1.75;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.feature-card{background:var(--white);padding:2.75rem 2.25rem;transition:background 0.25s;position:relative;}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:0;transition:opacity 0.25s;}
+.feature-card:hover{background:var(--blush);}
+.feature-card:hover::before{opacity:1;}
+.feature-num{display:block;font-family:'Playfair Display',serif;font-size:14px;font-style:italic;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1.5rem;}
+.feature-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:12px;color:var(--ink);letter-spacing:-0.2px;}
+.feature-desc{font-size:14px;color:var(--text2);line-height:1.8;}
 
 /* HOW IT WORKS */
-.how-section{background:var(--white);}
-.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;position:relative;}
-.steps-grid::before{content:'';position:absolute;top:28px;left:calc(16.6% + 1rem);right:calc(16.6% + 1rem);height:1px;background:var(--border);}
-.step{padding-top:0.5rem;}
-.step-marker{width:56px;height:56px;border-radius:14px;background:var(--gradient);color:#fff;font-family:'Playfair Display',serif;font-size:22px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 0 1.75rem;box-shadow:0 6px 20px rgba(217,79,56,0.25);}
-.step h3{font-size:18px;font-weight:700;margin-bottom:10px;color:var(--text);}
-.step p{font-size:14px;color:var(--text2);line-height:1.75;}
+.how-section{background:linear-gradient(180deg,var(--white) 0%,var(--blush) 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3.5rem;}
+.step{position:relative;}
+.step-marker{font-family:'Playfair Display',serif;font-size:56px;font-weight:700;font-style:italic;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;opacity:0.45;line-height:1;margin-bottom:1.5rem;letter-spacing:-2px;}
+.step h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:12px;color:var(--ink);letter-spacing:-0.2px;}
+.step p{font-size:14.5px;color:var(--text2);line-height:1.8;}
 
 /* PRICING */
-.pricing-section{background:linear-gradient(150deg,#FDDDD0 0%,#FFF0E8 40%,#FDDDD0 100%);position:relative;overflow:hidden;}
-.pricing-section::before{content:'';position:absolute;top:30%;left:20%;width:600px;height:600px;background:radial-gradient(circle,rgba(217,79,56,0.15) 0%,transparent 65%);pointer-events:none;}
-.pricing-section::after{content:'';position:absolute;bottom:-100px;right:5%;width:500px;height:500px;background:radial-gradient(circle,rgba(245,146,74,0.18) 0%,transparent 65%);pointer-events:none;}
-.pricing-toggle-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:3.5rem;}
-.toggle-label{font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;transition:color 0.2s;}
-.toggle-label.active{color:var(--text);}
-.toggle-switch{width:48px;height:26px;background:var(--gradient);border-radius:100px;position:relative;cursor:pointer;box-shadow:0 2px 8px rgba(217,79,56,0.25);}
-.toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.18);}
-.toggle-switch.yearly .toggle-knob{transform:translateX(22px);}
-.save-pill{font-size:11px;font-weight:700;background:var(--gradient);color:#fff;padding:3px 10px;border-radius:100px;letter-spacing:0.5px;}
-.pricing-cards{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:860px;margin:0 auto;align-items:start;}
-.pricing-card{background:#fff;border:1.5px solid var(--border);border-radius:24px;padding:2.75rem;position:relative;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 20px rgba(0,0,0,0.04);}
-.pricing-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.07);}
-.pricing-card.pro{border:none;padding:0;overflow:hidden;box-shadow:0 32px 80px rgba(217,79,56,0.22),0 6px 20px rgba(217,79,56,0.1);transform:translateY(-12px);}
-.pricing-card.pro:hover{transform:translateY(-15px);box-shadow:0 40px 90px rgba(217,79,56,0.26),0 8px 24px rgba(217,79,56,0.14);}
-.pro-card-header{background:var(--gradient);padding:2.5rem 2.75rem 2rem;color:#fff;position:relative;overflow:hidden;}
-.pro-card-header::after{content:'';position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:rgba(255,255,255,0.06);border-radius:50%;pointer-events:none;}
-.pro-badge{display:inline-block;background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.4);color:#fff;font-size:10px;font-weight:800;padding:5px 15px;border-radius:100px;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.25rem;}
-.pro-card-header .plan-name{color:rgba(255,255,255,0.8);margin-bottom:0.75rem;}
-.pro-card-header .plan-price .amount{color:#fff;}
-.pro-card-header .plan-price .currency{color:rgba(255,255,255,0.8);}
-.pro-card-header .plan-price .period{color:rgba(255,255,255,0.65);}
-.pro-card-header .plan-desc{color:rgba(255,255,255,0.65);margin-bottom:0;}
-.pro-card-body{padding:2rem 2.75rem 2.75rem;}
-.plan-name{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:1.25rem;}
-.plan-price{display:flex;align-items:flex-end;gap:4px;margin-bottom:6px;}
-.plan-price .amount{font-family:'Playfair Display',serif;font-size:60px;font-weight:900;line-height:1;color:var(--text);}
-.plan-price .currency{font-size:20px;font-weight:700;color:var(--text2);padding-bottom:10px;}
-.plan-price .period{font-size:14px;color:var(--text3);padding-bottom:12px;font-weight:500;}
-.plan-desc{font-size:13px;color:var(--text3);margin-bottom:2.25rem;line-height:1.65;}
-.plan-features{list-style:none;display:flex;flex-direction:column;gap:13px;margin-bottom:2.25rem;}
-.plan-features li{display:flex;align-items:flex-start;gap:11px;font-size:14px;color:var(--text2);line-height:1.45;}
-.plan-features li::before{content:'✓';color:var(--red);font-weight:800;flex-shrink:0;margin-top:1px;font-size:13px;}
-.plan-features li.dim{color:var(--border2);text-decoration:line-through;}
-.plan-features li.dim::before{content:'—';color:var(--border);font-weight:400;}
-.pro-card-body .plan-features li{font-size:14.5px;}
-.pro-card-body .plan-features li::before{color:var(--red);}
-.plan-btn{display:block;width:100%;text-align:center;padding:16px;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.18s;letter-spacing:0.1px;}
-.plan-btn.free{background:transparent;color:var(--text2);border:1.5px solid var(--border2);}
-.plan-btn.free:hover{border-color:var(--red);color:var(--red);background:rgba(217,79,56,0.04);}
-.plan-btn.paid{background:var(--gradient);color:#fff;box-shadow:0 8px 28px rgba(217,79,56,0.35);font-size:15.5px;padding:17px;}
+.pricing-section{background:linear-gradient(160deg,var(--blush) 0%,var(--cream) 45%,var(--blush) 100%);position:relative;overflow:hidden;}
+.pricing-section::before{content:'';position:absolute;top:20%;left:10%;width:600px;height:600px;background:radial-gradient(circle,rgba(217,79,56,0.15) 0%,transparent 62%);pointer-events:none;animation:orbFloat 14s ease-in-out infinite alternate;}
+.pricing-section::after{content:'';position:absolute;bottom:-120px;right:5%;width:520px;height:520px;background:radial-gradient(circle,rgba(245,146,74,0.17) 0%,transparent 62%);pointer-events:none;animation:orbFloat 17s ease-in-out infinite alternate-reverse;}
+.pricing-section .section-inner{position:relative;z-index:1;}
+.pricing-sub{color:var(--text2);margin-top:1rem;font-size:16px;line-height:1.7;}
+.pricing-toggle-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:4rem;}
+.toggle-label{font-size:14px;font-weight:500;color:var(--text3);cursor:pointer;transition:color 0.2s;}
+.toggle-label.active{color:var(--ink);}
+.toggle-switch{width:46px;height:25px;background:var(--ink);border-radius:100px;position:relative;cursor:pointer;}
+.toggle-knob{position:absolute;top:3px;left:3px;width:19px;height:19px;background:var(--cream);border-radius:50%;transition:transform 0.2s;}
+.toggle-switch.yearly .toggle-knob{transform:translateX(21px);}
+.save-pill{font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.5px;margin-left:4px;}
+.pricing-cards{display:grid;grid-template-columns:0.94fr 1.06fr;gap:1.75rem;max-width:920px;margin:0 auto;align-items:center;}
+.pricing-card{background:var(--white);border:1px solid var(--border);border-radius:22px;padding:2.75rem 2.5rem;position:relative;transition:box-shadow 0.25s;}
+.pricing-card:hover{box-shadow:var(--shadow-lg);}
+.pricing-card.pro{padding:3.25rem 3rem;border-radius:26px;border:1px solid transparent;background:linear-gradient(var(--dark),var(--dark)) padding-box,var(--gradient) border-box;}
+.pro-badge{position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:var(--gradient);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:8px 22px;border-radius:100px;box-shadow:0 6px 20px rgba(217,79,56,0.4);white-space:nowrap;}
+.price-equiv{display:none;margin-bottom:10px;font-size:12px;font-weight:600;color:#F5A164;letter-spacing:0.4px;background:rgba(245,146,74,0.12);border:1px solid rgba(245,146,74,0.25);padding:4px 12px;border-radius:100px;}
+.price-equiv.show{display:inline-block;}
+.pricing-footnote{text-align:center;margin-top:2.75rem;font-size:13px;color:var(--text3);display:flex;justify-content:center;align-items:center;gap:1.75rem;flex-wrap:wrap;}
+.pricing-footnote span{display:inline-flex;align-items:center;gap:7px;}
+.pricing-footnote .fn-check{color:var(--accent);font-weight:700;}
+.plan-name{font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);margin-bottom:1.75rem;}
+.pricing-card.pro .plan-name{color:rgba(250,247,242,0.5);}
+.plan-price{display:flex;align-items:flex-end;gap:5px;margin-bottom:8px;}
+.plan-price .amount{font-family:'Playfair Display',serif;font-size:58px;font-weight:700;line-height:1;color:var(--ink);letter-spacing:-1.5px;}
+.pricing-card.pro .plan-price .amount{color:var(--cream);}
+.plan-price .currency{font-size:17px;font-weight:500;color:var(--text3);padding-bottom:9px;}
+.plan-price .period{font-size:14px;color:var(--text3);padding-bottom:11px;font-weight:400;}
+.pricing-card.pro .plan-price .currency,.pricing-card.pro .plan-price .period{color:rgba(250,247,242,0.45);}
+.plan-desc{font-size:13px;color:var(--text3);margin-bottom:2.5rem;line-height:1.65;}
+.pricing-card.pro .plan-desc{color:rgba(250,247,242,0.45);}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:2.5rem;}
+.plan-features li{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--text2);line-height:1.5;}
+.plan-features li::before{content:'✓';width:19px;height:19px;border-radius:50%;background:rgba(217,79,56,0.1);color:var(--accent);font-weight:700;flex-shrink:0;font-size:10px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.plan-features li.dim{color:var(--text4);}
+.plan-features li.dim::before{content:'—';background:transparent;color:var(--border2);font-weight:400;font-size:13px;}
+.pricing-card.pro .plan-features li{color:rgba(250,247,242,0.85);font-size:14.5px;}
+.pricing-card.pro .plan-features li::before{background:rgba(245,146,74,0.16);color:#F5A164;}
+.pricing-card.pro .plan-features li strong{color:#fff;font-weight:600;}
+.plan-btn{display:block;width:100%;text-align:center;padding:16px;border-radius:100px;font-size:14.5px;font-weight:500;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.plan-btn.free{background:transparent;color:var(--ink);border:1px solid var(--border2);}
+.plan-btn.free:hover{border-color:var(--ink);}
+.plan-btn.paid{background:var(--gradient);background-size:160% 160%;color:#fff;box-shadow:0 8px 28px rgba(217,79,56,0.35);animation:gradientShift 6s ease infinite;}
 .plan-btn.paid:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(217,79,56,0.45);}
 
 /* FAQ */
-.faq-section{background:var(--white);}
-.faq-list{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:0;}
-.faq-item{border-bottom:1px solid var(--border);padding:1.5rem 0;cursor:pointer;}
-.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:600;color:var(--text);gap:1rem;user-select:none;}
-.faq-icon{width:28px;height:28px;border-radius:50%;background:var(--cream);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--red);font-size:16px;flex-shrink:0;transition:transform 0.2s,background 0.2s;}
-.faq-item.open .faq-icon{transform:rotate(45deg);background:rgba(217,79,56,0.08);}
-.faq-a{font-size:14px;color:var(--text2);line-height:1.8;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;}
-.faq-item.open .faq-a{max-height:300px;padding-top:1rem;}
+.faq-section{background:var(--white);border-top:1px solid var(--border);}
+.faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;}
+.faq-item{border-bottom:1px solid var(--border);padding:1.75rem 0;cursor:pointer;}
+.faq-item:first-child{border-top:1px solid var(--border);}
+.faq-q{display:flex;justify-content:space-between;align-items:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);gap:1.5rem;user-select:none;letter-spacing:-0.2px;}
+.faq-icon{font-family:'DM Sans',sans-serif;color:var(--text3);font-size:18px;font-weight:300;flex-shrink:0;transition:transform 0.25s,color 0.25s;line-height:1;}
+.faq-item.open .faq-icon{transform:rotate(45deg);color:var(--accent);}
+.faq-a{font-size:14.5px;color:var(--text2);line-height:1.85;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;}
+.faq-item.open .faq-a{max-height:300px;padding-top:1.25rem;}
 
 /* FINAL CTA */
-.cta-section{padding:8rem 2rem;background:var(--dark);text-align:center;position:relative;overflow:hidden;}
-.cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(217,79,56,0.1) 0%,transparent 65%);pointer-events:none;}
-.cta-section h2{color:#fff;margin-bottom:1rem;position:relative;}
-.cta-section p{color:rgba(255,255,255,0.5);font-size:18px;margin-bottom:3rem;position:relative;}
+.cta-section{padding:10rem 2rem;background:var(--dark);text-align:center;position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(217,79,56,0.14) 0%,transparent 62%);pointer-events:none;animation:orbFloat 12s ease-in-out infinite alternate;}
+.cta-section h2{color:var(--cream);margin-bottom:1.25rem;position:relative;}
+.cta-section p{color:rgba(250,247,242,0.45);font-size:17px;margin-bottom:3.5rem;position:relative;}
 .cta-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;position:relative;}
-.btn-primary-dark{display:inline-flex;align-items:center;gap:8px;background:var(--gradient);color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:18px 40px;border-radius:100px;box-shadow:0 8px 32px rgba(217,79,56,0.4);transition:transform 0.2s,box-shadow 0.2s;}
+.btn-primary-dark{display:inline-flex;align-items:center;gap:10px;background:var(--gradient);background-size:160% 160%;color:#fff;text-decoration:none;font-size:15px;font-weight:500;padding:18px 40px;border-radius:100px;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 8px 32px rgba(217,79,56,0.4);animation:gradientShift 6s ease infinite;position:relative;overflow:hidden;}
+.btn-primary-dark::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.35),transparent);animation:shimmer 3.6s ease infinite;}
 .btn-primary-dark:hover{transform:translateY(-2px);box-shadow:0 16px 48px rgba(217,79,56,0.5);}
 
 /* FOOTER */
-footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,0.05);}
-.footer-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.25rem;}
-.footer-links{display:flex;justify-content:center;gap:2rem;list-style:none;margin-bottom:1.5rem;flex-wrap:wrap;}
-.footer-links a{text-decoration:none;color:rgba(255,255,255,0.3);font-size:13px;transition:color 0.2s;}
-.footer-links a:hover{color:rgba(255,255,255,0.65);}
-.footer-copy{font-size:12px;color:rgba(255,255,255,0.18);}
+footer{background:var(--dark2);padding:4rem 2rem;text-align:center;}
+.footer-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--cream);margin-bottom:1.5rem;}
+.footer-links{display:flex;justify-content:center;gap:2.25rem;list-style:none;margin-bottom:1.75rem;flex-wrap:wrap;}
+.footer-links a{text-decoration:none;color:rgba(250,247,242,0.35);font-size:13px;transition:color 0.2s;}
+.footer-links a:hover{color:rgba(250,247,242,0.7);}
+.footer-copy{font-size:12px;color:rgba(250,247,242,0.18);}
 
 /* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity 0.6s ease,transform 0.6s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+nav{transition:box-shadow 0.3s;}
+nav.scrolled{box-shadow:0 2px 28px rgba(217,79,56,0.1);}
+h1 em{position:relative;display:inline-block;}
+h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height:0.06em;background:var(--gradient);border-radius:100px;transform:scaleX(0);transform-origin:left;animation:underlineSweep 0.9s 1.1s cubic-bezier(0.22,1,0.36,1) forwards;}
+@keyframes underlineSweep{to{transform:scaleX(1);}}
+.pricing-card.pro{animation:proGlow 6s ease-in-out infinite;}
+@keyframes proGlow{0%,100%{box-shadow:0 26px 70px rgba(217,79,56,0.22),0 8px 24px rgba(22,12,7,0.16);}50%{box-shadow:0 30px 84px rgba(217,79,56,0.34),0 8px 24px rgba(22,12,7,0.16);}}
+.step-marker{transition:transform 0.3s;}
+.step:hover .step-marker{transform:scale(1.12) rotate(-4deg);}
+.feature-card{transition:background 0.25s,transform 0.25s;}
+.feature-card:hover{transform:translateY(-4px);}
+.faq-item{transition:padding-left 0.25s;}
+.faq-item:hover{padding-left:8px;}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 .reveal-delay-1{transition-delay:0.1s;}
 .reveal-delay-2{transition-delay:0.2s;}
@@ -234,24 +266,21 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   .hero{text-align:center;}
   .hero-sub{max-width:540px;margin-left:auto;margin-right:auto;}
   .hero-btns{justify-content:center;}
-  .problem-grid{grid-template-columns:1fr;}
+  .problem-grid{grid-template-columns:1fr;gap:3rem;}
   .features-grid{grid-template-columns:1fr 1fr;}
   .steps-grid{grid-template-columns:1fr;gap:3rem;}
-  .steps-grid::before{display:none;}
   .pricing-cards{grid-template-columns:1fr;max-width:460px;}
-  .pricing-card.pro{transform:none;}
-  .pricing-card.pro:hover{transform:translateY(-3px);}
-  .pricing-card.pro:hover{transform:translateY(-2px);}
   .compare-table td,.compare-table th{padding:1rem;}
 }
 @media(max-width:600px){
-  nav{padding:0.875rem 1.25rem;}
+  nav{padding:1rem 1.25rem;}
   .nav-links{display:none;}
   .nav-signin{display:none;}
+  .nav-open-app{display:none;}
   .features-grid{grid-template-columns:1fr;}
-  .stats-inner{gap:1.5rem;}
+  .stats-inner{gap:2rem;}
   .stat-divider{display:none;}
-  h1{letter-spacing:-1.5px;}
+  h1{letter-spacing:-1px;}
 }
 </style>
 <script>
@@ -267,10 +296,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
 <nav>
   <a href="/" class="nav-brand">
     <img src="/logo.png" class="nav-logo-svg" alt="Pinlo"/>
-    <div class="nav-logo-text">
-      <span class="nav-logo">Pinlo</span>
-      <span class="nav-logo-tagline">Pinterest Pin Generator</span>
-    </div>
+    <span class="nav-logo">Pinlo</span>
   </a>
   <ul class="nav-links">
     <li><a href="#features" onclick="smoothScroll('features');return false;">Features</a></li>
@@ -280,40 +306,38 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   <div class="nav-right">
     <a href="/app?signin" class="nav-signin">Sign in</a>
     <a href="/app" class="nav-open-app">Open app</a>
-    <a href="/app" class="nav-cta">Try free →</a>
+    <a href="/app" class="nav-cta">Try free</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg">
-    <div class="hero-orb-mid"></div>
-  </div>
+  <div class="hero-bg"></div>
   <div class="hero-inner">
     <div class="hero-left">
       <div class="hero-eyebrow">Built for affiliate marketers</div>
       <h1>Your Pinterest copy<br>in <em>seconds</em></h1>
-      <p class="hero-sub">Type a product. Hit generate. Walk away with a title, description, and hashtags that are actually worth posting — not something you'd rewrite anyway.</p>
+      <p class="hero-sub">Type a product. Hit generate. Walk away with a title, description, and hashtags that are actually worth posting — no cluttered dashboard, no settings to learn, no tutorial videos required.</p>
       <div class="hero-btns">
-        <a href="/app" class="btn-primary">Generate your first pin free →</a>
+        <a href="/app" class="btn-primary">Generate your first pin free</a>
         <a href="#how" onclick="smoothScroll('how');return false;" class="btn-ghost">See how it works</a>
       </div>
-      <p class="hero-note">No credit card required · 5 free pins</p>
-      <p class="hero-counter" id="pin-counter-wrap" style="opacity:0;transition:opacity 0.6s;"><span id="pin-counter">✦ 0 pins generated and counting</span></p>
+      <p class="hero-note">No credit card required · 10 free pins every month</p>
+      <p class="hero-counter" id="pin-counter-wrap" style="opacity:0;transition:opacity 0.6s;"><span id="pin-counter">0 pins generated and counting</span></p>
     </div>
     <div class="hero-right">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-        <div style="width:8px;height:8px;border-radius:50%;background:#43A047;box-shadow:0 0 0 3px rgba(67,160,71,0.2);animation:pulse 2s ease infinite;flex-shrink:0;"></div>
-        <span style="font-size:13px;font-weight:600;color:var(--text3);">Generated in ~3 seconds each</span>
+      <div class="hero-live">
+        <div class="hero-live-dot"></div>
+        <span>Generated in ~3 seconds each</span>
       </div>
-      <div id="hero-pins"></div>
+      <div id="hero-pins" style="display:flex;flex-direction:column;gap:16px;"></div>
     </div>
   </div>
 </section>
 <script>
 (function() {
   const pool = [
-    { niche:'Fitness', title:'The $40 foam roller that finally fixed my tight hips', desc:'Two years in and I still use it every morning. Nothing else worked on my IT band.', tags:'#fitness #recovery #foamrolling', badge:true },
+    { niche:'Fitness', title:'The $40 foam roller that finally fixed my tight hips', desc:'Two years in and I still use it every morning. Nothing else worked on my IT band.', tags:'#fitness #recovery #foamrolling' },
     { niche:'Home', title:"Underbed storage that doesn't look like you gave up", desc:'Cleared out my whole closet with four of these. Holds way more than it looks.', tags:'#homeorganization #smallspace #declutter' },
     { niche:'Kitchen', title:'The blender my smoothies actually taste better in', desc:"It's not the ingredients — I was just using a bad blender. This one changed that.", tags:'#kitchenfinds #smoothie #mealprep' },
     { niche:'Skincare', title:'The $18 cleanser that cleared my skin after years of trying', desc:"I've tried the expensive ones. This one is the only thing that didn't break me out.", tags:'#skincare #cleanser #affordablebeauty' },
@@ -328,20 +352,21 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   ];
 
   const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 3);
-  const rotations = ['-1.5deg', '0.8deg', '-0.6deg'];
-  const offsets = ['0px', '-8px', '-4px'];
+  const rotations = ['-1.2deg', '0.8deg', '-0.5deg'];
+  const durations = ['6.5s', '8s', '7.2s'];
   const container = document.getElementById('hero-pins');
   shuffled.forEach((p, i) => {
     const card = document.createElement('div');
     card.className = 'pin-card';
-    card.style.transform = 'rotate('+rotations[i]+')';
-    card.style.marginTop = offsets[i];
-    card.innerHTML = '<div class="pin-niche">'+p.niche+'</div><div class="pin-title">'+p.title+'</div><div class="pin-desc">'+p.desc+' <span style="color:var(--red);font-size:12px;">'+p.tags+'</span></div>';
+    card.style.setProperty('--card-rot', rotations[i]);
+    card.style.setProperty('--float-dur', durations[i]);
+    card.style.animationDelay = (-i * 1.7) + 's';
+    card.innerHTML = '<div class="pin-niche">'+p.niche+'</div><div class="pin-title">'+p.title+'</div><div class="pin-desc">'+p.desc+' <span class="pin-tags">'+p.tags+'</span></div>';
     container.appendChild(card);
   });
 })();
 
-// Scattered hashtag pills — zigzag positions, gentle float, no columns
+// Floating hashtag pills — scattered along the edges, gentle drift
 (function() {
   const allTags = [
     '#skincare','#affiliatemarketing','#beautytips','#workfromhome','#selfcare',
@@ -349,74 +374,62 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     '#budgetfinds','#organization','#naturalbeauty','#pinterestmarketing',
     '#kitchengadgets','#homedecor','#veganrecipes','#travelhacks','#outdoorliving',
     '#productivity','#budgetbeauty','#cleanbeauty','#gymlife','#wellnessjourney',
-    '#fashionfinds','#skincareroutine','#homestyle','#affordablebeauty','#healthyrecipes',
-    '#interiordesign','#plantmom','#crochet','#giftideas','#travelfinds',
-    '#lowcarbrecipes','#morningroutine','#bookrecommendations','#desksetup','#petcare'
+    '#fashionfinds','#skincareroutine','#homestyle','#affordablebeauty','#healthyrecipes'
   ];
 
   const shuffled = allTags.slice().sort(() => Math.random() - 0.5);
   const bg = document.querySelector('.hero-bg');
   if (!bg) return;
 
-  // Zigzag left positions — alternates between near and far from edge so it's not a straight line
+  // Zigzag positions, kept in the outer gutters so pills never sit over the text columns
   const leftPos  = [
-    {x:'1%', y:'7%'}, {x:'12%',y:'15%'}, {x:'3%', y:'24%'}, {x:'9%', y:'33%'},
-    {x:'1%', y:'42%'}, {x:'14%',y:'51%'}, {x:'5%', y:'60%'}, {x:'11%',y:'69%'},
-    {x:'2%', y:'78%'}, {x:'13%',y:'87%'}, {x:'4%', y:'95%'}
+    {x:'0.5%', y:'9%'}, {x:'3.5%',y:'21%'}, {x:'1%', y:'33%'}, {x:'4%', y:'45%'},
+    {x:'0.5%', y:'57%'}, {x:'3%',y:'69%'}, {x:'1%', y:'81%'}, {x:'4%',y:'92%'}
   ];
-  // Zigzag right positions — same idea, anchored right
   const rightPos = [
-    {r:'1%', y:'5%'}, {r:'12%',y:'13%'}, {r:'3%', y:'22%'}, {r:'8%', y:'31%'},
-    {r:'1%', y:'40%'}, {r:'13%',y:'49%'}, {r:'4%', y:'58%'}, {r:'10%',y:'67%'},
-    {r:'2%', y:'76%'}, {r:'12%',y:'85%'}, {r:'5%', y:'93%'}
+    {r:'0.5%', y:'7%'}, {r:'3.5%',y:'19%'}, {r:'1%', y:'31%'}, {r:'4%', y:'43%'},
+    {r:'0.5%', y:'55%'}, {r:'3%',y:'67%'}, {r:'1%', y:'79%'}, {r:'4%',y:'91%'}
   ];
 
-  const leftTags  = shuffled.slice(0, 11);
-  const rightTags = shuffled.slice(11, 22);
-
-  function place(tag, pos, fromRight) {
+  function place(tag, pos, fromRight, idx) {
     const el = document.createElement('div');
-    el.className = 'hashtag-float';
+    el.className = 'hashtag-float c' + ((idx % 3) + 1);
     el.textContent = tag;
-    const rot = (Math.random() - 0.5) * 8;
+    const rot = (Math.random() - 0.5) * 7;
     const dur = (7 + Math.random() * 6).toFixed(1) + 's';
     const delay = -(Math.random() * 7).toFixed(1) + 's';
-    el.style.cssText = `top:${pos.y};${fromRight ? 'right:'+pos.r : 'left:'+pos.x};--rot:${rot}deg;--dur:${dur};animation-delay:${delay};`;
+    el.style.cssText += `top:${pos.y};${fromRight ? 'right:'+pos.r : 'left:'+pos.x};--rot:${rot}deg;--dur:${dur};animation-delay:${delay};`;
     bg.appendChild(el);
   }
 
-  leftTags.forEach((tag, i)  => place(tag, leftPos[i],  false));
-  rightTags.forEach((tag, i) => place(tag, rightPos[i], true));
+  shuffled.slice(0, 8).forEach((tag, i)  => place(tag, leftPos[i],  false, i));
+  shuffled.slice(8, 16).forEach((tag, i) => place(tag, rightPos[i], true, i));
 })();
 </script>
 
-<!-- TICKER -->
+<!-- CAPABILITY STRIP -->
 <div class="ticker-wrap">
   <div class="ticker-track">
-    <span class="ticker-item">FTC Disclaimer Auto-Added</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">24 Niches</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Pain Point Suggestions</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Pin History</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Under 30 Seconds</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">SEO Hashtags</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Keyword-Rich Titles</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Works With Any Affiliate Program</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">4 Pin Goals</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Bulk Generation</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Niche Strategy Tips</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Auto-Detected Audience</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">FTC Disclaimer Auto-Added</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">24 Niches</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Pain Point Suggestions</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Pin History</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Under 30 Seconds</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">SEO Hashtags</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Keyword-Rich Titles</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Works With Any Affiliate Program</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">4 Pin Goals</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Bulk Generation</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Niche Strategy Tips</span><span class="ticker-sep">·</span>
-    <span class="ticker-item">Auto-Detected Audience</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Done in under 30 seconds</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Hashtags people actually search for</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">FTC disclosure added for you</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Titles that don't get cut off</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">10 pins in one click</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Knows your niche automatically</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Every pin saved for later</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Works with any affiliate program</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Tips for what you're promoting</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">No setup, no learning curve</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Done in under 30 seconds</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Hashtags people actually search for</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">FTC disclosure added for you</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Titles that don't get cut off</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">10 pins in one click</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Knows your niche automatically</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Every pin saved for later</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Works with any affiliate program</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">Tips for what you're promoting</span><span class="ticker-sep">&#9679;</span>
+    <span class="ticker-item">No setup, no learning curve</span><span class="ticker-sep">&#9679;</span>
   </div>
 </div>
 
@@ -425,9 +438,9 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   <div class="stats-inner">
     <div class="stat"><strong>~3s</strong><span>Per pin, start to finish</span></div>
     <div class="stat-divider"></div>
-    <div class="stat"><strong>10</strong><span>Pins at once on Pro</span></div>
+    <div class="stat"><strong data-count="10">0</strong><span>Pins at once on Pro</span></div>
     <div class="stat-divider"></div>
-    <div class="stat"><strong>24</strong><span>Niches covered</span></div>
+    <div class="stat"><strong data-count="24">0</strong><span>Niches covered</span></div>
     <div class="stat-divider"></div>
     <div class="stat"><strong>$0</strong><span>To start — no card</span></div>
   </div>
@@ -446,6 +459,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
           <div class="problem-item"><span class="x-icon">✕</span>Generic copy doesn't rank — Pinterest search is competitive and keyword placement actually matters</div>
           <div class="problem-item"><span class="x-icon">✕</span>Reusing descriptions across pins tanks your reach — Pinterest flags duplicate content</div>
           <div class="problem-item"><span class="x-icon">✕</span>The more products you promote, the more time disappears into writing copy instead of posting</div>
+          <div class="problem-item"><span class="x-icon">✕</span>Other pin tools bury you in templates, toggles, and tutorials before you've made a single pin</div>
         </div>
       </div>
       <div class="problem-card reveal reveal-delay-1">
@@ -462,7 +476,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     <div class="section-header reveal">
       <div class="eyebrow">Why not ChatGPT?</div>
       <h2>ChatGPT is a general tool.<br><em>This isn't.</em></h2>
-      <p style="color:rgba(255,255,255,0.55);font-size:17px;max-width:600px;margin:1rem auto 0;line-height:1.75;">You can use ChatGPT for this. People do. But you'll spend more time prompting it than you will actually posting. Here's what the difference looks like in practice.</p>
+      <p class="compare-sub">You can use ChatGPT for this. People do. But you'll spend more time prompting it than you will actually posting. Here's what the difference looks like in practice.</p>
     </div>
     <div class="compare-wrapper reveal">
       <table class="compare-table">
@@ -518,7 +532,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
       </table>
     </div>
     <div class="compare-cta reveal">
-      <a href="/app" class="btn-primary-dark">Try it free →</a>
+      <a href="/app" class="btn-primary-dark">Try it free</a>
     </div>
   </div>
 </section>
@@ -532,32 +546,32 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     </div>
     <div class="features-grid">
       <div class="feature-card reveal">
-        <span class="feature-num">01</span>
+        <span class="feature-num">No. 01</span>
         <div class="feature-title">Figures it out for you</div>
         <p class="feature-desc">Type the product name. Pinlo detects the niche, the audience, and what problem it solves. You don't have to explain any of it — just hit generate.</p>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <span class="feature-num">02</span>
+        <span class="feature-num">No. 02</span>
         <div class="feature-title">10 pins at once</div>
         <p class="feature-desc">Generate up to 10 pins in one go, each with a different angle. Do your whole week on Sunday and don't think about copy again until next week.</p>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <span class="feature-num">03</span>
+        <span class="feature-num">No. 03</span>
         <div class="feature-title">Disclaimer included</div>
         <p class="feature-desc">Every pin gets an FTC-compliant affiliate disclosure added automatically. One less thing to forget every time you post.</p>
       </div>
       <div class="feature-card reveal">
-        <span class="feature-num">04</span>
+        <span class="feature-num">No. 04</span>
         <div class="feature-title">Tips for your product</div>
         <p class="feature-desc">After you generate, you get a specific tip based on what you're actually promoting — not generic niche advice, but something relevant to that product.</p>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <span class="feature-num">05</span>
+        <span class="feature-num">No. 05</span>
         <div class="feature-title">Everything you've made</div>
         <p class="feature-desc">Every pin saves automatically. Go back and grab anything — title, description, hashtags — without having to generate it again.</p>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <span class="feature-num">06</span>
+        <span class="feature-num">No. 06</span>
         <div class="feature-title">Knows what hurts</div>
         <p class="feature-desc">Pinlo suggests pain points specific to your product — not a generic list of guesses. The copy lands better when the hook is actually relevant to what you're promoting.</p>
       </div>
@@ -598,7 +612,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
     <div class="section-header reveal">
       <div class="eyebrow">Pricing</div>
       <h2>Try it free.<br><em>Upgrade if you love it.</em></h2>
-      <p style="color:var(--text2);margin-top:0.75rem;font-size:16px;">No card needed to start. If it saves you time on a few posts, Pro pays for itself.</p>
+      <p class="pricing-sub">No card needed to start. If it saves you time on a few posts, Pro pays for itself.</p>
     </div>
     <div class="pricing-toggle-row reveal">
       <span class="toggle-label active" id="monthly-label">Monthly</span>
@@ -617,7 +631,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
         </div>
         <p class="plan-desc">No card. No catch.</p>
         <ul class="plan-features">
-          <li>5 pins to try it out</li>
+          <li>10 free pins every month</li>
           <li>All 24 niches</li>
           <li>Pin history</li>
           <li class="dim">SEO score</li>
@@ -628,29 +642,30 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
         <a href="/app" class="plan-btn free">Get started free</a>
       </div>
       <div class="pricing-card pro">
-        <div class="pro-card-header">
-          <div class="pro-badge">Most popular</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price">
-            <span class="currency">CA$</span>
-            <span class="amount" id="price-amount">11.99</span>
-            <span class="period" id="price-period">/month</span>
-          </div>
-          <p class="plan-desc" id="price-desc">Cancel anytime. No questions asked.</p>
+        <div class="pro-badge">Most popular</div>
+        <div class="plan-name">Pro</div>
+        <span class="price-equiv" id="price-equiv">That's CA$7.50/month</span>
+        <div class="plan-price">
+          <span class="currency">CA$</span>
+          <span class="amount" id="price-amount">11.99</span>
+          <span class="period" id="price-period">/month</span>
         </div>
-        <div class="pro-card-body">
-          <ul class="plan-features">
-            <li>Unlimited pins — no cap</li>
-            <li>Bulk generation up to 10 pins</li>
-            <li>Full SEO score on every pin</li>
-            <li>Pain point suggestions</li>
-            <li>Niche strategy tips</li>
-            <li>All 24 niches</li>
-            <li>Full pin history</li>
-          </ul>
-          <a href="/app" class="plan-btn paid" id="pro-cta">Start Pro — CA$11.99/mo →</a>
-        </div>
+        <p class="plan-desc" id="price-desc">Less than one lost commission · Cancel anytime</p>
+        <ul class="plan-features">
+          <li><strong>Unlimited pins</strong> — post as much as you want</li>
+          <li><strong>10 pins in one click</strong> — a week of content in seconds</li>
+          <li><strong>SEO score on every pin</strong> — know it'll rank before you post</li>
+          <li><strong>Pain point suggestions</strong> — hooks that actually land</li>
+          <li><strong>Strategy tips</strong> — specific to what you're promoting</li>
+          <li>Every niche, full pin history</li>
+        </ul>
+        <a href="/app" class="plan-btn paid" id="pro-cta">Start Pro — CA$11.99/mo</a>
       </div>
+    </div>
+    <div class="pricing-footnote reveal">
+      <span><span class="fn-check">✓</span>Cancel anytime in two clicks</span>
+      <span><span class="fn-check">✓</span>Secure checkout via Stripe</span>
+      <span><span class="fn-check">✓</span>Prices in Canadian dollars</span>
     </div>
   </div>
 </section>
@@ -668,6 +683,10 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
         <div class="faq-a">ChatGPT works, but you're doing most of the work. You have to explain Pinterest SEO, your niche, the character limits, and the tone you want — every single session. Pinlo already knows all of that. Type the product, get the pin. The output is built around how Pinterest actually ranks content, not just what sounds good to a language model.</div>
       </div>
       <div class="faq-item reveal" onclick="toggleFaq(this)">
+        <div class="faq-q">How is Pinlo different from other pin generators? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Most pin tools are full dashboards — templates, brand kits, image editors, schedulers, CSV imports — and you need a tutorial video just to make your first pin. Pinlo does one thing: it writes your pin copy. One field, one button, done in seconds. There's nothing to set up and nothing to learn.</div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFaq(this)">
         <div class="faq-q">Will Pinterest penalize generated descriptions? <span class="faq-icon">+</span></div>
         <div class="faq-a">No. Pinterest ranks pins on keywords, engagement, and freshness — it doesn't care how the copy was written. What matters is whether people click and save it. That's exactly what Pinlo's output is built to do.</div>
       </div>
@@ -680,8 +699,8 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
         <div class="faq-a">All of them. Pinlo generates the copy — you add your own link. Amazon Associates, ShareASale, Impact, LTK, whatever you're using — it doesn't matter.</div>
       </div>
       <div class="faq-item reveal" onclick="toggleFaq(this)">
-        <div class="faq-q">What happens after my 5 free pins? <span class="faq-icon">+</span></div>
-        <div class="faq-a">You'll see an option to upgrade to Pro — CA$11.99/month or CA$89.99/year. That gets you unlimited pins, bulk generation up to 10 at once, niche strategy tips, pain point suggestions, and a full SEO score on every pin.</div>
+        <div class="faq-q">What happens after my 10 free pins? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Your free pins reset every month — 10 more come back at the start of each calendar month, free forever. If you want more than that, Pro is CA$11.99/month or CA$89.99/year: unlimited pins, bulk generation up to 10 at once, niche strategy tips, pain point suggestions, and a full SEO score on every pin.</div>
       </div>
     </div>
   </div>
@@ -692,7 +711,7 @@ footer{background:var(--dark2);padding:3rem 2rem;text-align:center;border-top:1p
   <h2>Your next pin is<br><em>30 seconds away.</em></h2>
   <p>Type a product. That's the hard part.</p>
   <div class="cta-btns">
-    <a href="/app" class="btn-primary-dark">Generate your first pin →</a>
+    <a href="/app" class="btn-primary-dark">Generate your first pin</a>
   </div>
 </section>
 
@@ -727,6 +746,31 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.08 });
 reveals.forEach(el => observer.observe(el));
 
+// Nav shadow once the page is scrolled
+const navEl = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  navEl.classList.toggle('scrolled', window.scrollY > 24);
+}, { passive: true });
+
+// Count-up animation for the stats bar
+const statObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    statObserver.unobserve(entry.target);
+    const el = entry.target;
+    const target = parseInt(el.dataset.count, 10);
+    const start = performance.now();
+    const dur = 1400;
+    function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-count]').forEach(el => statObserver.observe(el));
+
 let isYearly = false;
 function toggleBilling() {
   isYearly = !isYearly;
@@ -737,12 +781,14 @@ function toggleBilling() {
   const cta = document.getElementById('pro-cta');
   const mLabel = document.getElementById('monthly-label');
   const yLabel = document.getElementById('yearly-label');
+  const equiv = document.getElementById('price-equiv');
   if (isYearly) {
     toggle.classList.add('yearly');
     amount.textContent = '89.99';
     period.textContent = '/year';
-    desc.textContent = 'CA$89.99/year billed annually · Cancel anytime';
-    cta.textContent = 'Start Pro — CA$89.99/yr →';
+    desc.textContent = 'Billed once a year · Cancel anytime';
+    cta.textContent = 'Start Pro — CA$89.99/yr';
+    if (equiv) equiv.classList.add('show');
     mLabel.classList.remove('active');
     yLabel.classList.add('active');
   } else {
@@ -750,7 +796,8 @@ function toggleBilling() {
     amount.textContent = '11.99';
     period.textContent = '/month';
     desc.textContent = 'Less than one lost commission · Cancel anytime';
-    cta.textContent = 'Start Pro — CA$11.99/mo →';
+    cta.textContent = 'Start Pro — CA$11.99/mo';
+    if (equiv) equiv.classList.remove('show');
     mLabel.classList.add('active');
     yLabel.classList.remove('active');
   }
@@ -767,11 +814,10 @@ function toggleFaq(el) {
   const el = document.getElementById('pin-counter');
   if (!el) return;
 
-  // Seed offset — increase this to bump the displayed number above the raw KV count
   function formatCount(n) {
-    if (n >= 1000000) return '✦ ' + (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M pins generated and counting';
-    if (n >= 1000) return '✦ ' + (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k pins generated and counting';
-    return '✦ ' + n.toLocaleString() + ' pins generated and counting';
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M pins generated and counting';
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k pins generated and counting';
+    return n.toLocaleString() + ' pins generated and counting';
   }
 
   let currentDisplayed = 0;

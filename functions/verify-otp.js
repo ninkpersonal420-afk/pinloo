@@ -39,14 +39,22 @@ export async function onRequestPost(context) {
     await KV.delete(`otp:${emailKey}`);
 
     // Get or create user record
+    const currentPeriod = new Date().toISOString().slice(0, 7); // "YYYY-MM"
     let user = null;
     const userData = await KV.get(emailKey);
     if (userData) {
       user = JSON.parse(userData);
+      // Monthly reset: free usage starts over each calendar month (mirrors claude.js)
+      if (user.usagePeriod !== currentPeriod) {
+        user.usage = 0;
+        user.usagePeriod = currentPeriod;
+        await KV.put(emailKey, JSON.stringify(user));
+      }
     } else {
       user = {
         email: emailKey,
         usage: 0,
+        usagePeriod: currentPeriod,
         isPro: false,
         stripeCustomerId: null,
         createdAt: new Date().toISOString(),

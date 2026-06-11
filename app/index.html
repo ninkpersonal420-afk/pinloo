@@ -493,7 +493,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
     <div class="usage-row" id="usage-row" style="display:none;">
       <div class="usage-info">
-        <div class="usage-label" id="usage-text">0 of 5 free pins used</div>
+        <div class="usage-label" id="usage-text">0 of 10 free pins used this month</div>
         <div class="usage-track"><div class="usage-fill" id="usage-fill" style="width:0%"></div></div>
       </div>
       <button class="usage-cta" onclick="showPaywall()">Unlock unlimited</button>
@@ -763,7 +763,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       </div>
       <!-- Free user history nudge -->
       <div id="history-pro-nudge" style="display:none;margin-bottom:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,rgba(217,79,56,0.07),rgba(245,146,74,0.06));border:1.5px solid rgba(217,79,56,0.18);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
-        <div style="font-size:13px;color:var(--text2);line-height:1.5;"><strong style="color:var(--text);">Want more pins?</strong> You have 5 free generations. Pro removes the limit and adds bulk generation.</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;"><strong style="color:var(--text);">Want more pins?</strong> You have 10 free generations every month. Pro removes the limit and adds bulk generation.</div>
         <button onclick="showPaywall()" style="flex-shrink:0;padding:8px 16px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;">Upgrade to Pro →</button>
       </div>
       <div id="history-container"></div>
@@ -977,7 +977,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <input type="email" class="email-gate-input" id="email-gate-input" placeholder="your@email.com" onkeydown="if(event.key==='Enter')submitEmailGate()"/>
       <div class="email-gate-error" id="email-gate-error">Please enter a valid email address.</div>
       <button class="email-gate-btn" id="email-gate-btn" onclick="submitEmailGate()">Send login code →</button>
-      <div class="email-gate-note">No spam. No password. Your 5 free pins are tied to this email.</div>
+      <div class="email-gate-note">No spam. No password. Your 10 free pins each month are tied to this email.</div>
     </div>
 
     <!-- Step 2: OTP -->
@@ -999,7 +999,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
     <div id="paywall-eyebrow" style="font-size:11px;font-weight:700;color:var(--red);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;text-align:center;">Free limit reached</div>
     <div id="paywall-headline" style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;line-height:1.2;margin-bottom:8px;text-align:center;color:var(--text);">You're out of free pins</div>
-    <div id="paywall-subtext" style="font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:1.5rem;text-align:center;">You've used your 5 free pins. Pro removes the limit.</div>
+    <div id="paywall-subtext" style="font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:1.5rem;text-align:center;">You've used your 10 free pins for this month. Pro removes the limit.</div>
 
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem;">
       <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg3);border-radius:12px;">
@@ -1080,7 +1080,7 @@ const ANTHROPIC_KEY = '';
 const STRIPE_MONTHLY = 'https://buy.stripe.com/dRmcN56P2e8w29tevh8IU00';
 const STRIPE_ANNUAL = 'https://buy.stripe.com/00w3cvb5ic0o5lFfzl8IU01';
 
-let pinsUsed = parseInt(localStorage.getItem('pinlo_pins_used') || '0'), FREE_LIMIT = 5;
+let pinsUsed = parseInt(localStorage.getItem('pinlo_pins_used') || '0'), FREE_LIMIT = 10;
 let isPro = false;
 let proPlan = null;
 
@@ -1745,7 +1745,7 @@ function showPaywall(reason) {
   if (reason === 'limit') {
     eyebrow.textContent = 'Free limit reached';
     headline.textContent = "You're out of free pins";
-    subtext.textContent = "You've used your "+FREE_LIMIT+" free pins. Pro removes the limit.";
+    subtext.textContent = "You've used your "+FREE_LIMIT+" free pins for this month. Pro removes the limit — or your free pins come back next month.";
   } else if (reason === 'pain') {
     eyebrow.textContent = 'Pro feature';
     headline.textContent = 'Unlock AI pain points';
@@ -1818,9 +1818,9 @@ function updateUsage() {
   const textEl = document.getElementById('usage-text');
   const badgeEl = document.getElementById('plan-badge');
   if (fillEl) fillEl.style.width=pct+'%';
-  if (textEl) textEl.textContent=pinsUsed+' of '+FREE_LIMIT+' free trial pins';
+  if (textEl) textEl.textContent=pinsUsed+' of '+FREE_LIMIT+' free pins this month';
   const left=Math.max(FREE_LIMIT-pinsUsed,0);
-  if (badgeEl) { const leftText = left > 0 ? ('FREE — '+left+' TRIAL PIN'+(left!==1?'S':'')+' LEFT') : 'FREE TRIAL ENDED'; badgeEl.textContent = leftText; }
+  if (badgeEl) { const leftText = left > 0 ? ('FREE — '+left+' PIN'+(left!==1?'S':'')+' LEFT THIS MONTH') : 'FREE — OUT OF PINS THIS MONTH'; badgeEl.textContent = leftText; }
 }
 
 function updateHistoryBadge() {
@@ -2677,6 +2677,20 @@ function resetToEmailStep() {
   setTimeout(() => { const i = document.getElementById('email-gate-input'); if (i) i.focus(); }, 100);
 }
 
+// Monthly reset — free pins come back each calendar month (server is the source
+// of truth in claude.js; this keeps the local gate from blocking a new month)
+(function monthlyUsageReset() {
+  const period = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  const storedPeriod = localStorage.getItem('pinlo_usage_period');
+  if (storedPeriod !== period) {
+    localStorage.setItem('pinlo_usage_period', period);
+    if (storedPeriod) {
+      localStorage.setItem('pinlo_pins_used', '0');
+      pinsUsed = 0;
+    }
+  }
+})();
+
 // Validate pin count is honest — reset if hash missing or mismatched
 (function validateGateIntegrity() {
   // Clean up any stale Pro tokens from older versions - Pro status now lives in the database
@@ -2873,7 +2887,7 @@ function resetToEmailStep() {
     } else {
       isPro = false; proPlan = null;
       const badge = document.getElementById('plan-badge');
-      if (badge) { badge.textContent = 'FREE — 5 PINS LEFT'; badge.style.background=''; badge.style.color=''; badge.style.border=''; }
+      if (badge) { badge.textContent = 'FREE — 10 PINS LEFT THIS MONTH'; badge.style.background=''; badge.style.color=''; badge.style.border=''; }
       const proBtn = document.querySelector('.pro-btn');
       if (proBtn) { proBtn.textContent='Upgrade to Pro'; proBtn.style.background=''; proBtn.style.color=''; proBtn.style.border=''; }
       const freeBadge = document.querySelector('.free-badge');

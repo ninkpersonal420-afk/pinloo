@@ -59,15 +59,24 @@ export async function onRequestPost(context) {
     }
 
     // --- Look up user in KV ---
+    const FREE_LIMIT = 10;
+    const currentPeriod = new Date().toISOString().slice(0, 7); // "YYYY-MM"
     let user = null;
     const stored = await KV.get(emailKey);
 
     if (stored) {
       user = JSON.parse(stored);
+      // Monthly reset: free usage starts over each calendar month.
+      // Pre-existing users without usagePeriod get a fresh allowance this month.
+      if (user.usagePeriod !== currentPeriod) {
+        user.usage = 0;
+        user.usagePeriod = currentPeriod;
+      }
     } else {
       user = {
         email: emailKey,
         usage: 0,
+        usagePeriod: currentPeriod,
         isPro: false,
         stripeCustomerId: null,
         createdAt: new Date().toISOString(),
@@ -76,10 +85,10 @@ export async function onRequestPost(context) {
     }
 
     // --- Enforce free tier limit ---
-    if (!user.isPro && user.usage >= 5) {
+    if (!user.isPro && user.usage >= FREE_LIMIT) {
       return new Response(JSON.stringify({
         error: 'free_limit_reached',
-        message: 'You have used all 5 free pins. Upgrade to Pro for unlimited generation.',
+        message: 'You have used all ' + FREE_LIMIT + ' free pins for this month. Upgrade to Pro for unlimited generation.',
         usage: user.usage,
         isPro: false
       }), { status: 402, headers: corsHeaders });
