@@ -1215,6 +1215,11 @@ async function verifyStripeSession(sessionId) {
         updateUsage();
       }
     } else {
+      // No gate email — there's no way to verify Pro against the database, so a
+      // stale pro cache must never be trusted. Clear it so admin/legacy overrides
+      // can't silently keep someone Pro after a cancellation.
+      localStorage.removeItem('pinlo_pro_cache');
+      isPro = false;
       updateUsage();
     }
     updateQtyControls();
@@ -2886,6 +2891,10 @@ function resetToEmailStep() {
       activatePro(plan || 'monthly');
     } else {
       isPro = false; proPlan = null;
+      // Clear the cached pro state so the downgrade survives a reload (otherwise
+      // pinlo_pro_cache would flip the app back to Pro on next load).
+      localStorage.removeItem('pinlo_pro_cache');
+      localStorage.removeItem('pinlo_pro_expiry');
       const badge = document.getElementById('plan-badge');
       if (badge) { badge.textContent = 'FREE — 10 PINS LEFT THIS MONTH'; badge.style.background=''; badge.style.color=''; badge.style.border=''; }
       const proBtn = document.querySelector('.pro-btn');
