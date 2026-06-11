@@ -283,12 +283,6 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   h1{letter-spacing:-1px;}
 }
 </style>
-<script>
-  // If already signed in, skip the landing page and go straight to the app
-  if (localStorage.getItem('pinlo_verified') === 'true' && localStorage.getItem('pinlo_gate_email')) {
-    window.location.replace('/app');
-  }
-</script>
 </head>
 <body>
 
