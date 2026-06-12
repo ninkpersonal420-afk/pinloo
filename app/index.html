@@ -346,6 +346,9 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .history-delete-btn{font-size:10px;padding:4px 10px;border:1px solid var(--border);border-radius:5px;cursor:pointer;background:transparent;color:var(--text4);font-family:'Outfit',sans-serif;transition:all 0.12s;}
 .history-delete-btn:hover{border-color:var(--red);color:var(--red);}
 .history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
+.history-search{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;color:var(--text);background:var(--bg2);outline:none;transition:border-color 0.15s;margin-bottom:1rem;}
+.history-search:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(217,79,56,0.1);}
+.history-search::placeholder{color:var(--text4);}
 .history-count{font-size:12px;color:var(--text4);}
 .clear-history-btn{font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:transparent;color:var(--text4);font-family:'Outfit',sans-serif;transition:all 0.12s;}
 .clear-history-btn:hover{border-color:var(--red);color:var(--red);}
@@ -426,6 +429,7 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
   .result-block{margin-bottom:1rem;padding-bottom:1rem;}
   .copy-btn{padding:7px 13px;font-size:12px;}
   .copy-all-btn{padding:7px 13px;font-size:12px;}
+  .copy-row{position:sticky;bottom:0;background:var(--bg2);padding:10px 0 6px;margin:0 -1px;border-top:1px solid var(--border);z-index:10;}
   .niche-tip{padding:10px 13px;}
   .niche-tip-text{font-size:13px;}
   .tag{font-size:11px;padding:4px 10px;}
@@ -772,6 +776,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
         <div style="font-size:13px;color:var(--text2);line-height:1.5;"><strong style="color:var(--text);">Want more pins?</strong> You have 10 free generations every month. Pro removes the limit and adds bulk generation.</div>
         <button onclick="showPaywall()" style="flex-shrink:0;padding:8px 16px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;">Upgrade to Pro →</button>
       </div>
+      <input type="search" class="history-search" id="history-search" placeholder="Search pins…" oninput="filterHistory(this.value)"/>
       <div id="history-container"></div>
     </div>
   </div>
@@ -2250,6 +2255,7 @@ async function generatePin() {
   document.getElementById('qty-down').disabled=true;
   document.getElementById('qty-up').disabled=true;
   document.getElementById('loading').classList.add('show');
+    document.title = 'Generating… — Pinlo';
   document.getElementById('result-panel').classList.remove('show');
   document.getElementById('bulk-results').innerHTML='';
   document.getElementById('empty-state').style.display='none';
@@ -2378,7 +2384,7 @@ async function generatePin() {
     updateUsage();
     if (pinsUsed>=FREE_LIMIT&&!isPro) setTimeout(()=>showPaywall('limit'),2000);
   } catch(e) { if (e.message !== 'free_limit_reached') { alert('Something went wrong. Please try again.'); } console.error(e); }
-  finally { const gb=document.getElementById('gen-btn'); if(gb) gb.disabled=false; const qd=document.getElementById('qty-down'); if(qd) qd.disabled=pinQty<=1; const qu=document.getElementById('qty-up'); if(qu) qu.disabled=pinQty>=(isPro?10:3); document.getElementById('loading').classList.remove('show'); document.getElementById('loading-text').textContent='Crafting your pin';
+  finally { const gb=document.getElementById('gen-btn'); if(gb) gb.disabled=false; const qd=document.getElementById('qty-down'); if(qd) qd.disabled=pinQty<=1; const qu=document.getElementById('qty-up'); if(qu) qu.disabled=pinQty>=(isPro?10:3); document.getElementById('loading').classList.remove('show'); document.getElementById('loading-text').textContent='Crafting your pin'; document.title = 'Pinlo — Pinterest Pin Generator';
     const lbl=document.getElementById('gen-btn-label');
     if(lbl) lbl.textContent='Generate '+(pinQty===1?'1 Pin':pinQty+' Pins');
     const sp=document.getElementById('gen-btn-spinner');
@@ -2399,7 +2405,7 @@ async function regenField(field) {
     if (field==='title'&&result.title) { const t=fixTitlePunctuation(result.title); const titleEl=document.getElementById('result-title'); const abBlock=document.getElementById('ab-block'); if(abBlock) abBlock.style.display='none'; if(titleEl) titleEl.style.display=''; typeText(titleEl,t); updateCharBar('title-bar','title-char',t.length,100); lastPinData.p.title=t; }
     else if (field==='description'&&result.description) { document.getElementById('result-desc').textContent=result.description; updateCharBar('desc-bar','desc-char',result.description.length,500); lastPinData.p.description=result.description; }
     else if (field==='hashtags'&&result.hashtags) { const tagsDiv=document.getElementById('result-tags'); tagsDiv.innerHTML=''; result.hashtags.forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t.startsWith('#')?t:'#'+t;tagsDiv.appendChild(s);}); lastPinData.p.hashtags=result.hashtags; }
-  } catch(e) { console.error(e); alert('Regeneration failed. Try again.'); }
+  } catch(e) { console.error(e); showToast('Regeneration failed — please try again.', 'error'); }
 }
 
 function copyAll() {
@@ -2429,7 +2435,7 @@ function onDescEdit() {
 }
 
 function exportHistoryCSV() {
-  if (!pinHistory.length) { alert('No pins in history to export.'); return; }
+  if (!pinHistory.length) { showToast('No pins in history to export yet.', 'info'); return; }
   const rows = [['Title','Description','Hashtags','Niche','Product','Date']];
   pinHistory.forEach(p => {
     const tags = (p.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ');
@@ -2524,6 +2530,19 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+function showToast(msg, type, undoFn) {
+  const c = document.getElementById('toast-container');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || 'info');
+  t.innerHTML = '<span>' + msg + '</span>' + (undoFn ? '<span class="toast-undo" onclick="this._undo()">Undo</span>' : '');
+  if (undoFn) t.querySelector('.toast-undo')._undo = undoFn;
+  c.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  const timer = setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 220); }, 3800);
+  if (undoFn) t.querySelector('.toast-undo').addEventListener('click', () => { clearTimeout(timer); t.classList.remove('show'); setTimeout(() => t.remove(), 220); });
+}
+
 function formatPinDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
@@ -2553,14 +2572,67 @@ function renderHistory() {
   container.innerHTML='';
   container.appendChild(list);
   container.querySelectorAll('.history-copy-btn').forEach(btn=>btn.addEventListener('click',()=>{const pin=pinHistory[parseInt(btn.dataset.idx)];const text=pin.title+'\n\n'+pin.description+'\n\n'+(pin.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ')+'\n\nThis post contains affiliate links. If you purchase through my link, I may earn a small commission at no extra cost to you.';navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy all';},1800);});}));
-  container.querySelectorAll('.history-delete-btn').forEach(btn=>btn.addEventListener('click',()=>{pinHistory.splice(parseInt(btn.dataset.idx),1);localStorage.setItem('pinai_history',JSON.stringify(pinHistory));updateHistoryBadge();
-setTimeout(updateTabLabels, 200);
-setTimeout(renderPricingTab, 200);renderHistory();}));
+  container.querySelectorAll('.history-delete-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    const idx=parseInt(btn.dataset.idx);
+    const deleted=pinHistory.splice(idx,1)[0];
+    localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+    updateHistoryBadge();
+    setTimeout(updateTabLabels,200);
+    setTimeout(renderPricingTab,200);
+    renderHistory();
+    showToast('Pin deleted.','info',()=>{
+      pinHistory.splice(idx,0,deleted);
+      localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+      updateHistoryBadge();
+      setTimeout(updateTabLabels,200);
+      setTimeout(renderPricingTab,200);
+      renderHistory();
+    });
+  }));
 }
 
-function clearHistory() { if (!confirm('Clear all saved pins?')) return; pinHistory=[]; localStorage.setItem('pinai_history',JSON.stringify(pinHistory)); updateHistoryBadge();
-setTimeout(updateTabLabels, 200);
-setTimeout(renderPricingTab, 200); renderHistory(); }
+function filterHistory(query) {
+  const q = (query || '').trim().toLowerCase();
+  const container = document.getElementById('history-container');
+  if (!container) return;
+  if (!q) { renderHistory(); return; }
+  const filtered = pinHistory.filter(p =>
+    (p.title||'').toLowerCase().includes(q) ||
+    (p.product||'').toLowerCase().includes(q) ||
+    (p.niche||'').toLowerCase().includes(q) ||
+    (p.description||'').toLowerCase().includes(q)
+  );
+  if (!filtered.length) { container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text4);font-size:14px;">No pins match "' + query + '"</div>'; return; }
+  const list = document.createElement('div');
+  list.className = 'history-list';
+  filtered.forEach((pin, i) => {
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + pin.title + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div>' + (pin.niche ? '<span class="history-item-niche">' + pin.niche + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + pin.product + '</span>' : '') + '</div><div class="history-item-desc">' + pin.description + '</div>';
+    list.appendChild(item);
+  });
+  container.innerHTML = '';
+  container.appendChild(list);
+}
+
+function clearHistory() {
+  if (!pinHistory.length) return;
+  const backup = pinHistory.slice();
+  pinHistory = [];
+  localStorage.setItem('pinai_history', JSON.stringify(pinHistory));
+  updateHistoryBadge();
+  setTimeout(updateTabLabels, 200);
+  setTimeout(renderPricingTab, 200);
+  renderHistory();
+  showToast('History cleared.', 'info', () => {
+    pinHistory = backup;
+    localStorage.setItem('pinai_history', JSON.stringify(pinHistory));
+    updateHistoryBadge();
+    setTimeout(updateTabLabels, 200);
+    setTimeout(renderPricingTab, 200);
+    renderHistory();
+  });
+}
 
 updateUsage();
 updateHistoryBadge();
@@ -3260,5 +3332,6 @@ function selectSupportType(el, val) {
 }
 
 </script>
+<div id="toast-container"></div>
 </body>
 </html>
