@@ -1115,10 +1115,11 @@ async function suVerifyOtp(e) {
     });
     const data = await res.json();
     if (!res.ok) { err.textContent = data.error || 'Incorrect code.'; return; }
-    localStorage.setItem('pinlo_email', data.email);
-    localStorage.setItem('pinlo_pro', data.isPro ? 'true' : 'false');
+    localStorage.setItem('pinlo_gate_email', data.email);
+    localStorage.setItem('pinlo_gate_hash', btoa(data.email).slice(0, 12));
+    localStorage.setItem('pinlo_verified', 'true');
     localStorage.setItem('pinlo_pins_used', String(data.usage || 0));
-    if (data.isPro) localStorage.setItem('pinlo_pro_expiry', String(Date.now() + 86400000));
+    if (data.isPro) localStorage.setItem('pinlo_pro_cache', '1');
     window.location.href = '/app';
   } catch (_) {
     err.textContent = 'Network error. Please try again.';
