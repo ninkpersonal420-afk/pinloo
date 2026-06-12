@@ -302,6 +302,53 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   .stat-divider{display:none;}
   h1{letter-spacing:-1px;}
 }
+
+/* ── Sign-up modal ───────────────────────────────────────────── */
+.su-overlay{position:fixed;inset:0;background:rgba(22,12,7,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.su-overlay.open{opacity:1;pointer-events:auto;}
+.su-card{background:var(--white);border-radius:24px;padding:2.5rem;width:100%;max-width:600px;position:relative;transform:translateY(16px);transition:transform 0.25s;max-height:92vh;overflow-y:auto;}
+.su-overlay.open .su-card{transform:translateY(0);}
+.su-close{position:absolute;top:1.1rem;right:1.1rem;background:none;border:none;font-size:22px;color:var(--text3);cursor:pointer;line-height:1;padding:4px 8px;border-radius:8px;transition:color 0.2s;font-family:'DM Sans',sans-serif;}
+.su-close:hover{color:var(--ink);}
+.su-back{background:none;border:none;font-size:13px;color:var(--text3);cursor:pointer;padding:0;margin-bottom:1.5rem;font-family:'DM Sans',sans-serif;transition:color 0.2s;display:inline-flex;align-items:center;gap:4px;}
+.su-back:hover{color:var(--ink);}
+.su-screen{animation:fadeUp 0.2s ease;}
+.su-hidden{display:none !important;}
+.su-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:0.5rem;}
+.su-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-0.5px;margin-bottom:0.35rem;}
+.su-sub{font-size:14px;color:var(--text3);margin-bottom:2rem;line-height:1.6;}
+.su-plans{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.su-plan{background:#FAF7F2;border:1.5px solid var(--border);border-radius:18px;padding:1.5rem;text-align:left;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s;position:relative;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;}
+.su-plan:hover{border-color:var(--accent);box-shadow:0 8px 28px rgba(217,79,56,0.12);transform:translateY(-2px);}
+.su-plan-pro{background:var(--dark);border:1.5px solid transparent;background:linear-gradient(var(--dark),var(--dark)) padding-box,var(--gradient) border-box;}
+.su-plan-pro:hover{box-shadow:0 12px 36px rgba(217,79,56,0.3);transform:translateY(-2px);}
+.su-plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gradient);color:#fff;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:100px;white-space:nowrap;}
+.su-plan-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:0.65rem;}
+.su-plan-pro .su-plan-label{color:rgba(250,247,242,0.45);}
+.su-plan-price{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:1rem;letter-spacing:-0.5px;}
+.su-plan-price span{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:var(--text3);}
+.su-plan-pro .su-plan-price{color:var(--cream);}
+.su-plan-pro .su-plan-price span{color:rgba(250,247,242,0.4);}
+.su-plan-feats{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:1.25rem;flex:1;}
+.su-plan-feats li{font-size:12.5px;color:var(--text2);display:flex;align-items:center;gap:7px;line-height:1.4;}
+.su-plan-feats li::before{content:'✓';color:var(--accent);font-weight:700;font-size:10px;flex-shrink:0;}
+.su-plan-pro .su-plan-feats li{color:rgba(250,247,242,0.72);}
+.su-plan-pro .su-plan-feats li::before{color:#F5A164;}
+.su-plan-cta{background:rgba(22,12,7,0.08);color:var(--ink);font-size:13px;font-weight:500;padding:10px 0;border-radius:100px;text-align:center;transition:background 0.2s;margin-top:auto;}
+.su-plan:hover .su-plan-cta{background:var(--ink);color:#fff;}
+.su-plan-cta-pro{background:var(--gradient);background-size:160% 160%;color:#fff;animation:gradientShift 6s ease infinite;}
+.su-plan-pro:hover .su-plan-cta-pro{background:var(--gradient);}
+.su-form{display:flex;flex-direction:column;gap:12px;}
+.su-input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--white);outline:none;transition:border-color 0.2s;box-sizing:border-box;}
+.su-input:focus{border-color:var(--accent);}
+.su-otp-input{font-size:28px;letter-spacing:10px;text-align:center;font-weight:700;padding:14px 8px;}
+.su-submit{background:var(--gradient);background-size:160% 160%;color:#fff;border:none;padding:15px;border-radius:100px;font-size:14.5px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform 0.2s,box-shadow 0.2s,opacity 0.2s;box-shadow:0 6px 24px rgba(217,79,56,0.3);animation:gradientShift 6s ease infinite;}
+.su-submit:hover{transform:translateY(-1px);box-shadow:0 10px 32px rgba(217,79,56,0.4);}
+.su-submit:disabled{opacity:0.55;cursor:not-allowed;transform:none;}
+.su-err{font-size:13px;color:#D94F38;min-height:18px;line-height:1.4;}
+.su-resend{background:none;border:none;font-size:13px;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;padding:4px 0;transition:color 0.2s;}
+.su-resend:hover{color:var(--ink);}
+@media(max-width:500px){.su-plans{grid-template-columns:1fr;}.su-card{padding:1.75rem 1.25rem;}}
 </style>
 <script>
   // Signed-in users skip the marketing page and go straight to the app — unless
@@ -717,7 +764,7 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
           <li><strong>Strategy tips</strong><span>Specific to what you're promoting</span></li>
           <li><strong>Every niche</strong><span>Full pin history included</span></li>
         </ul>
-        <a href="/app" class="plan-btn paid" id="pro-cta">Start Pro — CA$11.99/mo</a>
+        <a href="https://buy.stripe.com/dRmcN56P2e8w29tevh8IU00" class="plan-btn paid" id="pro-cta">Start Pro — CA$11.99/mo</a>
       </div>
     </div>
     <div class="pricing-footnote reveal">
@@ -791,6 +838,71 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   <p class="footer-copy">© 2026 Pinlo. All rights reserved.</p>
 </footer>
 
+<!-- ── Sign-up modal ───────────────────────────────────────────── -->
+<div id="signup-modal" class="su-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="su-card">
+    <button class="su-close" onclick="suClose()" aria-label="Close">×</button>
+
+    <!-- Screen 1: plan picker -->
+    <div class="su-screen" id="su-screen-pick">
+      <div class="su-logo">Pinlo</div>
+      <h2 class="su-title">Get started</h2>
+      <p class="su-sub">Choose a plan — you can always upgrade later.</p>
+      <div class="su-plans">
+        <button class="su-plan" onclick="suPickFree()">
+          <div class="su-plan-label">Free</div>
+          <div class="su-plan-price">CA$0<span> /forever</span></div>
+          <ul class="su-plan-feats">
+            <li>10 pins every month</li>
+            <li>All 24 niches</li>
+            <li>Pin history</li>
+          </ul>
+          <div class="su-plan-cta">Start free</div>
+        </button>
+        <button class="su-plan su-plan-pro" onclick="suPickPro()">
+          <div class="su-plan-badge">Most popular</div>
+          <div class="su-plan-label">Pro</div>
+          <div class="su-plan-price" id="su-pro-price">CA$11.99<span> /month</span></div>
+          <ul class="su-plan-feats">
+            <li>Unlimited pins</li>
+            <li>A/B title testing</li>
+            <li>10 pins in one click</li>
+            <li>SEO score + strategy tips</li>
+          </ul>
+          <div class="su-plan-cta su-plan-cta-pro">Start Pro</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Screen 2: email input -->
+    <div class="su-screen su-hidden" id="su-screen-email">
+      <button class="su-back" onclick="suShow('su-screen-pick')">← Back</button>
+      <div class="su-logo">Pinlo</div>
+      <h2 class="su-title">Enter your email</h2>
+      <p class="su-sub">We'll send a 6-digit sign-in code. No password needed.</p>
+      <form class="su-form" onsubmit="suSendOtp(event)">
+        <input type="email" id="su-email-input" class="su-input" placeholder="you@example.com" required autocomplete="email">
+        <div id="su-email-err" class="su-err"></div>
+        <button type="submit" class="su-submit" id="su-email-btn">Send code</button>
+      </form>
+    </div>
+
+    <!-- Screen 3: OTP verify -->
+    <div class="su-screen su-hidden" id="su-screen-otp">
+      <button class="su-back" onclick="suShow('su-screen-email')">← Back</button>
+      <div class="su-logo">Pinlo</div>
+      <h2 class="su-title">Check your email</h2>
+      <p class="su-sub" id="su-otp-sub">Enter the 6-digit code we sent.</p>
+      <form class="su-form" onsubmit="suVerifyOtp(event)">
+        <input type="text" id="su-otp-input" class="su-input su-otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required>
+        <div id="su-otp-err" class="su-err"></div>
+        <button type="submit" class="su-submit" id="su-otp-btn">Sign in</button>
+        <button type="button" class="su-resend" id="su-resend-btn" onclick="suResend()">Resend code</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 function smoothScroll(id) {
   const el = document.getElementById(id);
@@ -844,22 +956,27 @@ function toggleBilling() {
   const mLabel = document.getElementById('monthly-label');
   const yLabel = document.getElementById('yearly-label');
   const equiv = document.getElementById('price-equiv');
+  const suProPrice = document.getElementById('su-pro-price');
   if (isYearly) {
     toggle.classList.add('yearly');
     amount.textContent = '89.99';
     period.textContent = '/year';
     desc.textContent = 'Billed once a year · Cancel anytime';
     cta.textContent = 'Start Pro — CA$89.99/yr';
+    cta.href = 'https://buy.stripe.com/00w3cvb5ic0o5lFfzl8IU01';
     if (equiv) equiv.classList.add('show');
+    if (suProPrice) suProPrice.innerHTML = 'CA$89.99<span> /year</span>';
     mLabel.classList.remove('active');
     yLabel.classList.add('active');
   } else {
     toggle.classList.remove('yearly');
     amount.textContent = '11.99';
     period.textContent = '/month';
-    desc.textContent = 'Less than one lost commission · Cancel anytime';
+    desc.textContent = 'Cancel anytime';
     cta.textContent = 'Start Pro — CA$11.99/mo';
+    cta.href = 'https://buy.stripe.com/dRmcN56P2e8w29tevh8IU00';
     if (equiv) equiv.classList.remove('show');
+    if (suProPrice) suProPrice.innerHTML = 'CA$11.99<span> /month</span>';
     mLabel.classList.add('active');
     yLabel.classList.remove('active');
   }
@@ -917,6 +1034,137 @@ function toggleFaq(el) {
   fetchAndUpdate();
   setInterval(fetchAndUpdate, 10000);
 })();
+
+// ── Sign-up modal ─────────────────────────────────────────────
+const STRIPE_MONTHLY = 'https://buy.stripe.com/dRmcN56P2e8w29tevh8IU00';
+const STRIPE_ANNUAL  = 'https://buy.stripe.com/00w3cvb5ic0o5lFfzl8IU01';
+let suEmailVal = '';
+
+function suOpen() {
+  const modal = document.getElementById('signup-modal');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  suShow('su-screen-pick');
+}
+
+function suClose() {
+  const modal = document.getElementById('signup-modal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function suShow(screenId) {
+  document.querySelectorAll('.su-screen').forEach(s => s.classList.add('su-hidden'));
+  document.getElementById(screenId).classList.remove('su-hidden');
+}
+
+function suPickFree() {
+  suShow('su-screen-email');
+  setTimeout(() => document.getElementById('su-email-input').focus(), 50);
+}
+
+function suPickPro() {
+  window.location.href = isYearly ? STRIPE_ANNUAL : STRIPE_MONTHLY;
+}
+
+async function suSendOtp(e) {
+  e.preventDefault();
+  const email = document.getElementById('su-email-input').value.trim();
+  const btn = document.getElementById('su-email-btn');
+  const err = document.getElementById('su-email-err');
+  err.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    const res = await fetch('/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) { err.textContent = data.error || 'Something went wrong.'; return; }
+    suEmailVal = email;
+    document.getElementById('su-otp-sub').textContent = `Enter the 6-digit code sent to ${email}.`;
+    document.getElementById('su-otp-input').value = '';
+    document.getElementById('su-otp-err').textContent = '';
+    suShow('su-screen-otp');
+    setTimeout(() => document.getElementById('su-otp-input').focus(), 50);
+  } catch (_) {
+    err.textContent = 'Network error. Please try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send code';
+  }
+}
+
+async function suVerifyOtp(e) {
+  e.preventDefault();
+  const code = document.getElementById('su-otp-input').value.trim();
+  const btn = document.getElementById('su-otp-btn');
+  const err = document.getElementById('su-otp-err');
+  err.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+  try {
+    const res = await fetch('/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: suEmailVal, code })
+    });
+    const data = await res.json();
+    if (!res.ok) { err.textContent = data.error || 'Incorrect code.'; return; }
+    localStorage.setItem('pinlo_email', data.email);
+    localStorage.setItem('pinlo_pro', data.isPro ? 'true' : 'false');
+    localStorage.setItem('pinlo_pins_used', String(data.usage || 0));
+    if (data.isPro) localStorage.setItem('pinlo_pro_expiry', String(Date.now() + 86400000));
+    window.location.href = '/app';
+  } catch (_) {
+    err.textContent = 'Network error. Please try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+  }
+}
+
+async function suResend() {
+  const btn = document.getElementById('su-resend-btn');
+  const err = document.getElementById('su-otp-err');
+  err.style.color = '';
+  err.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    const res = await fetch('/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: suEmailVal })
+    });
+    const data = await res.json();
+    if (!res.ok) { err.textContent = data.error || 'Could not resend.'; }
+    else { err.style.color = 'var(--accent)'; err.textContent = 'New code sent!'; setTimeout(() => { err.textContent = ''; err.style.color = ''; }, 3000); }
+  } catch (_) {
+    err.textContent = 'Network error.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Resend code';
+  }
+}
+
+// Intercept all /app links — except "Open app" (returning users) and the Pro CTA (goes to Stripe)
+document.querySelectorAll('a[href="/app"]').forEach(a => {
+  if (a.classList.contains('nav-open-app')) return;
+  a.addEventListener('click', e => { e.preventDefault(); suOpen(); });
+});
+
+// Close on backdrop click
+document.getElementById('signup-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) suClose();
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') suClose(); });
 </script>
 </body>
 </html>
