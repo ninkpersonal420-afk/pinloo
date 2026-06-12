@@ -377,6 +377,17 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .result-body-text{font-size:15.5px;line-height:1.85;color:var(--text2);font-weight:400;padding:16px 19px;background:var(--bg4);border-radius:14px;border:1px solid var(--hairline);}
 .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
 .tag{font-size:12px;padding:5px 13px;border-radius:100px;background:var(--gradient-soft);color:var(--red);border:1px solid rgba(217,79,56,0.18);font-weight:600;letter-spacing:0.1px;}
+.tag.tag-removable{display:inline-flex;align-items:center;gap:5px;padding-right:9px;}
+.tag-x{font-size:13px;line-height:1;opacity:0.55;cursor:pointer;font-weight:400;}
+.tag-x:hover{opacity:1;}
+.tag-add{font-size:12px;padding:5px 12px;border-radius:100px;background:transparent;color:var(--text4);border:1px dashed var(--border2);font-weight:500;cursor:pointer;transition:border-color 0.14s,color 0.14s,background 0.14s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:4px;}
+.tag-add:hover{border-color:var(--red);color:var(--red);border-style:solid;background:var(--gradient-soft);}
+.tag-inline-input{font-size:12px;padding:5px 12px;border-radius:100px;border:1px solid var(--red);background:var(--bg2);color:var(--text);font-family:'Outfit',sans-serif;outline:none;width:110px;}
+.audience-suggestions-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
+.audience-sug-label{font-size:10.5px;font-weight:700;color:var(--text4);letter-spacing:1.2px;text-transform:uppercase;margin-top:11px;margin-bottom:6px;}
+.audience-sug-chip{font-size:12.5px;padding:6px 13px;border-radius:100px;border:1px dashed var(--border2);cursor:pointer;color:var(--text3);background:transparent;transition:border-color 0.14s,color 0.14s,background 0.14s,opacity 0.14s;font-family:'Outfit',sans-serif;user-select:none;}
+.audience-sug-chip:hover{border-color:var(--red);color:var(--red);border-style:solid;background:var(--gradient-soft);}
+.audience-sug-chip.used{opacity:0.35;pointer-events:none;}
 .copy-row{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;}
 .copy-btn{font-size:12.5px;font-weight:600;padding:7px 15px;border:1px solid var(--border);border-radius:100px;cursor:pointer;background:transparent;color:var(--text3);font-family:'Outfit',sans-serif;transition:border-color 0.15s,color 0.15s,background 0.15s;}
 .copy-btn:hover{border-color:var(--text2);color:var(--text);background:var(--bg4);}
@@ -679,6 +690,10 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
         </div>
         <div class="audience-tag-input" id="audience-tag-input" onclick="document.getElementById('audience-input').focus()">
           <input type="text" id="audience-input" placeholder="Type an audience and press Enter..." onkeydown="audienceKeydown(event)" />
+        </div>
+        <div id="audience-suggestions-wrap" style="display:none;">
+          <p class="audience-sug-label">Suggestions for your niche</p>
+          <div class="audience-suggestions-row" id="audience-suggestions"></div>
         </div>
         <button id="audience-clear-btn" class="field-clear" onclick="clearAudience()">Clear</button>
       </div>
@@ -1503,20 +1518,37 @@ function pickNiche(el, val) {
   document.getElementById('niche-auto-tag').style.display = 'none';
   applyNicheData(val);
   const productVal = document.getElementById('product-input').value.trim();
-  if (productVal.length >= 2) { clearTimeout(audienceTimer); audienceTimer = setTimeout(() => autoFillAudience(productVal), 400); }
+  if (productVal.length >= 2 && audienceDetectEnabled) { clearTimeout(audienceTimer); audienceTimer = setTimeout(() => autoFillAudience(productVal), 400); }
 }
 
 function clearNicheSelection() {
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   activeNiche = '';
   document.getElementById('niche-auto-tag').style.display = 'none';
+  const sugWrap = document.getElementById('audience-suggestions-wrap');
+  if (sugWrap) sugWrap.style.display = 'none';
 }
 
 function applyNicheData(val) {
   const data = NICHE_DATA[val];
   if (!data) return;
-  // Trending chips removed
-  // Pain points now AI-generated from product input
+  const wrap = document.getElementById('audience-suggestions-wrap');
+  const row = document.getElementById('audience-suggestions');
+  if (wrap && row && data.audience) {
+    row.innerHTML = '';
+    const auds = data.audience.split(',').map(a => a.trim()).filter(a => a);
+    auds.forEach(aud => {
+      const chip = document.createElement('span');
+      chip.className = 'audience-sug-chip';
+      chip.textContent = aud;
+      chip.onclick = () => {
+        addAudienceChip(aud);
+        chip.classList.add('used');
+      };
+      row.appendChild(chip);
+    });
+    wrap.style.display = auds.length ? '' : 'none';
+  }
 }
 
 let autoDetectEnabled = true;
@@ -1576,7 +1608,7 @@ function onProductInput(val) {
       autoDetectNicheAI(trimmed);
     }, 300);
   }
-  audienceTimer = setTimeout(() => autoFillAudience(trimmed), 900);
+  audienceTimer = setTimeout(() => autoFillAudience(trimmed), 2500);
   if (painAutofillOn && isPro) {
     clearTimeout(painTimer);
     painTimer = setTimeout(() => autoGeneratePains(trimmed), 1200);
@@ -1619,6 +1651,11 @@ async function autoDetectNicheAI(product) {
           activeNiche=detected;
           document.getElementById('niche-auto-tag').style.display='inline-block'; document.getElementById('niche-auto-tag').textContent='Auto-detected'; document.getElementById('niche-auto-tag').style.opacity='1';
           applyNicheData(detected);
+          // Niche is now known — cancel the fallback audience timer and fire immediately
+          if (audienceDetectEnabled) {
+            clearTimeout(audienceTimer);
+            autoFillAudience(product);
+          }
         }
       });
     }
@@ -1755,8 +1792,9 @@ async function autoGeneratePains(product) {
   }
   container.innerHTML = '<span style="font-size:12px;color:var(--text4);">Generating pain points...</span>';
   try {
-    const sys = 'Pinterest affiliate pain-point generator. If the product name has a typo or misspelling, infer the most likely intended product before generating. Base pain points on what the product actually does — never on the brand\'s country of origin or cultural background. Return a JSON array of exactly 5 pain points (3–6 words each) that a buyer feels BEFORE finding this product — the problem they have, not the solution. Frame each as a symptom or frustration the user experiences (e.g. "skin feels dry after moisturizing" not "difficulty absorbing moisturizers"). Each must be distinct, specific to the product, and written from the customer\'s perspective. Output only the JSON array — no markdown, no explanation, no wrapper text.';
-    const rawData = await callClaude(sys, 'Product: "' + product + '"');
+    const sys = 'Pinterest affiliate pain-point generator. Return a JSON array of exactly 5 pain points (3–7 words each) that MOTIVATE someone to buy this product — the problem or frustration that existed BEFORE they found it. Rules: (1) Infer intent if product name has typo or is vague. (2) Each pain describes the PURCHASE TRIGGER — what made the buyer go looking. For fashion/clothing: focus on fit problems, comfort issues, or style frustrations that led them to seek this item. For tech: workflow friction, physical discomfort, or productivity problems. (3) Write from the buyer\'s first-person experience — something they would literally say or think. (4) Never describe problems caused BY the product — only problems SOLVED by it. (5) Each pain must be distinct and concrete (e.g. "jeans gap at the waist", "can\'t find trousers that fit thighs" — not "difficulty with fit"). (6) Output ONLY the JSON array, no markdown, no explanation.';
+    const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
+    const rawData = await callClaude(sys, 'Product: "' + product + '"' + (niche ? '\nNiche: ' + niche : ''));
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
     container.innerHTML = '';
     const updateBenefitFromPillsPro = () => {
@@ -1855,9 +1893,9 @@ async function autoFillAudience(product) {
   // Clean product string - strip brand names, model numbers, years before sending to AI
   const cleanProduct = product.replace(/(20\d\d)/g,'').replace(/[A-Z]{2,}[0-9]+\w*/g,'').replace(/(upgraded|premium|pro|plus|ultra|deluxe|new|improved|original|authentic|genuine|official)/gi,'').replace(/\s+/g,' ').trim();
   try {
-    const sys = 'Pinterest buyer-persona detector. Return a plain comma-separated list of 3–5 audience types who DIRECTLY purchase this product. Critical rules: (1) If the product name has a typo or misspelling, infer the most likely intended product before classifying. (2) Be specific — avoid vague labels like "enthusiasts", "lovers", or "fans". Use concrete descriptors: age range, lifestyle, need, or use case (e.g. "women in their 30s", "small apartment renters", "budget-conscious moms", "home gym owners"). (3) NEVER base personas on the brand\'s country of origin or cultural background — a Japanese brand does not mean the audience is "Japanese design enthusiasts". Focus on the buyer\'s actual need, not brand aesthetics. (4) Only include people who would literally search for and buy this exact product. (5) Each persona must be a short, natural everyday phrase (2–4 words max). (6) Never combine two descriptors into one label. (7) NEVER ask clarifying questions — only return INVALID if genuinely too vague even after inferring intent. No intro text, no numbering, no explanation.';
+    const sys = 'Pinterest buyer-persona detector. Return a plain comma-separated list of 3–5 audience segments who would literally search for and buy this product. Rules — follow every one: (1) Infer intent if product name has a typo or is slightly vague. (2) Each persona must answer WHY they buy this — their lifestyle, need, body type, life stage, or use case. NEVER use occupation labels like "young professionals", "working moms", "students", "executives", or "freelancers" unless the product is office or professional equipment. (3) For clothing/fashion: describe fit need, style preference, or body type (e.g. "petite women who want a slim look", "women wanting comfortable work trousers", "women transitioning from skinny to wide-leg"). (4) For tech: describe work setup or use case, not just job title. (5) Banned words: enthusiasts, lovers, fans, community, aficionados, connoisseurs. (6) Each persona: 3–5 words, natural phrase, specific enough that a real person says "that\'s me". (7) Return INVALID only if product is truly unclassifiable even after inference. No intro text, no numbering.';
     const email = getGateEmail() || 'autofill@pinlo.internal';
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:60,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'" | Niche: '+niche+'\nWho would literally search for and buy this product? Short natural personas only. Format: persona1, persona2, persona3'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',max_tokens:80,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'"\nNiche: '+(niche||'general')+'\n\nList the buyer personas for this product. Format: persona1, persona2, persona3'}]})});
     if (!res.ok) { console.log('Audience autofill skipped: server error', res.status); return; }
     const data = await res.json();
     const result = data.content.map(i=>i.text||'').join('').trim().replace(/^["']|["']$/g,'').replace(/^(Target audience:|Audience:)/i,'').trim();
@@ -2293,9 +2331,7 @@ function renderPin(p) {
   document.getElementById('result-desc').textContent=p.description;
   updateCharBar('title-bar','title-char',p.title.length,100);
   updateCharBar('desc-bar','desc-char',p.description.length,500);
-  const tagsDiv=document.getElementById('result-tags');
-  tagsDiv.innerHTML='';
-  (p.hashtags||[]).forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t.startsWith('#')?t:'#'+t;tagsDiv.appendChild(s);});
+  renderHashtags(document.getElementById('result-tags'), p.hashtags||[]);
   renderScore(p);
   
   
@@ -2516,20 +2552,72 @@ async function regenField(field) {
     const result=await callClaude(sys,msg);
     if (field==='title'&&result.title) { const t=fixTitlePunctuation(result.title); const titleEl=document.getElementById('result-title'); const abBlock=document.getElementById('ab-block'); if(abBlock) abBlock.style.display='none'; if(titleEl) titleEl.style.display=''; typeText(titleEl,t); updateCharBar('title-bar','title-char',t.length,100); lastPinData.p.title=t; }
     else if (field==='description'&&result.description) { document.getElementById('result-desc').textContent=result.description; updateCharBar('desc-bar','desc-char',result.description.length,500); lastPinData.p.description=result.description; }
-    else if (field==='hashtags'&&result.hashtags) { const tagsDiv=document.getElementById('result-tags'); tagsDiv.innerHTML=''; result.hashtags.forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t.startsWith('#')?t:'#'+t;tagsDiv.appendChild(s);}); lastPinData.p.hashtags=result.hashtags; }
+    else if (field==='hashtags'&&result.hashtags) { renderHashtags(document.getElementById('result-tags'), result.hashtags); lastPinData.p.hashtags=result.hashtags; }
   } catch(e) { console.error(e); showToast('Regeneration failed — please try again.', 'error'); }
 }
 
 function copyAll() {
   const title=document.getElementById('result-title').textContent.replace('|','').trim();
   const desc=document.getElementById('result-desc').textContent;
-  const tags=Array.from(document.querySelectorAll('#result-tags .tag')).map(t=>{const v=t.textContent.trim();return v.startsWith('#')?v:'#'+v;}).join(' ');
+  const tags=Array.from(document.querySelectorAll('#result-tags .tag')).map(t=>{const v=(t.dataset.tag||t.textContent.replace('×','').trim());return v.startsWith('#')?v:'#'+v;}).join(' ');
   const disclaimer=document.getElementById('result-disclaimer').textContent;
   navigator.clipboard.writeText(title+'\n\n'+desc+'\n\n'+tags+'\n\n'+disclaimer).then(()=>{const btn=document.getElementById('copy-all-btn');btn.textContent='✓ Copied!';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy all';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);});
 }
 
 function copyField(id,label,btn) { navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='✓ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent=label;btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
-function copyTags(btn) { const t=Array.from(document.querySelectorAll('#result-tags .tag')).map(x=>{const v=x.textContent.trim();return v.startsWith('#')?v:'#'+v;}).join(' '); navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy hashtags';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
+function copyTags(btn) { const t=Array.from(document.querySelectorAll('#result-tags .tag')).map(x=>{const v=(x.dataset.tag||x.textContent.replace('×','').trim());return v.startsWith('#')?v:'#'+v;}).join(' '); navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy hashtags';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
+
+function renderHashtags(container, hashtags) {
+  container.innerHTML = '';
+  hashtags.forEach(t => {
+    const ht = t.startsWith('#') ? t : '#' + t;
+    const s = document.createElement('span');
+    s.className = 'tag tag-removable';
+    s.dataset.tag = ht;
+    s.innerHTML = esc(ht) + ' <span class="tag-x" title="Remove" onclick="removeHashtag(this.closest(\'.tag\'))">×</span>';
+    container.appendChild(s);
+  });
+  const addBtn = document.createElement('span');
+  addBtn.className = 'tag-add';
+  addBtn.title = 'Add hashtag';
+  addBtn.innerHTML = '+ Add';
+  addBtn.onclick = () => addNewHashtag(container, addBtn);
+  container.appendChild(addBtn);
+}
+
+function removeHashtag(el) {
+  el.remove();
+  if (lastPinData && lastPinData.p) {
+    lastPinData.p.hashtags = Array.from(document.querySelectorAll('#result-tags .tag')).map(t => t.dataset.tag || t.textContent.replace('×','').trim());
+  }
+}
+
+function addNewHashtag(container, addBtn) {
+  addBtn.style.display = 'none';
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.className = 'tag-inline-input';
+  inp.placeholder = 'hashtag';
+  container.insertBefore(inp, addBtn);
+  inp.focus();
+  const commit = () => {
+    const val = inp.value.trim().replace(/^#+/, '');
+    inp.remove();
+    addBtn.style.display = '';
+    if (!val) return;
+    const ht = '#' + val;
+    const s = document.createElement('span');
+    s.className = 'tag tag-removable';
+    s.dataset.tag = ht;
+    s.innerHTML = esc(ht) + ' <span class="tag-x" title="Remove" onclick="removeHashtag(this.closest(\'.tag\'))">×</span>';
+    container.insertBefore(s, addBtn);
+    if (lastPinData && lastPinData.p) {
+      lastPinData.p.hashtags = Array.from(document.querySelectorAll('#result-tags .tag')).map(t => t.dataset.tag || t.textContent.replace('×','').trim());
+    }
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } if (e.key === 'Escape') { inp.remove(); addBtn.style.display = ''; } });
+  inp.addEventListener('blur', commit);
+}
 
 function onTitleEdit() {
   const el = document.getElementById('result-title');
@@ -3428,6 +3516,8 @@ function clearNiche() {
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   activeNiche = '';
   document.getElementById('niche-custom-input').value = '';
+  const sugWrap = document.getElementById('audience-suggestions-wrap');
+  if (sugWrap) sugWrap.style.display = 'none';
 }
 
 function clearPainPoint() {
