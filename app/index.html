@@ -1156,6 +1156,10 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     <a href="#" onclick="openManageModal();return false;" style="color:var(--text3);text-decoration:none;transition:color 0.15s;cursor:pointer;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">Manage subscription</a>
     <span style="opacity:0.4;">·</span>
     <a href="mailto:pinlosupport@proton.me" style="color:var(--text3);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">Support</a>
+    <span style="opacity:0.4;">·</span>
+    <a href="/privacy.html" style="color:var(--text3);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">Privacy</a>
+    <span style="opacity:0.4;">·</span>
+    <a href="/terms.html" style="color:var(--text3);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">Terms</a>
   </div>
   <div style="margin-top:12px;opacity:0.6;">© 2026 Pinlo. Checkout handled by Stripe.</div>
 </footer>
@@ -1163,6 +1167,13 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 <script>
 const STRIPE_MONTHLY = 'https://buy.stripe.com/dRmcN56P2e8w29tevh8IU00';
 const STRIPE_ANNUAL = 'https://buy.stripe.com/00w3cvb5ic0o5lFfzl8IU01';
+
+// Escape user/AI-supplied text before it goes into innerHTML
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
 
 let pinsUsed = parseInt(localStorage.getItem('pinlo_pins_used') || '0'), FREE_LIMIT = 10;
 let isPro = false;
@@ -1296,6 +1307,10 @@ async function verifyStripeSession(sessionId) {
       const status = await checkProStatus(email);
       if (status.isPro) {
         activatePro(status.plan);
+      } else if (status.status === 'error') {
+        // Network blip or server error — keep the cached Pro state rather than
+        // flashing a paying user back to free. The server still enforces limits.
+        if (isPro) activatePro(proPlan); else updateUsage();
       } else {
         localStorage.removeItem('pinlo_pro_cache');
         isPro = false;
@@ -2233,7 +2248,7 @@ function renderAB(titleA, titleB) {
   [titleA, titleB].forEach((t,i) => {
     const card = document.createElement('div');
     card.className = 'ab-card'+(i===0?' selected':'');
-    card.innerHTML = '<div class="ab-label">Option '+(i===0?'A':'B')+'</div><div class="ab-title">'+t+'</div>';
+    card.innerHTML = '<div class="ab-label">Option '+(i===0?'A':'B')+'</div><div class="ab-title">'+esc(t)+'</div>';
     card.onclick = () => {
       if (titleEl) { titleEl.textContent = t; titleEl.style.display = ''; updateCharBar('title-bar','title-char',t.length,100); if (lastPinData) lastPinData.p.title = t; }
       block.style.display = 'none';
@@ -2274,9 +2289,9 @@ function renderPin(p) {
     tipWrap.style.display='block';
     if (!isPro) {
       const fallback = NICHE_TIPS[niche]||'';
-      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+niche+' tip 🔒</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+(fallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips →</span></div></div>';
+      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+esc(niche)+' tip 🔒</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+esc(fallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips →</span></div></div>';
     } else {
-      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+niche+' tip</div><div class="niche-tip-text" id="niche-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this product…</div></div>';
+      tipWrap.innerHTML='<div class="niche-tip"><div class="niche-tip-label">'+esc(niche)+' tip</div><div class="niche-tip-text" id="niche-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this product…</div></div>';
       fetchNicheTip(product, niche, document.getElementById('niche-tip-text'));
     }
   } else { tipWrap.style.display='none'; }
@@ -2371,10 +2386,10 @@ async function generatePin() {
         item.style.opacity = '0';
         item.style.transform = 'translateY(12px)';
         item.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
-        const tags = (p.hashtags||[]).map(t=>'<span class="bulk-item-tag">'+(t.startsWith('#')?t:'#'+t)+'</span>').join('');
+        const tags = (p.hashtags||[]).map(t=>'<span class="bulk-item-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
         const scoreColor = p.seo_score>=80?'#97c459':p.seo_score>=60?'var(--amber-text)':'var(--red)';
         const scoreHtml = '';
-        const pinTitle = p.title||''; const pinDesc = p.description||'';
+        const pinTitle = esc(p.title||''); const pinDesc = esc(p.description||'');
         item.innerHTML = '<div class="bulk-item-num">Pin '+(globalIndex+1)+' of '+qty+'</div>'+scoreHtml+
           '<div class="bulk-item-title">'+pinTitle+'</div>'+
           '<div class="copy-row" style="margin:4px 0 10px;"><button class="copy-btn bulk-copy-title" style="font-size:11px;padding:4px 12px;">Copy title</button></div>'+
@@ -2449,9 +2464,9 @@ async function generatePin() {
         tipDiv.style.gridColumn = '1 / -1';
         const bulkFallback = NICHE_TIPS[bulkNiche]||'';
         if (!isPro) {
-          tipDiv.innerHTML = '<div class="niche-tip-label">'+bulkNiche+' tip 🔒</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+(bulkFallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips →</span></div>';
+          tipDiv.innerHTML = '<div class="niche-tip-label">'+esc(bulkNiche)+' tip 🔒</div><div class="niche-tip-text"><span style="filter:blur(4px);user-select:none;pointer-events:none;">'+esc(bulkFallback.substring(0,100)||'Specific tips for your product...')+'...</span><span onclick="showPaywall(\'niche-tip\')" style="display:block;margin-top:8px;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;">Upgrade to Pro to unlock niche strategy tips →</span></div>';
         } else {
-          tipDiv.innerHTML = '<div class="niche-tip-label">'+bulkNiche+' tip</div><div class="niche-tip-text bulk-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this product…</div>';
+          tipDiv.innerHTML = '<div class="niche-tip-label">'+esc(bulkNiche)+' tip</div><div class="niche-tip-text bulk-tip-text" style="color:var(--text4);font-style:italic;">Getting tip for this product…</div>';
           bulkContainer.appendChild(tipDiv);
           fetchNicheTip(product, bulkNiche, tipDiv.querySelector('.bulk-tip-text'));
         }
@@ -2573,8 +2588,8 @@ function renderSavedProducts() {
   container.style.display='flex';
   let html='<span style="font-size:11px;color:var(--text4);white-space:nowrap;padding-top:2px;flex-shrink:0;">Saved:</span>';
   savedProducts.forEach((s,i) => {
-    html += '<span onclick="loadSavedProduct('+i+')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:4px 8px 4px 10px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:var(--bg2);color:var(--text2);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;" title="'+s.product+'">'+
-      '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+s.product+(s.niche?' <span style="font-size:10px;color:var(--text4);">'+s.niche+'</span>':'')+'</span>'+
+    html += '<span onclick="loadSavedProduct('+i+')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:4px 8px 4px 10px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:var(--bg2);color:var(--text2);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;" title="'+esc(s.product)+'">'+
+      '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(s.product)+(s.niche?' <span style="font-size:10px;color:var(--text4);">'+esc(s.niche)+'</span>':'')+'</span>'+
       '<span onclick="event.stopPropagation();deleteSavedProduct('+i+')" style="cursor:pointer;color:var(--text4);font-size:14px;line-height:1;flex-shrink:0;" title="Remove">×</span></span>';
   });
   container.innerHTML = html;
@@ -2645,8 +2660,8 @@ function renderHistory() {
   const list=document.createElement('div'); list.className='history-list';
   pinHistory.forEach((pin,i)=>{
     const item=document.createElement('div'); item.className='history-item';
-    const tags=(pin.hashtags||[]).slice(0,8).map(t=>'<span class="history-item-tag">'+(t.startsWith('#')?t:'#'+t)+'</span>').join('');
-    item.innerHTML='<div class="history-item-top"><div class="history-item-title">'+pin.title+'</div><div class="history-item-meta">'+formatPinDate(pin.date)+'</div></div><div style="margin-bottom:6px;">'+(pin.niche?'<span class="history-item-niche">'+pin.niche+'</span>':'')+(pin.product?'<span class="history-item-niche">'+pin.product+'</span>':'')+'</div><div class="history-item-desc">'+pin.description+'</div>'+(tags?'<div class="history-item-tags">'+tags+'</div>':'')+'<div class="history-actions"><button class="history-copy-btn" data-idx="'+i+'">Copy all</button><button class="history-delete-btn" data-idx="'+i+'">Delete</button></div>';
+    const tags=(pin.hashtags||[]).slice(0,8).map(t=>'<span class="history-item-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
+    item.innerHTML='<div class="history-item-top"><div class="history-item-title">'+esc(pin.title)+'</div><div class="history-item-meta">'+formatPinDate(pin.date)+'</div></div><div style="margin-bottom:6px;">'+(pin.niche?'<span class="history-item-niche">'+esc(pin.niche)+'</span>':'')+(pin.product?'<span class="history-item-niche">'+esc(pin.product)+'</span>':'')+'</div><div class="history-item-desc">'+esc(pin.description)+'</div>'+(tags?'<div class="history-item-tags">'+tags+'</div>':'')+'<div class="history-actions"><button class="history-copy-btn" data-idx="'+i+'">Copy all</button><button class="history-delete-btn" data-idx="'+i+'">Delete</button></div>';
     list.appendChild(item);
   });
   container.innerHTML='';
@@ -2682,13 +2697,13 @@ function filterHistory(query) {
     (p.niche||'').toLowerCase().includes(q) ||
     (p.description||'').toLowerCase().includes(q)
   );
-  if (!filtered.length) { container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text4);font-size:14px;">No pins match "' + query + '"</div>'; return; }
+  if (!filtered.length) { container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text4);font-size:14px;">No pins match "' + esc(query) + '"</div>'; return; }
   const list = document.createElement('div');
   list.className = 'history-list';
   filtered.forEach((pin, i) => {
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + pin.title + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div>' + (pin.niche ? '<span class="history-item-niche">' + pin.niche + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + pin.product + '</span>' : '') + '</div><div class="history-item-desc">' + pin.description + '</div>';
+    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + esc(pin.title) + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div>' + (pin.niche ? '<span class="history-item-niche">' + esc(pin.niche) + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + esc(pin.product) + '</span>' : '') + '</div><div class="history-item-desc">' + esc(pin.description) + '</div>';
     list.appendChild(item);
   });
   container.innerHTML = '';
@@ -2904,7 +2919,9 @@ async function submitEmailGate() {
       btn.textContent = 'Send login code →';
       return;
     }
-    // Show OTP step
+    // Show OTP step — reset the send button so "Use a different email" returns to a live form
+    btn.disabled = false;
+    btn.textContent = 'Send login code →';
     document.getElementById('gate-otp-email-display').textContent = email;
     document.getElementById('gate-step-email').style.display = 'none';
     document.getElementById('gate-step-otp').style.display = '';
@@ -2950,7 +2967,9 @@ async function submitOTP() {
       otpInput.focus();
       return;
     }
-    // Verified — log them in
+    // Verified — log them in (reset the button so a future gate open isn't stuck)
+    btn.disabled = false;
+    btn.textContent = 'Verify code →';
     setGateEmail(email);
     localStorage.setItem('pinlo_verified', 'true');
     // Sync usage from server (so they can't bypass by clearing localStorage)

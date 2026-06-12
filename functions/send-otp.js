@@ -44,8 +44,10 @@ export async function onRequestPost(context) {
     };
     await KV.put(rateKey, JSON.stringify(newRate), { expirationTtl: 3600 });
 
-    // Generate 6-digit OTP
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate 6-digit OTP with a CSPRNG (Math.random is predictable)
+    const buf = new Uint32Array(1);
+    crypto.getRandomValues(buf);
+    const code = String(100000 + (buf[0] % 900000));
 
     // Store OTP in KV with 10 minute TTL; reset attempt counter
     await KV.put(`otp:${emailKey}`, JSON.stringify({ code, createdAt: Date.now(), attempts: 0 }), { expirationTtl: 600 });
