@@ -31,6 +31,13 @@ export async function onRequestPost(context) {
     }
     const emailKey = email.toLowerCase().trim();
 
+    // Admin allowlist — bypasses the free quota for owner/testing accounts.
+    // Set ADMIN_EMAILS in Cloudflare (comma-separated). admin@pinlo.internal
+    // is always honored to match the documented convention.
+    const ADMIN_EMAILS = (context.env.ADMIN_EMAILS || '')
+      .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    const isAdmin = emailKey === 'admin@pinlo.internal' || ADMIN_EMAILS.includes(emailKey);
+
     // Autofill and niche-tip: verify email is known, no quota deduction, soft daily cap
     if (type === 'autofill' || type === 'niche-tip') {
       const isInternalEmail = emailKey === 'autofill@pinlo.internal';
@@ -89,9 +96,10 @@ export async function onRequestPost(context) {
       };
     }
 
-    // Pro status from D1 — single source of truth, ignores stale KV isPro field
-    let isPro = false;
-    if (DB) {
+    // Pro status from D1 — single source of truth, ignores stale KV isPro field.
+    // Admin accounts are treated as Pro without a subscriber row.
+    let isPro = isAdmin;
+    if (!isAdmin && DB) {
       try {
         const row = await DB.prepare(
           `SELECT status, current_period_end FROM subscribers WHERE email = ?`
@@ -129,11 +137,13 @@ export async function onRequestPost(context) {
     const data = await response.json();
 
     if (response.ok) {
-      user.usage = (user.usage || 0) + 1;
-      user.lastUsedAt = new Date().toISOString();
-      try {
-        await KV.put(emailKey, JSON.stringify(user));
-      } catch (_) { /* non-critical */ }
+      if (!isAdmin) {
+        user.usage = (user.usage || 0) + 1;
+        user.lastUsedAt = new Date().toISOString();
+        try {
+          await KV.put(emailKey, JSON.stringify(user));
+        } catch (_) { /* non-critical */ }
+      }
 
       try {
         const totalKey = '__global_pins__';

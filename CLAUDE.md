@@ -90,7 +90,7 @@ updated_at INTEGER
 - Request types `autofill` and `niche-tip` do **not** count toward the monthly quota
 - Free users: 10 generations/month, reset at calendar month boundary (`YYYY-MM`)
 - Pro users: unlimited (status checked via D1 through `check-pro`)
-- `admin@pinlo.internal` bypasses all tracking
+- `admin@pinlo.internal` and any address in `ADMIN_EMAILS` bypass the free pin limit and quota tracking in `claude.js`
 
 ### Stripe Integration
 
@@ -113,6 +113,7 @@ ANTHROPIC_API_KEY
 RESEND_API_KEY
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
+ADMIN_EMAILS          # optional, comma-separated; these emails bypass the free pin limit server-side (for owner/testing)
 ```
 
 Plus Cloudflare bindings (configured in Cloudflare dashboard, not `.env`):
