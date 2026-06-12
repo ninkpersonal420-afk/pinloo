@@ -191,7 +191,7 @@ h2 em{font-style:italic;font-weight:600;background:var(--gradient);background-si
 .toggle-knob{position:absolute;top:3px;left:3px;width:19px;height:19px;background:var(--cream);border-radius:50%;transition:transform 0.2s;}
 .toggle-switch.yearly .toggle-knob{transform:translateX(21px);}
 .save-pill{font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.5px;margin-left:4px;}
-.pricing-cards{display:grid;grid-template-columns:0.94fr 1.06fr;gap:1.75rem;max-width:920px;margin:0 auto;align-items:center;}
+.pricing-cards{display:grid;grid-template-columns:0.94fr 1.06fr;gap:1.75rem;max-width:920px;margin:0 auto;align-items:start;}
 .pricing-card{background:var(--white);border:1px solid var(--border);border-radius:22px;padding:2.75rem 2.5rem;position:relative;transition:box-shadow 0.25s;}
 .pricing-card:hover{box-shadow:var(--shadow-lg);}
 .pricing-card.pro{padding:3.25rem 3rem;border-radius:26px;border:1px solid transparent;background:linear-gradient(var(--dark),var(--dark)) padding-box,var(--gradient) border-box;}
@@ -216,9 +216,12 @@ h2 em{font-style:italic;font-weight:600;background:var(--gradient);background-si
 .plan-features li::before{content:'✓';width:19px;height:19px;border-radius:50%;background:rgba(217,79,56,0.1);color:var(--accent);font-weight:700;flex-shrink:0;font-size:10px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
 .plan-features li.dim{color:var(--text4);}
 .plan-features li.dim::before{content:'—';background:transparent;color:var(--border2);font-weight:400;font-size:13px;}
-.pricing-card.pro .plan-features li{color:rgba(250,247,242,0.85);font-size:14.5px;}
+.pricing-card.pro .plan-features{gap:0;}
+.pricing-card.pro .plan-features li{display:grid;grid-template-columns:22px 1fr 1fr;gap:0 12px;padding:11px 0;border-bottom:1px solid rgba(250,247,242,0.07);align-items:center;color:rgba(250,247,242,0.85);font-size:14px;line-height:1.4;}
+.pricing-card.pro .plan-features li:last-child{border-bottom:none;padding-bottom:0;}
 .pricing-card.pro .plan-features li::before{background:rgba(245,146,74,0.16);color:#F5A164;}
 .pricing-card.pro .plan-features li strong{color:#fff;font-weight:600;}
+.pricing-card.pro .plan-features li span{color:rgba(250,247,242,0.42);font-size:13px;}
 .plan-btn{display:block;width:100%;text-align:center;padding:16px;border-radius:100px;font-size:14.5px;font-weight:500;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
 .plan-btn.free{background:transparent;color:var(--ink);border:1px solid var(--border2);}
 .plan-btn.free:hover{border-color:var(--ink);}
@@ -706,13 +709,13 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
         </div>
         <p class="plan-desc" id="price-desc">Less than one lost commission · Cancel anytime</p>
         <ul class="plan-features">
-          <li><strong>Unlimited pins</strong> — post as much as you want</li>
-          <li><strong>A/B title testing</strong> — pick the best hook from two options</li>
-          <li><strong>10 pins in one click</strong> — a week of content in seconds</li>
-          <li><strong>SEO score on every pin</strong> — know it'll rank before you post</li>
-          <li><strong>Pain point suggestions</strong> — hooks that actually land</li>
-          <li><strong>Strategy tips</strong> — specific to what you're promoting</li>
-          <li>Every niche, full pin history</li>
+          <li><strong>Unlimited pins</strong><span>post as much as you want</span></li>
+          <li><strong>A/B title testing</strong><span>pick the best hook from two options</span></li>
+          <li><strong>10 pins in one click</strong><span>a week of content in seconds</span></li>
+          <li><strong>SEO score on every pin</strong><span>know it'll rank before you post</span></li>
+          <li><strong>Pain point suggestions</strong><span>hooks that actually land</span></li>
+          <li><strong>Strategy tips</strong><span>specific to what you're promoting</span></li>
+          <li><strong>Every niche</strong><span>full pin history included</span></li>
         </ul>
         <a href="/app" class="plan-btn paid" id="pro-cta">Start Pro — CA$11.99/mo</a>
       </div>
