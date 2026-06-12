@@ -196,6 +196,8 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .field-clear{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text4);cursor:pointer;background:none;border:none;padding:5px 0 0 1px;font-family:'Outfit',sans-serif;letter-spacing:0.5px;text-transform:uppercase;transition:color 0.15s;white-space:nowrap;text-align:left;}
 .field-clear::before{content:'×';font-size:14px;line-height:1;font-weight:400;}
 .field-clear:hover{color:var(--red);}
+.field-save{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--red);cursor:pointer;background:none;border:none;padding:5px 0 0 6px;font-family:'Outfit',sans-serif;letter-spacing:0.5px;text-transform:uppercase;transition:color 0.15s;white-space:nowrap;}
+.field-save:hover{color:var(--red2);}
 
 [data-theme="light"] .header{background:#FFFBF7;}
 [data-theme="light"] .tabs{background:#FFF8F3;}
@@ -520,7 +522,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
                   </div>
         <input type="text" id="product-input" placeholder="e.g. standing desk mat, collagen powder, fan..." oninput="onProductInput(this.value);"/>
         <button id="product-clear-btn" class="field-clear" onclick="clearProduct()">Clear</button>
-        <button class="field-clear" onclick="saveProduct()" style="color:var(--red);margin-left:2px;" title="Save for quick recall">★ Save</button>
+        <button class="field-save" onclick="saveProduct()" title="Save this product so you can reload it in one tap">★ Save</button>
         <div id="saved-products-row" style="display:none;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;"></div>
 
       </div>
@@ -769,7 +771,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding:0 0.25rem;">
         <div style="font-size:13px;font-weight:600;color:var(--text3);letter-spacing:0.3px;" id="history-count-text">0 saved pins</div>
         <div style="display:flex;gap:6px;">
-          <button class="clear-history-btn" onclick="exportHistoryCSV()">Export CSV</button>
+          <button class="clear-history-btn" onclick="exportHistoryCSV()">Download pins</button>
           <button class="clear-history-btn" onclick="clearHistory()">Clear all</button>
         </div>
       </div>
