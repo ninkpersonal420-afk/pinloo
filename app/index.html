@@ -159,10 +159,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .suggestion-chip{font-size:13px;padding:7px 15px;border-radius:100px;border:1px dashed var(--border2);cursor:pointer;color:var(--text3);background:transparent;transition:border-color 0.14s,color 0.14s,background 0.14s;font-family:'Outfit',sans-serif;}
 .suggestion-chip:hover{border-color:var(--red);color:var(--red);border-style:solid;background:var(--gradient-soft);}
 .pain-pills{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
-.audience-tag-input{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:9px 13px;background:var(--bg);border:1px solid var(--border);border-radius:12px;cursor:text;transition:border-color 0.18s,box-shadow 0.18s;min-height:50px;}
-.audience-tag-input:hover:not(:focus-within){border-color:var(--border2);}
-.audience-tag-input:focus-within{border-color:#F4705A;box-shadow:var(--ring);}
-[data-theme="light"] .audience-tag-input{background:#FFFCF9;}
 .audience-options{display:flex;flex-direction:column;gap:5px;margin-top:4px;}
 .audience-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-family:'Outfit',sans-serif;color:var(--text3);background:var(--bg);line-height:1.45;transition:border-color 0.14s,color 0.14s,background 0.14s;text-align:left;width:100%;box-sizing:border-box;user-select:none;}
 .audience-opt::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;margin-top:5px;transition:background 0.14s;}
@@ -389,11 +385,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .tag-add{font-size:12px;padding:5px 12px;border-radius:100px;background:transparent;color:var(--text4);border:1px dashed var(--border2);font-weight:500;cursor:pointer;transition:border-color 0.14s,color 0.14s,background 0.14s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:4px;}
 .tag-add:hover{border-color:var(--red);color:var(--red);border-style:solid;background:var(--gradient-soft);}
 .tag-inline-input{font-size:12px;padding:5px 12px;border-radius:100px;border:1px solid var(--red);background:var(--bg2);color:var(--text);font-family:'Outfit',sans-serif;outline:none;width:110px;}
-.audience-suggestions-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
-.audience-sug-label{font-size:10.5px;font-weight:700;color:var(--text4);letter-spacing:1.2px;text-transform:uppercase;margin-top:11px;margin-bottom:6px;}
-.audience-sug-chip{font-size:12.5px;padding:6px 13px;border-radius:100px;border:1px dashed var(--border2);cursor:pointer;color:var(--text3);background:transparent;transition:border-color 0.14s,color 0.14s,background 0.14s,opacity 0.14s;font-family:'Outfit',sans-serif;user-select:none;}
-.audience-sug-chip:hover{border-color:var(--red);color:var(--red);border-style:solid;background:var(--gradient-soft);}
-.audience-sug-chip.used{opacity:0.35;pointer-events:none;}
 .copy-row{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;}
 .copy-btn{font-size:12.5px;font-weight:600;padding:7px 15px;border:1px solid var(--border);border-radius:100px;cursor:pointer;background:transparent;color:var(--text3);font-family:'Outfit',sans-serif;transition:border-color 0.15s,color 0.15s,background 0.15s;}
 .copy-btn:hover{border-color:var(--text2);color:var(--text);background:var(--bg4);}
@@ -517,7 +508,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   .niche-pills{gap:5px;margin-top:6px;}
   .pill{font-size:11.5px;padding:6px 12px;}
   .pain-pills{gap:5px;}
-  .pain-pill{font-size:12px;padding:5px 12px;}
+  .pain-pill{font-size:12.5px;padding:9px 13px;}
   .season-chip{font-size:12px;padding:6px 13px;}
   .suggestion-chip{font-size:12px;padding:5px 12px;}
   .gen-btn{padding:15px;font-size:15px;}
@@ -1524,30 +1515,20 @@ function clearNicheSelection() {
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   activeNiche = '';
   document.getElementById('niche-auto-tag').style.display = 'none';
-  const sugWrap = document.getElementById('audience-suggestions-wrap');
-  if (sugWrap) sugWrap.style.display = 'none';
 }
 
 function applyNicheData(val) {
   const data = NICHE_DATA[val];
-  if (!data) return;
-  const wrap = document.getElementById('audience-suggestions-wrap');
-  const row = document.getElementById('audience-suggestions');
-  if (wrap && row && data.audience) {
-    row.innerHTML = '';
-    const auds = data.audience.split(',').map(a => a.trim()).filter(a => a);
-    auds.forEach(aud => {
-      const chip = document.createElement('span');
-      chip.className = 'audience-sug-chip';
-      chip.textContent = aud;
-      chip.onclick = () => {
-        addAudienceChip(aud);
-        chip.classList.add('used');
-      };
-      row.appendChild(chip);
-    });
-    wrap.style.display = auds.length ? '' : 'none';
-  }
+  if (!data || !data.audience) return;
+  // Seed audience options from niche data, but never clobber AI results or user picks
+  const container = document.getElementById('audience-options');
+  if (!container) return;
+  const hasOptions = container.querySelectorAll('.audience-opt').length > 0;
+  const isDetecting = container.querySelector('.audience-detecting') &&
+                      container.querySelector('.audience-detecting').textContent === 'Detecting audience...';
+  if (hasOptions || isDetecting) return;
+  const auds = data.audience.split(',').map(a => a.trim()).filter(a => a);
+  if (auds.length) renderAudienceOptions(auds, true);
 }
 
 let autoDetectEnabled = true;
@@ -1574,7 +1555,7 @@ function toggleAudienceDetect() {
   toggle.style.background = audienceDetectEnabled ? '#F4705A' : 'var(--border2)';
   toggle.style.borderColor = audienceDetectEnabled ? '#F4705A' : 'var(--border2)';
   knob.style.left = audienceDetectEnabled ? '17px' : '3px';
-  label.textContent = audienceDetectEnabled ? 'Auto-fill ON' : 'Auto-fill OFF';
+  label.textContent = audienceDetectEnabled ? 'Auto-detect ON' : 'Auto-detect OFF';
   label.style.color = audienceDetectEnabled ? '#F4705A' : 'var(--text4)';
 }
 
@@ -1595,9 +1576,10 @@ function onProductInput(val) {
   const trimmed = val.trim();
   if (trimmed.length === 0) {
     if (nicheDetectEnabled) clearNicheSelection();
-    if (audienceDetectEnabled) { clearAudience(); document.getElementById('audience-auto-tag').style.display = 'none'; }
+    if (audienceDetectEnabled) { audienceFillSeq++; resetAudienceOptions(); }
     document.getElementById('pain-pills').innerHTML = '';
     document.getElementById('benefit-input').value = '';
+    updatePainCounter();
     return;
   }
   if (trimmed.length < 6) return;
@@ -1820,29 +1802,38 @@ async function autoGeneratePains(product) {
 function renderAudienceOptions(list, markAutoDetected) {
   const container = document.getElementById('audience-options');
   if (!container) return;
+  // Preserve what the user already chose: selected values and custom-typed options
+  const activeValues = new Set(Array.from(container.querySelectorAll('.audience-opt.active')).map(o => o.dataset.value));
+  const customOpts = Array.from(container.querySelectorAll('.audience-opt:not(.auto-suggested)'));
   container.innerHTML = '';
-  list.forEach(text => {
-    text = text.trim();
-    if (!text) return;
+  const makeOpt = (text, isAuto) => {
     const opt = document.createElement('span');
-    opt.className = 'audience-opt' + (markAutoDetected ? ' auto-suggested' : '');
+    opt.className = 'audience-opt' + (isAuto ? ' auto-suggested' : '');
     opt.textContent = text;
     opt.dataset.value = text.toLowerCase();
+    if (activeValues.has(opt.dataset.value)) opt.classList.add('active');
     opt.onclick = () => { opt.classList.toggle('active'); updateAudienceClear(); };
-    container.appendChild(opt);
+    return opt;
+  };
+  const seen = new Set();
+  list.forEach(text => {
+    text = text.trim();
+    if (!text || seen.has(text.toLowerCase())) return;
+    seen.add(text.toLowerCase());
+    container.appendChild(makeOpt(text, markAutoDetected));
+  });
+  customOpts.forEach(o => {
+    if (seen.has(o.dataset.value)) return;
+    seen.add(o.dataset.value);
+    container.appendChild(makeOpt(o.textContent, false));
   });
   updateAudienceClear();
 }
 
-// Legacy shim — used by applyNicheData and autoFillAudience
+// AI/niche results arrive as a comma-separated string — split and render as options
 function renderAudienceChips(audienceStr) {
   const list = audienceStr.split(',').map(a => a.trim()).filter(a => a.length > 0).slice(0, 6);
   renderAudienceOptions(list, true);
-}
-
-function addAudienceChip(text) {
-  // Add a new option chip (used by old suggestion chips — now just renders inline)
-  renderAudienceChips(getAudienceValue() + (getAudienceValue() ? ', ' : '') + text);
 }
 
 function audienceCustomKeydown(e) {
@@ -1853,6 +1844,9 @@ function audienceCustomKeydown(e) {
     // Add as a new selectable option and auto-select it
     const container = document.getElementById('audience-options');
     if (!container) return;
+    // Drop the idle placeholder hint (but keep an in-flight "Detecting..." note)
+    const ph = container.querySelector('.audience-detecting');
+    if (ph && ph.textContent !== 'Detecting audience...') ph.remove();
     const existing = Array.from(container.querySelectorAll('.audience-opt')).map(o => o.dataset.value);
     if (existing.includes(val.toLowerCase())) {
       // Just select the existing one
@@ -1896,15 +1890,19 @@ function updatePainCounter() {
   if (counter) { counter.textContent = n + ' selected'; counter.style.display = n > 0 ? '' : 'none'; }
 }
 
+let audienceFillSeq = 0;
 async function autoFillAudience(product) {
   if (!audienceDetectEnabled) return;
-  const inp = document.getElementById('audience-input');
+  const mySeq = ++audienceFillSeq;
+  const container = document.getElementById('audience-options');
   const tag = document.getElementById('audience-auto-tag');
+  if (!container) return;
   const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || 'general';
-  inp.value = '';
-  inp.placeholder = 'Detecting audience...';
-  inp.style.borderColor = '';
-  tag.style.display = 'none';
+  if (tag) tag.style.display = 'none';
+  // Show detecting state without destroying existing options or selections
+  let det = container.querySelector('.audience-detecting');
+  if (!det) { det = document.createElement('span'); det.className = 'audience-detecting'; container.appendChild(det); }
+  det.textContent = 'Detecting audience...';
   // Clean product string - strip brand names, model numbers, years before sending to AI
   const cleanProduct = product.replace(/(20\d\d)/g,'').replace(/[A-Z]{2,}[0-9]+\w*/g,'').replace(/(upgraded|premium|pro|plus|ultra|deluxe|new|improved|original|authentic|genuine|official)/gi,'').replace(/\s+/g,' ').trim();
   try {
@@ -1912,24 +1910,33 @@ async function autoFillAudience(product) {
     const email = getGateEmail() || 'autofill@pinlo.internal';
     const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',max_tokens:80,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'"\nNiche: '+(niche||'general')+'\n\nList the buyer personas for this product. Format: persona1, persona2, persona3'}]})});
     if (!res.ok) { console.log('Audience autofill skipped: server error', res.status); return; }
+    // A newer detection has been fired — discard this stale result
+    if (mySeq !== audienceFillSeq) return;
     const data = await res.json();
     const result = data.content.map(i=>i.text||'').join('').trim().replace(/^["']|["']$/g,'').replace(/^(Target audience:|Audience:)/i,'').trim();
     if (result === 'INVALID' || result.toLowerCase().includes('not a real') || result.toLowerCase().includes('invalid') || result.toLowerCase().includes('not enough context') || result.toLowerCase().includes('cannot provide') || result.toLowerCase().includes("don't have enough")) {
-      inp.value = '';
-      inp.placeholder = '⚠️ Try a more specific product name';
-      const tagBox = document.getElementById('audience-tag-input');
-      if (tagBox) tagBox.style.borderColor = 'var(--red)';
-      tag.style.display = 'none';
+      det.textContent = 'Could not detect an audience — try a more specific product name';
     } else if (result) {
       renderAudienceChips(result);
-      const tagBox = document.getElementById('audience-tag-input');
-      if (tagBox) tagBox.style.borderColor = '';
-      tag.style.display = 'inline-block';
+      if (tag) tag.style.display = 'inline-block';
     }
   } catch(e) { console.log('Audience autofill skipped:',e); }
   finally {
-    if (inp.placeholder === 'Detecting audience...') inp.placeholder = 'Add more...';
+    if (mySeq === audienceFillSeq) {
+      const d = container.querySelector('.audience-detecting');
+      if (d && d.textContent === 'Detecting audience...') d.remove();
+      if (container.children.length === 0) resetAudienceOptions();
+    }
   }
+}
+
+function resetAudienceOptions() {
+  const container = document.getElementById('audience-options');
+  if (!container) return;
+  container.innerHTML = '<span class="audience-detecting">Select a niche or type a product to detect your audience</span>';
+  const tag = document.getElementById('audience-auto-tag');
+  if (tag) tag.style.display = 'none';
+  updateAudienceClear();
 }
 
 function pickSeason(el, val) { document.querySelectorAll('.season-chip').forEach(s=>s.classList.remove('active')); el.classList.add('active'); activeSeason=val; }
@@ -3505,34 +3512,32 @@ function renderPricingTab() {
 }
 
 function clearAudience() {
-  const container = document.getElementById('audience-tag-input');
-  const inp = document.getElementById('audience-input');
-  if (container) container.querySelectorAll('.audience-chip').forEach(c => c.remove());
-  if (inp) { inp.value = ''; inp.placeholder = 'Type an audience and press Enter...'; }
-  const tagBox = document.getElementById('audience-tag-input');
-  if (tagBox) tagBox.style.borderColor = '';
+  const container = document.getElementById('audience-options');
+  if (container) container.querySelectorAll('.audience-opt.active').forEach(o => o.classList.remove('active'));
+  const custom = document.getElementById('audience-custom-input');
+  if (custom) custom.value = '';
+  const autoTag = document.getElementById('audience-auto-tag');
+  if (autoTag) autoTag.style.display = 'none';
   updateAudienceClear();
 }
 
 function clearProduct() {
   document.getElementById('product-input').value = '';
-  // Reset auto-detected stuff
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   activeNiche = '';
-  const audiContainer = document.getElementById('audience-tag-input');
-  if (audiContainer) audiContainer.querySelectorAll('.audience-chip').forEach(c => c.remove());
-  const audiInp = document.getElementById('audience-input');
-  if (audiInp) { audiInp.value = ''; audiInp.placeholder = 'Type an audience and press Enter...'; }
+  audienceFillSeq++; // invalidate any in-flight detection
+  resetAudienceOptions();
+  const custom = document.getElementById('audience-custom-input');
+  if (custom) custom.value = '';
   document.getElementById('pain-pills').innerHTML = '';
   document.getElementById('benefit-input').value = '';
+  updatePainCounter();
 }
 
 function clearNiche() {
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   activeNiche = '';
   document.getElementById('niche-custom-input').value = '';
-  const sugWrap = document.getElementById('audience-suggestions-wrap');
-  if (sugWrap) sugWrap.style.display = 'none';
 }
 
 function clearPainPoint() {
