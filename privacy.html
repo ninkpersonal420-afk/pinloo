@@ -75,16 +75,17 @@ footer a:hover{color:rgba(255,255,255,0.7);}
   <p>To run the app, send your sign-in link, process your payment, and answer your support emails. That's genuinely it. We're not building ad profiles or selling lists. There's no business model here that requires doing anything creepy with your data.</p>
 
   <h2>Who else sees it</h2>
-  <p>Three services touch your data in some way:</p>
+  <p>Four services touch your data in some way:</p>
   <ul>
-    <li><strong>Stripe</strong> — processes your payment. Their privacy policy is at <a href="https://stripe.com/privacy" target="_blank">stripe.com/privacy</a>.</li>
+    <li><strong>Stripe</strong> — processes your payment. Your billing email and payment details go to them. Their privacy policy is at <a href="https://stripe.com/privacy" target="_blank">stripe.com/privacy</a>.</li>
     <li><strong>Anthropic</strong> — the AI that generates your pin copy. When you hit generate, your product inputs go to their API. Their privacy policy is at <a href="https://www.anthropic.com/privacy" target="_blank">anthropic.com/privacy</a>.</li>
-    <li><strong>Cloudflare</strong> — hosts the site and handles security. They see the same metadata any hosting provider would.</li>
+    <li><strong>Resend</strong> — sends your sign-in code email. Your email address is passed to them to deliver the login code. Their privacy policy is at <a href="https://resend.com/privacy" target="_blank">resend.com/privacy</a>.</li>
+    <li><strong>Cloudflare</strong> — hosts the site and stores your account data (email, usage count, subscription status) in their KV and D1 database services. Their privacy policy is at <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">cloudflare.com/privacypolicy</a>.</li>
   </ul>
   <p>Nobody else. We're not passing your email to a marketing platform or sharing anything with data brokers.</p>
 
-  <h2>Cookies</h2>
-  <p>Just the basics — keeping you signed in, remembering your theme preference. No ad tracking, no third-party cookies following you around the web.</p>
+  <h2>Local storage</h2>
+  <p>The app stores your sign-in state and theme preference in your browser's local storage. No tracking cookies, no third-party cookies following you around the web.</p>
 
   <h2>How long we keep things</h2>
   <p>Your account data stays as long as your account does. Your pin history lives in your own browser's local storage — you can clear it anytime. If you want your account deleted, email us and we'll remove everything within 30 days.</p>
@@ -100,6 +101,9 @@ footer a:hover{color:rgba(255,255,255,0.7);}
 
   <h2>If this changes</h2>
   <p>We'll update the date at the top when something changes. If it's a big change, we'll email you. Small tweaks won't warrant an email blast.</p>
+
+  <h2>Governing law</h2>
+  <p>This policy is governed by the laws of Canada.</p>
 
   <h2>Questions</h2>
   <p>Email <a href="mailto:pinlosupport@proton.me">pinlosupport@proton.me</a>. We read every email and respond to everything.</p>

@@ -15,6 +15,7 @@ export async function onRequestPost(context) {
     }
 
     const emailKey = email.toLowerCase().trim();
+    const MAX_ATTEMPTS = 5;
 
     // Look up OTP
     const stored = await KV.get(`otp:${emailKey}`);
@@ -22,7 +23,8 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: 'Code expired or not found. Please request a new one.' }), { status: 400, headers: corsHeaders });
     }
 
-    const { code: savedCode, createdAt } = JSON.parse(stored);
+    const otpData = JSON.parse(stored);
+    const { code: savedCode, createdAt, attempts = 0 } = otpData;
 
     // Check expiry (10 min)
     if (Date.now() - createdAt > 10 * 60 * 1000) {
@@ -30,8 +32,21 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: 'Code has expired. Please request a new one.' }), { status: 400, headers: corsHeaders });
     }
 
+    // Check attempt limit before comparing — invalidate OTP to prevent further guessing
+    if (attempts >= MAX_ATTEMPTS) {
+      await KV.delete(`otp:${emailKey}`);
+      return new Response(JSON.stringify({ error: 'Too many incorrect attempts. Please request a new code.' }), { status: 400, headers: corsHeaders });
+    }
+
     // Check code
     if (code.trim() !== savedCode) {
+      const newAttempts = attempts + 1;
+      if (newAttempts >= MAX_ATTEMPTS) {
+        await KV.delete(`otp:${emailKey}`);
+        return new Response(JSON.stringify({ error: 'Too many incorrect attempts. Please request a new code.' }), { status: 400, headers: corsHeaders });
+      }
+      // Update attempt count in the stored OTP
+      await KV.put(`otp:${emailKey}`, JSON.stringify({ ...otpData, attempts: newAttempts }), { expirationTtl: Math.ceil((10 * 60 * 1000 - (Date.now() - createdAt)) / 1000) });
       return new Response(JSON.stringify({ error: 'Incorrect code. Please try again.' }), { status: 400, headers: corsHeaders });
     }
 

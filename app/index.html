@@ -875,7 +875,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem;">
         <div style="background:var(--gradient);border-radius:16px;padding:1.5rem 1rem;text-align:center;box-shadow:0 4px 20px rgba(217,79,56,0.25);position:relative;overflow:hidden;">
           <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none;"></div>
-          <div style="font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#fff;line-height:1;">18</div>
+          <div style="font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#fff;line-height:1;">24</div>
           <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:5px;line-height:1.4;font-weight:500;">Supported niches</div>
         </div>
         <div style="background:var(--gradient);border-radius:16px;padding:1.5rem 1rem;text-align:center;box-shadow:0 4px 20px rgba(217,79,56,0.25);position:relative;overflow:hidden;">
@@ -1081,7 +1081,6 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 </footer>
 
 <script>
-const ANTHROPIC_KEY = '';
 const STRIPE_MONTHLY = 'https://buy.stripe.com/dRmcN56P2e8w29tevh8IU00';
 const STRIPE_ANNUAL = 'https://buy.stripe.com/00w3cvb5ic0o5lFfzl8IU01';
 
@@ -1253,7 +1252,14 @@ function updateQtyControls() {
 }
 let autoDetectTimer = null, audienceTimer = null;
 let pinHistory = JSON.parse(localStorage.getItem('pinai_history') || '[]');
-let isDark = false;
+let isDark = localStorage.getItem('pinlo_theme') === 'dark';
+if (isDark) {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = '🌙';
+  });
+}
 
 const NICHE_DATA = {
   'Beauty & Skincare':{audience:'women 25-45, skincare beginners, budget-conscious shoppers',products:['vitamin C serum','jade roller','tinted moisturizer','lip plumper','sheet masks','scalp massager'],pains:['Dull tired skin','Breakouts','Dark spots','Dry skin','Fine lines forming']},
@@ -1314,6 +1320,7 @@ const NICHE_TIPS = {
 function toggleTheme() {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  localStorage.setItem('pinlo_theme', isDark ? 'dark' : 'light');
   document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
 }
 
@@ -1575,35 +1582,31 @@ async function autoGeneratePains(product) {
     // Free users get static pain point chips based on niche
     const staticPains = {
       'Beauty & Skincare':['Sensitive skin reactions','Expensive products','Confusing routines','Ineffective results'],
-      'Fitness & Gym':['No motivation','Back pain from sitting','Hard to stay consistent','Expensive gym fees'],
-      'Home & Organization':['Clutter stress','Wasted space','Hard to find things','Disorganized routines'],
-      'Tech & Gadgets':['Slow devices','Cable mess','Poor battery life','Expensive upgrades'],
-      'Food & Recipes':['No time to cook','Recipe boredom','Unhealthy eating','Food waste'],
-      'Fashion & Style':['Outfit confusion','Fast fashion waste','Limited budget','Nothing to wear'],
-      'Mom & Baby':['Sleep deprivation','Overwhelming choices','Safety concerns','Limited time'],
-      'Travel':['Overpacking','Hidden costs','Poor planning','Missing out'],
-      'Personal Finance':['Living paycheck to paycheck','Impulse spending','No savings','Debt stress'],
-      'Self Improvement':['Lack of motivation','Bad habits','No consistency','Overwhelm'],
-      'Pets':['Vet costs','Behavior issues','Finding quality products','Limited time'],
-      'DIY & Crafts':['Wasted materials','Complex instructions','Limited tools','Project failures'],
-      'Outdoor & Garden':['Plant deaths','Weather damage','Limited space','High maintenance'],
       'Books & Education':['No time to read','Information overload','Expensive courses','Hard to focus'],
-      'Kitchen & Cooking':['Meal prep stress','Food waste','Limited recipes','Equipment gaps'],
-      'Wedding & Events':['Budget overruns','Decision fatigue','Vendor stress','Time pressure'],
-      'Photography':['Bad lighting','Blurry photos','Expensive gear','Editing complexity'],
+      'DIY & Crafts':['Wasted materials','Complex instructions','Limited tools','Project failures'],
+      'Fashion & Style':['Outfit confusion','Fast fashion waste','Limited budget','Nothing to wear'],
+      'Fitness & Gym':['No motivation','Back pain from sitting','Hard to stay consistent','Expensive gym fees'],
+      'Food & Recipes':['No time to cook','Recipe boredom','Unhealthy eating','Food waste'],
       'Gaming':['Back pain from gaming','Poor audio','Cluttered desk','Wrist strain'],
-      'Mental Health':['Constant anxiety','Trouble sleeping','Feeling overwhelmed','Hard to switch off'],
-      'Baby & Nursery':['Baby not sleeping','Unsafe sleep space','Overwhelmed by choices','Expensive setup'],
-      'Cleaning & Organization':['House always messy','Cleaning takes all day','Products do not work','No storage'],
       'Hair Care':['Frizzy unmanageable hair','Heat damage','Scalp issues','Color fading fast'],
-      'Supplements & Nutrition':['Constant fatigue','Hitting a plateau','Poor gut health','Slow recovery'],
-      'Home Office':['Neck and back pain','Distracting workspace','Bad video call setup','Poor posture'],
-      'Candles & Home Fragrance':['Home smells stale','Toxic candles','Scent fades fast','Generic gift options'],
+      'Health & Wellness':['Low energy all day','Trouble sleeping','Constant brain fog','Stress and anxiety'],
+      'Home Decor':['Home feels cold','Cheap-looking decor','No storage space','Hard to find a cohesive style'],
       'Jewelry & Accessories':['Jewelry turns green','Generic gifts','Outfit feels unfinished','Allergic to cheap metals'],
+      'Kitchen & Cooking':['Meal prep stress','Food waste','Limited recipes','Equipment gaps'],
+      'Outdoor & Garden':['Plant deaths','Weather damage','Limited space','High maintenance'],
+      'Parenting & Family':['Sleep deprivation','Overwhelming choices','Safety concerns','Limited time'],
+      'Personal Finance':['Living paycheck to paycheck','Impulse spending','No savings','Debt stress'],
+      'Pets':['Vet costs','Behavior issues','Finding quality products','Limited time'],
+      'Photography':['Bad lighting','Blurry photos','Expensive gear','Editing complexity'],
+      'Self Improvement':['Lack of motivation','Bad habits','No consistency','Overwhelm'],
       'Stationery & Journaling':['Inconsistent planning','Chaotic schedule','Cannot stick to a system','Expensive supplies'],
-      'Vintage & Thrift':['Items look worn','Hard to style vintage','No space for finds','Finding quality pieces']
+      'Supplements & Nutrition':['Constant fatigue','Hitting a plateau','Poor gut health','Slow recovery'],
+      'Tech & Gadgets':['Slow devices','Cable mess','Poor battery life','Expensive upgrades'],
+      'Travel':['Overpacking','Hidden costs','Poor planning','Missing out'],
+      'Vintage & Thrift':['Items look worn','Hard to style vintage','No space for finds','Finding quality pieces'],
+      'Wedding & Events':['Budget overruns','Decision fatigue','Vendor stress','Time pressure']
     };
-    const niche = document.querySelector('.pill.active')?.textContent || '';
+    const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
     const pains = staticPains[niche] || ['Quality concerns','High costs','Limited options','Time constraints'];
     container.innerHTML = '';
     const updateBenefitFromPills = () => {
@@ -1925,7 +1928,7 @@ function buildMsg(product, niche, audience, benefit, extra) {
 }
 
 async function callClaude(sys, msg) {
-  const email = isPro ? 'admin@pinlo.internal' : (getGateEmail() || '');
+  const email = getGateEmail() || '';
   const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,model:'claude-haiku-4-5',max_tokens:800,system:sys,messages:[{role:'user',content:msg}]})});
   if (res.status === 402) {
     const errData = await res.json();
@@ -2189,7 +2192,7 @@ function renderPin(p) {
 
 async function fetchNicheTip(product, niche, el) {
   try {
-    const email = getEmail()||'anonymous';
+    const email = getGateEmail()||'anonymous';
     const sys = `Pinterest affiliate tip writer. Write ONE specific, actionable tip for the exact product given.
 Rules:
 - Must reference the specific product type — no generic niche advice
@@ -2360,7 +2363,7 @@ async function generatePin() {
     }
     updateUsage();
     if (pinsUsed>=FREE_LIMIT&&!isPro) setTimeout(()=>showPaywall('limit'),2000);
-  } catch(e) { if (e.message !== 'free_limit_reached') { alert('Something went wrong. Check your API key and try again.'); } console.error(e); }
+  } catch(e) { if (e.message !== 'free_limit_reached') { alert('Something went wrong. Please try again.'); } console.error(e); }
   finally { const gb=document.getElementById('gen-btn'); if(gb) gb.disabled=false; const qd=document.getElementById('qty-down'); if(qd) qd.disabled=pinQty<=1; const qu=document.getElementById('qty-up'); if(qu) qu.disabled=pinQty>=(isPro?10:3); document.getElementById('loading').classList.remove('show'); document.getElementById('loading-text').textContent='Crafting your pin';
     const lbl=document.getElementById('gen-btn-label');
     if(lbl) lbl.textContent='Generate '+(pinQty===1?'1 Pin':pinQty+' Pins');
@@ -2448,12 +2451,12 @@ function toggleBilling() {
   knob.style.left = isAnnual ? '23px' : '3px';
   monthlyLabel.style.color = isAnnual ? 'var(--text3)' : 'var(--text)';
   monthlyLabel.style.fontWeight = isAnnual ? '400' : '600';
-  if (price) price.textContent = isAnnual ? '$6.58' : '$11.99';
+  if (price) price.textContent = isAnnual ? '$7.50' : '$11.99';
   if (period) period.textContent = isAnnual ? '/month' : '/month';
   if (note) note.textContent = isAnnual ? 'Billed $89.99/year · Cancel anytime' : 'Billed monthly · Cancel anytime';
 }
 
-function submitSupport() {
+async function submitSupport() {
   const type = document.getElementById('support-type').value;
   const email = document.getElementById('support-email').value.trim();
   const message = document.getElementById('support-message').value.trim();
@@ -2461,17 +2464,22 @@ function submitSupport() {
   const btn = document.getElementById('support-btn');
   btn.disabled = true;
   btn.textContent = 'Sending...';
-  const subject = encodeURIComponent('Pinlo ' + type.charAt(0).toUpperCase() + type.slice(1) + (email ? ' from ' + email : ''));
-  const body = encodeURIComponent((email ? 'From: ' + email + '\n\n' : '') + 'Type: ' + type + '\n\nMessage:\n' + message);
-  const gmailUrl = 'https://mail.google.com/mail/?view=cm&to=pinlosupport@proton.me&su=' + subject + '&body=' + body;
-  window.open(gmailUrl, '_blank');
-  setTimeout(() => {
+  try {
+    const res = await fetch('/send-support', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, email, message })
+    });
+    if (!res.ok) throw new Error('send failed');
     document.getElementById('support-success').style.display = 'block';
     document.getElementById('support-message').value = '';
     document.getElementById('support-email').value = '';
+  } catch (e) {
+    alert('Message failed to send. Please email us directly at pinlosupport@proton.me');
+  } finally {
     btn.disabled = false;
-    btn.textContent = 'Send Message';
-  }, 500);
+    btn.textContent = 'Send message';
+  }
 }
 
 

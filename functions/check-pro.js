@@ -6,7 +6,6 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  // CORS headers - allow the app to call this from any page
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -21,23 +20,22 @@ export async function onRequestPost(context) {
     }
 
     const email = emailRaw.toLowerCase().trim();
-    // Quick sanity check - basic email shape, not full RFC validation
     if (!email.includes('@') || email.length < 5 || email.length > 254) {
       return jsonResponse({ isPro: false, error: 'Invalid email' }, 400, corsHeaders);
     }
 
-    // Query the database
     const row = await env.DB.prepare(
       `SELECT status, plan, current_period_end FROM subscribers WHERE email = ?`
     ).bind(email).first();
 
     if (!row) {
-      // Email not in database - they've never paid
       return jsonResponse({ isPro: false, status: 'free' }, 200, corsHeaders);
     }
 
-    // Pro means: status is 'active' or 'trialing' (and not past_due, canceled, etc)
-    const isPro = row.status === 'active' || row.status === 'trialing';
+    const now = Math.floor(Date.now() / 1000);
+    // past_due keeps access until the current period ends (Stripe is still retrying)
+    const isPro = row.status === 'active' || row.status === 'trialing' ||
+                  (row.status === 'past_due' && row.current_period_end && row.current_period_end > now);
 
     return jsonResponse({
       isPro,
@@ -52,7 +50,6 @@ export async function onRequestPost(context) {
   }
 }
 
-// Handle CORS preflight
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,

@@ -14,18 +14,41 @@ export async function onRequestPost(context) {
     if (!email || typeof email !== 'string' || !email.includes('@')) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400, headers: corsHeaders });
     }
-
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ error: 'Email service not configured' }), { status: 500, headers: corsHeaders });
     }
 
     const emailKey = email.toLowerCase().trim();
 
+    // Rate limit: max 1 send per 60 seconds, max 5 per hour per email
+    const rateKey = `otp_rate:${emailKey}`;
+    const rateRaw = await KV.get(rateKey).catch(() => null);
+    const rate = rateRaw ? JSON.parse(rateRaw) : null;
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
+
+    if (rate) {
+      if (now - rate.lastSent < 60000) {
+        return new Response(JSON.stringify({ error: 'Please wait a moment before requesting another code.' }), { status: 429, headers: corsHeaders });
+      }
+      const windowCount = (now - rate.windowStart < oneHour) ? rate.count : 0;
+      if (windowCount >= 5) {
+        return new Response(JSON.stringify({ error: 'Too many code requests. Please try again in an hour.' }), { status: 429, headers: corsHeaders });
+      }
+    }
+
+    const newRate = {
+      lastSent: now,
+      windowStart: (rate && now - rate.windowStart < oneHour) ? rate.windowStart : now,
+      count: (rate && now - rate.windowStart < oneHour) ? rate.count + 1 : 1
+    };
+    await KV.put(rateKey, JSON.stringify(newRate), { expirationTtl: 3600 });
+
     // Generate 6-digit OTP
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store OTP in KV with 10 minute TTL
-    await KV.put(`otp:${emailKey}`, JSON.stringify({ code, createdAt: Date.now() }), { expirationTtl: 600 });
+    // Store OTP in KV with 10 minute TTL; reset attempt counter
+    await KV.put(`otp:${emailKey}`, JSON.stringify({ code, createdAt: Date.now(), attempts: 0 }), { expirationTtl: 600 });
 
     // Send email via Resend
     const res = await fetch('https://api.resend.com/emails', {

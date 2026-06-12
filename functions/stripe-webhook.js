@@ -34,7 +34,7 @@ export async function onRequestPost(context) {
         break;
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
-        await handleSubscriptionChange(env.DB, event.data.object);
+        await handleSubscriptionChange(env.DB, event.data.object, env.STRIPE_SECRET_KEY);
         break;
       case 'customer.subscription.deleted':
         await handleSubscriptionCanceled(env.DB, event.data.object);
@@ -79,28 +79,47 @@ async function handleCheckoutCompleted(db, session) {
   ).bind(email, customerId, subscriptionId, now, now).run();
 }
 
-async function handleSubscriptionChange(db, subscription) {
+async function handleSubscriptionChange(db, subscription, stripeSecret) {
   // Fired when a subscription is created or updated (renewal, plan change, etc).
   const customerId = subscription.customer;
   const subscriptionId = subscription.id;
-  const status = subscription.status; // 'active', 'trialing', 'past_due', 'canceled', etc
+  const status = subscription.status;
   const periodEnd = subscription.current_period_end || null;
 
-  // Get the plan from the first subscription item's price
-  const priceId = subscription.items?.data?.[0]?.price?.id || null;
   const interval = subscription.items?.data?.[0]?.price?.recurring?.interval || null;
   const plan = interval === 'year' ? 'annual' : (interval === 'month' ? 'monthly' : null);
 
   const now = Math.floor(Date.now() / 1000);
 
-  // Find the email by customer ID (it was saved during checkout)
+  // Find the email by customer ID (set during checkout)
   const existing = await db.prepare(
     `SELECT email FROM subscribers WHERE stripe_customer_id = ?`
   ).bind(customerId).first();
 
   if (!existing) {
-    // No matching record - this is unusual but possible if the subscription was created
-    // outside of normal checkout flow. Skip silently.
+    // No row yet — checkout.session.completed may not have arrived.
+    // Fetch the customer from Stripe to get their email and upsert so this event isn't lost.
+    if (!stripeSecret) return;
+    try {
+      const custResp = await fetch(`https://api.stripe.com/v1/customers/${customerId}`, {
+        headers: { 'Authorization': `Bearer ${stripeSecret}` }
+      });
+      if (!custResp.ok) return;
+      const cust = await custResp.json();
+      const email = (cust.email || '').toLowerCase().trim();
+      if (!email) return;
+      await db.prepare(
+        `INSERT INTO subscribers (email, stripe_customer_id, stripe_subscription_id, status, plan, current_period_end, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(email) DO UPDATE SET
+           stripe_customer_id = excluded.stripe_customer_id,
+           stripe_subscription_id = excluded.stripe_subscription_id,
+           status = excluded.status,
+           plan = excluded.plan,
+           current_period_end = excluded.current_period_end,
+           updated_at = excluded.updated_at`
+      ).bind(email, customerId, subscriptionId, status, plan, periodEnd, now, now).run();
+    } catch (_) {}
     return;
   }
 
@@ -112,7 +131,6 @@ async function handleSubscriptionChange(db, subscription) {
 }
 
 async function handleSubscriptionCanceled(db, subscription) {
-  // Fired when a subscription is fully canceled (not just at-period-end).
   const customerId = subscription.customer;
   const now = Math.floor(Date.now() / 1000);
 
@@ -124,8 +142,8 @@ async function handleSubscriptionCanceled(db, subscription) {
 }
 
 async function handlePaymentFailed(db, invoice) {
-  // Fired when a recurring payment fails. We mark the user as past_due so the app
-  // shows them as Free until they update their card.
+  // Mark as past_due. check-pro.js still grants access until current_period_end,
+  // so the user isn't immediately cut off while Stripe retries.
   const customerId = invoice.customer;
   if (!customerId) return;
   const now = Math.floor(Date.now() / 1000);
@@ -160,7 +178,6 @@ async function verifyStripeSignature(payload, header, secret) {
   const now = Math.floor(Date.now() / 1000);
   if (Math.abs(now - parseInt(timestamp, 10)) > 300) return false;
 
-  // Compute the expected signature
   const signedPayload = `${timestamp}.${payload}`;
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
