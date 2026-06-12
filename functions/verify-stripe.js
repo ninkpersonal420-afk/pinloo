@@ -36,7 +36,23 @@ export async function onRequestPost(context) {
 
     const valid = session.payment_status === 'paid' || session.status === 'complete';
     const stripeEmail = session.customer_details?.email || null;
-    const plan = (session.amount_total || 0) <= 1299 ? 'monthly' : 'annual';
+
+    // Plan from the subscription's actual billing interval. The old amount_total
+    // heuristic (<= $12.99 → monthly) breaks once sales tax is added to a charge.
+    let plan = (session.amount_total || 0) <= 1299 ? 'monthly' : 'annual';
+    if (session.subscription) {
+      try {
+        const subResp = await fetch(`https://api.stripe.com/v1/subscriptions/${session.subscription}`, {
+          headers: { 'Authorization': `Bearer ${STRIPE_SECRET}` }
+        });
+        if (subResp.ok) {
+          const sub = await subResp.json();
+          const interval = sub.items?.data?.[0]?.price?.recurring?.interval;
+          if (interval === 'year') plan = 'annual';
+          else if (interval === 'month') plan = 'monthly';
+        }
+      } catch (_) { /* keep amount-based fallback */ }
+    }
 
     // --- If payment is valid, flip isPro in KV ---
     if (valid) {

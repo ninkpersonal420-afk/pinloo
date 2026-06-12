@@ -1040,7 +1040,24 @@ const STRIPE_MONTHLY = 'https://buy.stripe.com/dRmcN56P2e8w29tevh8IU00';
 const STRIPE_ANNUAL  = 'https://buy.stripe.com/00w3cvb5ic0o5lFfzl8IU01';
 let suEmailVal = '';
 
+// Same URL shape the in-app upgrade uses: the success redirect carries the
+// session_id so /app can verify the payment, and prefilled_email (when the
+// visitor is signed in) locks checkout to the account email.
+function proCheckoutUrl() {
+  const base = isYearly ? STRIPE_ANNUAL : STRIPE_MONTHLY;
+  const successUrl = encodeURIComponent(window.location.origin + '/app?session_id={CHECKOUT_SESSION_ID}');
+  let url = base + '?success_url=' + successUrl;
+  const email = localStorage.getItem('pinlo_gate_email');
+  if (email) url += '&prefilled_email=' + encodeURIComponent(email);
+  return url;
+}
+
 function suOpen() {
+  // Already signed in — no need to pick a plan or re-verify, go straight in
+  if (localStorage.getItem('pinlo_verified') === 'true' && localStorage.getItem('pinlo_gate_email')) {
+    window.location.href = '/app';
+    return;
+  }
   const modal = document.getElementById('signup-modal');
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
@@ -1066,7 +1083,7 @@ function suPickFree() {
 }
 
 function suPickPro() {
-  window.location.href = isYearly ? STRIPE_ANNUAL : STRIPE_MONTHLY;
+  window.location.href = proCheckoutUrl();
 }
 
 async function suSendOtp(e) {
@@ -1158,6 +1175,11 @@ document.querySelectorAll('a[href="/app"]').forEach(a => {
   if (a.classList.contains('nav-open-app')) return;
   a.addEventListener('click', e => { e.preventDefault(); suOpen(); });
 });
+
+// Pro CTA in the pricing section → Stripe with the success redirect attached.
+// The static href stays as a plain fallback for open-in-new-tab.
+const proCtaEl = document.getElementById('pro-cta');
+if (proCtaEl) proCtaEl.addEventListener('click', e => { e.preventDefault(); window.location.href = proCheckoutUrl(); });
 
 // Close on backdrop click
 document.getElementById('signup-modal').addEventListener('click', e => {

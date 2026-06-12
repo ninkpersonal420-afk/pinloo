@@ -1184,6 +1184,9 @@ async function verifyStripeSession(sessionId) {
       console.log('No email returned from Stripe - cannot verify Pro');
       return;
     }
+    // Completing checkout with this email proves ownership — treat as verified so
+    // users who paid straight from the landing page don't hit the OTP gate.
+    localStorage.setItem('pinlo_verified', 'true');
     // Poll /check-pro until the webhook has written to the database (~1-3s typical)
     const maxAttempts = 6;
     for (let i = 0; i < maxAttempts; i++) {
@@ -1813,7 +1816,9 @@ function openManageModal() {
 }
 function closeManageModal() { document.getElementById('manage-overlay').classList.remove('show'); }
 function goToPortal() {
-  window.location.href = 'https://billing.stripe.com/p/login/dRmcN56P2e8w29tevh8IU00';
+  const email = getGateEmail();
+  window.location.href = 'https://billing.stripe.com/p/login/dRmcN56P2e8w29tevh8IU00' +
+    (email ? '?prefilled_email=' + encodeURIComponent(email) : '');
 }
 function handleSubscribe() {
   // We need the gate email to lock Stripe checkout to it. If the user hasn't entered

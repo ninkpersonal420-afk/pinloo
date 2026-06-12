@@ -60,83 +60,107 @@ export async function onRequestPost(context) {
       body: JSON.stringify({
         from: 'Pinlo <noreply@getpinlo.com>',
         to: emailKey,
-        subject: `${code} is your Pinlo login code`,
+        subject: `${code} is your Pinlo sign-in code`,
         html: `
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#FBF6F1;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FBF6F1;padding:48px 20px;">
-    <tr><td align="center">
-      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:500px;">
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Your Pinlo sign-in code</title>
+</head>
+<body style="margin:0;padding:0;background-color:#FBF6F1;-webkit-text-size-adjust:100%;">
+  <!-- Preheader: shows in inbox preview, hidden in the email body -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Your sign-in code is ${code}. It expires in 10 minutes.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 
-        <!-- Logo above card -->
-        <tr>
-          <td align="center" style="padding-bottom:24px;">
-            <table cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="vertical-align:middle;">
-                  <img src="https://getpinlo.com/logo.png" alt="Pinlo" width="52" height="52" style="border-radius:22%;display:block;"/>
-                </td>
-                <td style="padding-left:12px;vertical-align:middle;">
-                  <p style="margin:0;font-size:24px;font-weight:800;color:#160C07;letter-spacing:-0.5px;">Pinlo</p>
-                  <p style="margin:2px 0 0;font-size:11px;color:#8A6255;letter-spacing:0.2px;">Pinterest Pin Generator</p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#FBF6F1" style="background-color:#FBF6F1;">
+    <tr>
+      <td align="center" style="padding:56px 20px 48px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;">
 
-        <!-- Card -->
-        <tr>
-          <td style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(22,12,7,0.1);">
+          <!-- Wordmark -->
+          <tr>
+            <td align="center" style="padding-bottom:28px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <img src="https://getpinlo.com/logo.png" alt="Pinlo" width="40" height="40" style="display:block;border-radius:10px;"/>
+                  </td>
+                  <td style="vertical-align:middle;padding-left:11px;">
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:23px;font-weight:700;color:#160C07;letter-spacing:-0.3px;">Pinlo</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-            <!-- Gradient header -->
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="background:linear-gradient(135deg,#D94F38,#F5924A);padding:32px 48px 28px;">
-                  <p style="margin:0;font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.3px;">Here's your sign-in code</p>
-                  <p style="margin:8px 0 0;font-size:14px;color:rgba(255,255,255,0.75);line-height:1.5;">Good for the next 10 minutes. Enter it in the app to get in.</p>
-                </td>
-              </tr>
-            </table>
+          <!-- Card -->
+          <tr>
+            <td bgcolor="#FFFFFF" style="background-color:#FFFFFF;border:1px solid #EFE4D9;border-radius:18px;padding:44px 44px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 
-            <!-- Card body -->
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="padding:32px 48px 16px;">
-                  <!-- OTP box -->
-                  <table width="100%" cellpadding="0" cellspacing="0">
-                    <tr>
-                      <td style="background:linear-gradient(135deg,rgba(217,79,56,0.06),rgba(245,146,74,0.06));border:2px solid rgba(217,79,56,0.2);border-radius:14px;padding:28px 24px;text-align:center;">
-                        <p style="margin:0 0 10px;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#B89485;">Your code</p>
-                        <p style="margin:0;font-size:52px;font-weight:800;letter-spacing:14px;color:#D94F38;font-family:'Courier New',Courier,monospace;padding-left:14px;">${code}</p>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:16px 48px 36px;">
-                  <p style="margin:0;font-size:13px;color:#B89485;line-height:1.7;">Not you? Just ignore this — nothing will happen to your account.</p>
-                </td>
-              </tr>
-            </table>
+                <tr>
+                  <td align="center" style="padding-bottom:10px;">
+                    <span style="font-family:Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:2.5px;color:#B89485;text-transform:uppercase;">Sign-in code</span>
+                  </td>
+                </tr>
 
-            <!-- Footer -->
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="border-top:1px solid #F0E8E0;padding:18px 48px;text-align:center;">
-                  <p style="margin:0;font-size:12px;color:#c4b0a8;">© 2026 Pinlo &nbsp;·&nbsp; <a href="https://getpinlo.com" style="color:#D94F38;text-decoration:none;">getpinlo.com</a></p>
-                </td>
-              </tr>
-            </table>
+                <tr>
+                  <td align="center" style="padding-bottom:8px;">
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:700;color:#160C07;letter-spacing:-0.4px;">Enter this code to sign in</span>
+                  </td>
+                </tr>
 
-          </td>
-        </tr>
+                <tr>
+                  <td align="center" style="padding-bottom:30px;">
+                    <span style="font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8A6255;line-height:1.6;">It's valid for the next 10 minutes.</span>
+                  </td>
+                </tr>
 
-      </table>
-    </td></tr>
+                <!-- Code -->
+                <tr>
+                  <td align="center" style="padding-bottom:30px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" bgcolor="#FBF6F1" style="background-color:#FBF6F1;border:1px solid #EFE4D9;border-radius:14px;padding:26px 16px 24px;">
+                          <span style="font-family:'Courier New',Courier,monospace;font-size:42px;font-weight:700;letter-spacing:12px;color:#160C07;padding-left:12px;">${code}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center" style="padding-top:14px;">
+                          <span style="font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#B89485;">One-time use &nbsp;·&nbsp; Expires in 10 minutes</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Divider -->
+                <tr>
+                  <td style="border-top:1px solid #F3EAE1;padding-top:22px;">
+                    <span style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#A88D80;line-height:1.7;">Didn't request this? You can safely ignore this email — no one can sign in without the code above, and your account is untouched.</span>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:26px;">
+              <span style="font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#C4B0A8;line-height:1.8;">
+                © 2026 Pinlo &nbsp;·&nbsp; <a href="https://getpinlo.com" style="color:#A88D80;text-decoration:underline;">getpinlo.com</a><br>
+                Sent because this address was used to sign in to Pinlo.
+              </span>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
   </table>
 </body>
 </html>`
