@@ -521,10 +521,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
           </div>
                   </div>
         <input type="text" id="product-input" placeholder="e.g. standing desk mat, collagen powder, fan..." oninput="onProductInput(this.value);"/>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:5px;">
-          <button id="product-clear-btn" class="field-clear" style="padding:0;" onclick="clearProduct()">Clear</button>
-          <button class="field-save" style="padding:0;" onclick="saveProduct()" title="Save this product so you can reload it in one tap">★ Save</button>
-        </div>
+        <button id="product-clear-btn" class="field-clear" onclick="clearProduct()">Clear</button>
         <div id="saved-products-row" style="display:none;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;"></div>
 
       </div>
