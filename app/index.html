@@ -339,7 +339,9 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .history-item-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;font-weight:500;color:var(--text);line-height:1.3;flex:1;}
 .history-item-meta{font-size:10px;color:var(--text4);white-space:nowrap;}
 .history-item-niche{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;background:var(--gradient-soft);color:var(--red);border:1px solid rgba(217,79,56,0.2);margin-right:4px;font-weight:600;}
-.history-item-desc{font-size:13px;color:var(--text3);line-height:1.5;font-weight:300;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.history-item-desc{font-size:13px;color:var(--text3);line-height:1.6;font-weight:400;margin-top:6px;}
+.history-item-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.history-item-tag{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--gradient-soft);color:var(--red);border:1px solid rgba(217,79,56,0.15);font-weight:500;}
 .history-actions{display:flex;gap:6px;margin-top:10px;}
 .history-copy-btn{font-size:10px;padding:4px 10px;border:1px solid var(--border);border-radius:5px;cursor:pointer;background:transparent;color:var(--text3);font-family:'Outfit',sans-serif;transition:all 0.12s;}
 .history-copy-btn:hover{border-color:var(--text3);color:var(--text2);}
@@ -2566,7 +2568,8 @@ function renderHistory() {
   const list=document.createElement('div'); list.className='history-list';
   pinHistory.forEach((pin,i)=>{
     const item=document.createElement('div'); item.className='history-item';
-    item.innerHTML='<div class="history-item-top"><div class="history-item-title">'+pin.title+'</div><div class="history-item-meta">'+formatPinDate(pin.date)+'</div></div><div>'+(pin.niche?'<span class="history-item-niche">'+pin.niche+'</span>':'')+(pin.product?'<span class="history-item-niche">'+pin.product+'</span>':'')+'</div><div class="history-item-desc">'+pin.description+'</div><div class="history-actions"><button class="history-copy-btn" data-idx="'+i+'">Copy all</button><button class="history-delete-btn" data-idx="'+i+'">Delete</button></div>';
+    const tags=(pin.hashtags||[]).slice(0,8).map(t=>'<span class="history-item-tag">'+(t.startsWith('#')?t:'#'+t)+'</span>').join('');
+    item.innerHTML='<div class="history-item-top"><div class="history-item-title">'+pin.title+'</div><div class="history-item-meta">'+formatPinDate(pin.date)+'</div></div><div style="margin-bottom:6px;">'+(pin.niche?'<span class="history-item-niche">'+pin.niche+'</span>':'')+(pin.product?'<span class="history-item-niche">'+pin.product+'</span>':'')+'</div><div class="history-item-desc">'+pin.description+'</div>'+(tags?'<div class="history-item-tags">'+tags+'</div>':'')+'<div class="history-actions"><button class="history-copy-btn" data-idx="'+i+'">Copy all</button><button class="history-delete-btn" data-idx="'+i+'">Delete</button></div>';
     list.appendChild(item);
   });
   container.innerHTML='';
