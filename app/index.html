@@ -158,19 +158,25 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .suggestions-row{display:flex;flex-wrap:wrap;gap:7px;}
 .suggestion-chip{font-size:13px;padding:7px 15px;border-radius:100px;border:1px dashed var(--border2);cursor:pointer;color:var(--text3);background:transparent;transition:border-color 0.14s,color 0.14s,background 0.14s;font-family:'Outfit',sans-serif;}
 .suggestion-chip:hover{border-color:var(--red);color:var(--red);border-style:solid;background:var(--gradient-soft);}
-.pain-pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+.pain-pills{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
 .audience-tag-input{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:9px 13px;background:var(--bg);border:1px solid var(--border);border-radius:12px;cursor:text;transition:border-color 0.18s,box-shadow 0.18s;min-height:50px;}
 .audience-tag-input:hover:not(:focus-within){border-color:var(--border2);}
 .audience-tag-input:focus-within{border-color:#F4705A;box-shadow:var(--ring);}
 [data-theme="light"] .audience-tag-input{background:#FFFCF9;}
-.audience-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 10px 5px 13px;font-size:13px;font-weight:500;color:var(--text2);white-space:nowrap;font-family:'Outfit',sans-serif;box-shadow:0 1px 2px rgba(26,13,8,0.04);}
-.audience-chip .chip-x{cursor:pointer;color:var(--text4);font-size:14px;line-height:1;font-weight:600;transition:color 0.1s;}
-.audience-chip .chip-x:hover{color:#F4705A;}
-.audience-tag-input input{border:none!important;outline:none!important;background:transparent!important;font-size:14px;min-width:130px;flex:1;padding:2px 0;font-family:'Outfit',sans-serif;color:var(--text);box-shadow:none!important;}
-.audience-tag-input input::placeholder{color:var(--text4);}
-.pain-pill{font-size:13px;padding:7px 15px;border-radius:100px;border:1px solid var(--border);cursor:pointer;color:var(--text3);background:var(--bg);transition:border-color 0.14s,color 0.14s,background 0.14s,box-shadow 0.14s;font-family:'Outfit',sans-serif;}
+.audience-options{display:flex;flex-direction:column;gap:5px;margin-top:4px;}
+.audience-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-family:'Outfit',sans-serif;color:var(--text3);background:var(--bg);line-height:1.45;transition:border-color 0.14s,color 0.14s,background 0.14s;text-align:left;width:100%;box-sizing:border-box;user-select:none;}
+.audience-opt::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;margin-top:5px;transition:background 0.14s;}
+.audience-opt:hover{border-color:var(--border2);color:var(--text2);}
+.audience-opt:hover::before{background:var(--text4);}
+.audience-opt.active{border-color:rgba(217,79,56,0.35);background:rgba(217,79,56,0.04);color:var(--text);font-weight:500;}
+.audience-opt.active::before{background:var(--red);}
+.audience-detecting{font-size:13px;color:var(--text4);font-style:italic;padding:4px 0;}
+.pain-pill{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-family:'Outfit',sans-serif;color:var(--text3);background:var(--bg);line-height:1.45;transition:border-color 0.14s,color 0.14s,background 0.14s;text-align:left;width:100%;box-sizing:border-box;}
+.pain-pill::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;margin-top:5px;transition:background 0.14s;}
 .pain-pill:hover{border-color:var(--border2);color:var(--text2);}
-.pain-pill.active{background:var(--green-bg);border-color:var(--green);color:var(--green-text);font-weight:600;box-shadow:0 2px 8px rgba(46,125,50,0.14);}
+.pain-pill:hover::before{background:var(--text4);}
+.pain-pill.active{border-color:rgba(217,79,56,0.35);background:rgba(217,79,56,0.04);color:var(--text);font-weight:500;}
+.pain-pill.active::before{background:var(--red);}
 .tone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
 .support-type-chip{padding:8px 17px;border:1px solid var(--border);border-radius:100px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text3);background:var(--bg);transition:border-color 0.14s,color 0.14s,background 0.14s;user-select:none;}
 .support-type-chip:hover{border-color:var(--border2);color:var(--text2);}
@@ -674,33 +680,26 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 
       <div class="field">
         <div class="field-header">
-          <label>Target audience</label>
-                    <div style="display:flex;align-items:center;gap:8px;">
-            <span class="auto-tag" id="audience-auto-tag">Auto-filled</span>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
-              <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleAudienceDetect()">
-                <span id="audience-detect-label" style="font-size:12px;color:#F4705A;font-weight:600;text-transform:none;">Auto-fill ON</span>
-                <div id="audience-detect-toggle" style="width:36px;height:20px;border-radius:10px;background:#F4705A;border:1px solid #F4705A;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
-                  <div id="audience-detect-knob" style="position:absolute;top:3px;left:17px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
-                </div>
+          <div style="display:flex;align-items:center;gap:6px;"><label>Target audience</label><span id="audience-selected-count" style="display:none;font-size:10px;font-weight:700;color:var(--red);background:rgba(217,79,56,0.08);padding:2px 7px;border-radius:20px;">0 selected</span></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="auto-tag" id="audience-auto-tag">Detected</span>
+            <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleAudienceDetect()">
+              <span id="audience-detect-label" style="font-size:12px;color:#F4705A;font-weight:600;text-transform:none;">Auto-detect ON</span>
+              <div id="audience-detect-toggle" style="width:36px;height:20px;border-radius:10px;background:#F4705A;border:1px solid #F4705A;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
+                <div id="audience-detect-knob" style="position:absolute;top:3px;left:17px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
               </div>
-              <span style="font-size:11px;color:var(--text4);text-transform:none;font-weight:400;">Auto-fills audience as you type</span>
-            </div>
           </div>
         </div>
-        <div class="audience-tag-input" id="audience-tag-input" onclick="document.getElementById('audience-input').focus()">
-          <input type="text" id="audience-input" placeholder="Type an audience and press Enter..." onkeydown="audienceKeydown(event)" />
+        <div class="audience-options" id="audience-options">
+          <span class="audience-detecting">Select a niche or type a product to detect your audience</span>
         </div>
-        <div id="audience-suggestions-wrap" style="display:none;">
-          <p class="audience-sug-label">Suggestions for your niche</p>
-          <div class="audience-suggestions-row" id="audience-suggestions"></div>
-        </div>
-        <button id="audience-clear-btn" class="field-clear" onclick="clearAudience()">Clear</button>
+        <input type="text" id="audience-custom-input" placeholder="or type a custom audience..." style="margin-top:8px;" oninput="updateAudienceClear()" onkeydown="audienceCustomKeydown(event)" />
+        <button id="audience-clear-btn" class="field-clear" style="display:none;" onclick="clearAudience()">Clear</button>
       </div>
 
       <div class="field">
         <div class="field-header">
-          <div style="display:flex;align-items:center;gap:6px;"><label>Pain point</label><span style="font-size:10px;color:var(--text4);">optional</span></div>
+          <div style="display:flex;align-items:center;gap:6px;"><label>Pain point</label><span style="font-size:10px;color:var(--text4);">optional</span><span id="pain-selected-count" style="display:none;font-size:10px;font-weight:700;color:var(--red);background:rgba(217,79,56,0.08);padding:2px 7px;border-radius:20px;">0 selected</span></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
             <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="togglePainAutofill()">
               <span id="pain-autofill-label" style="font-size:12px;color:var(--text3);font-weight:600;text-transform:none;">Auto-fill</span>
@@ -713,7 +712,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
           </div>
         </div>
         <div class="pain-pills" id="pain-pills"></div>
-        <input type="text" id="benefit-input" placeholder="or describe the problem this solves..." style="margin-top:8px;"/>
+        <input type="text" id="benefit-input" style="display:none;"/>
         <button id="pain-clear-btn" class="field-clear" onclick="clearPainPoint()">Clear</button>
       </div>
 
@@ -1773,12 +1772,14 @@ async function autoGeneratePains(product) {
     const pains = staticPains[niche] || ['Quality concerns','High costs','Limited options','Time constraints'];
     container.innerHTML = '';
     const updateBenefitFromPills = () => {
-      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.textContent);
+      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.dataset.pain);
       document.getElementById('benefit-input').value = selected.join('; ');
+      updatePainCounter();
     };
     pains.forEach(pain => {
       const pp = document.createElement('span');
       pp.className = 'pain-pill';
+      pp.dataset.pain = pain;
       pp.textContent = pain;
       pp.onclick = () => { pp.classList.toggle('active'); updateBenefitFromPills(); };
       container.appendChild(pp);
@@ -1798,12 +1799,14 @@ async function autoGeneratePains(product) {
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
     container.innerHTML = '';
     const updateBenefitFromPillsPro = () => {
-      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.textContent);
+      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.dataset.pain);
       document.getElementById('benefit-input').value = selected.join('; ');
+      updatePainCounter();
     };
     pains.forEach(pain => {
       const pp = document.createElement('span');
       pp.className = 'pain-pill';
+      pp.dataset.pain = pain;
       pp.textContent = pain;
       pp.onclick = () => { pp.classList.toggle('active'); updateBenefitFromPillsPro(); };
       container.appendChild(pp);
@@ -1814,71 +1817,83 @@ async function autoGeneratePains(product) {
   }
 }
 
-function renderAudienceChips(audienceStr) {
-  // Clear existing chips, keep the input
-  const container = document.getElementById('audience-tag-input');
-  const inp = document.getElementById('audience-input');
-  if (!container || !inp) return;
-  container.querySelectorAll('.audience-chip').forEach(c => c.remove());
-  inp.value = '';
-  inp.placeholder = 'Add more...';
-  const audiences = audienceStr.split(',').map(a => a.trim()).filter(a => a.length > 0).slice(0, 6);
-  audiences.forEach(aud => addAudienceChip(aud));
-}
-
-function addAudienceChip(text) {
-  text = text.trim();
-  if (!text) return;
-  const container = document.getElementById('audience-tag-input');
-  const inp = document.getElementById('audience-input');
-  if (!container || !inp) return;
-  // Don't add duplicates
-  const existing = Array.from(container.querySelectorAll('.audience-chip')).map(c => c.dataset.value);
-  if (existing.includes(text.toLowerCase())) return;
-  const chip = document.createElement('span');
-  chip.className = 'audience-chip';
-  chip.dataset.value = text.toLowerCase();
-  chip.innerHTML = text + ' <span class="chip-x" title="Remove">×</span>';
-  chip.querySelector('.chip-x').onclick = (e) => { e.stopPropagation(); chip.remove(); updateAudienceClear(); };
-  container.insertBefore(chip, inp);
-  inp.value = '';
+function renderAudienceOptions(list, markAutoDetected) {
+  const container = document.getElementById('audience-options');
+  if (!container) return;
+  container.innerHTML = '';
+  list.forEach(text => {
+    text = text.trim();
+    if (!text) return;
+    const opt = document.createElement('span');
+    opt.className = 'audience-opt' + (markAutoDetected ? ' auto-suggested' : '');
+    opt.textContent = text;
+    opt.dataset.value = text.toLowerCase();
+    opt.onclick = () => { opt.classList.toggle('active'); updateAudienceClear(); };
+    container.appendChild(opt);
+  });
   updateAudienceClear();
 }
 
-function audienceKeydown(e) {
-  const inp = e.target;
-  if ((e.key === 'Enter' || e.key === ',') && inp.value.trim()) {
+// Legacy shim — used by applyNicheData and autoFillAudience
+function renderAudienceChips(audienceStr) {
+  const list = audienceStr.split(',').map(a => a.trim()).filter(a => a.length > 0).slice(0, 6);
+  renderAudienceOptions(list, true);
+}
+
+function addAudienceChip(text) {
+  // Add a new option chip (used by old suggestion chips — now just renders inline)
+  renderAudienceChips(getAudienceValue() + (getAudienceValue() ? ', ' : '') + text);
+}
+
+function audienceCustomKeydown(e) {
+  if (e.key === 'Enter' && e.target.value.trim()) {
     e.preventDefault();
-    addAudienceChip(inp.value.replace(/,/g,''));
-  } else if (e.key === 'Backspace' && !inp.value) {
-    // Remove last chip on backspace
-    const container = document.getElementById('audience-tag-input');
-    const chips = container.querySelectorAll('.audience-chip');
-    if (chips.length > 0) { chips[chips.length-1].remove(); updateAudienceClear(); }
+    const val = e.target.value.trim();
+    e.target.value = '';
+    // Add as a new selectable option and auto-select it
+    const container = document.getElementById('audience-options');
+    if (!container) return;
+    const existing = Array.from(container.querySelectorAll('.audience-opt')).map(o => o.dataset.value);
+    if (existing.includes(val.toLowerCase())) {
+      // Just select the existing one
+      container.querySelectorAll('.audience-opt').forEach(o => { if (o.dataset.value === val.toLowerCase()) o.classList.add('active'); });
+    } else {
+      const opt = document.createElement('span');
+      opt.className = 'audience-opt active';
+      opt.textContent = val;
+      opt.dataset.value = val.toLowerCase();
+      opt.onclick = () => { opt.classList.toggle('active'); updateAudienceClear(); };
+      container.appendChild(opt);
+    }
+    updateAudienceClear();
   }
 }
 
 function getAudienceValue() {
-  const container = document.getElementById('audience-tag-input');
-  const inp = document.getElementById('audience-input');
+  const container = document.getElementById('audience-options');
+  const custom = document.getElementById('audience-custom-input');
   if (!container) return '';
-  const chips = Array.from(container.querySelectorAll('.audience-chip')).map(c => {
-    // Get text without the × button text
-    return c.childNodes[0].textContent.trim();
-  });
-  const typed = inp ? inp.value.trim().replace(/,/g,'') : '';
-  if (typed) chips.push(typed);
-  return chips.join(', ');
+  const selected = Array.from(container.querySelectorAll('.audience-opt.active')).map(o => o.textContent);
+  const typed = custom ? custom.value.trim() : '';
+  if (typed) selected.push(typed);
+  return selected.join(', ');
 }
 
 function updateAudienceClear() {
-  const container = document.getElementById('audience-tag-input');
-  const inp = document.getElementById('audience-input');
+  const container = document.getElementById('audience-options');
+  const custom = document.getElementById('audience-custom-input');
   const btn = document.getElementById('audience-clear-btn');
-  if (!container || !btn) return;
-  const hasChips = container.querySelectorAll('.audience-chip').length > 0;
-  const hasText = inp && inp.value.trim().length > 0;
-  btn.style.display = (hasChips || hasText) ? '' : 'none';
+  const counter = document.getElementById('audience-selected-count');
+  const n = container ? container.querySelectorAll('.audience-opt.active').length : 0;
+  const hasText = custom && custom.value.trim().length > 0;
+  if (btn) btn.style.display = (n > 0 || hasText) ? '' : 'none';
+  if (counter) { counter.textContent = n + ' selected'; counter.style.display = n > 0 ? '' : 'none'; }
+}
+
+function updatePainCounter() {
+  const n = document.querySelectorAll('.pain-pill.active').length;
+  const counter = document.getElementById('pain-selected-count');
+  if (counter) { counter.textContent = n + ' selected'; counter.style.display = n > 0 ? '' : 'none'; }
 }
 
 async function autoFillAudience(product) {
@@ -3521,9 +3536,9 @@ function clearNiche() {
 }
 
 function clearPainPoint() {
+  document.querySelectorAll('.pain-pill.active').forEach(p => p.classList.remove('active'));
   document.getElementById('benefit-input').value = '';
-  
-  document.querySelectorAll('.pain-pill').forEach(x => x.classList.remove('active'));
+  updatePainCounter();
 }
 
 function selectSupportType(el, val) {
