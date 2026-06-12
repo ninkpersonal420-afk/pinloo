@@ -322,6 +322,9 @@ html,body{background:var(--bg);color:var(--text);}body{font-family:'Outfit',sans
 .regen-field-btn:hover{border-color:var(--text3);color:var(--text2);}
 .disclaimer-text{font-size:14px;color:var(--text3);line-height:1.6;font-style:italic;}
 
+.result-title-text[contenteditable],.result-body-text[contenteditable]{outline:none;cursor:text;}
+.result-title-text[contenteditable]:focus,.result-body-text[contenteditable]:focus{box-shadow:0 0 0 2px rgba(217,79,56,0.12);border-radius:4px;}
+
 .niche-tip{background:var(--gradient-soft);border-left:4px solid var(--red);border-radius:0 12px 12px 0;padding:14px 18px;margin-top:14px;box-shadow:0 2px 12px rgba(217,79,56,0.08);}
 .niche-tip-label{font-size:11px;font-weight:700;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
 .niche-tip-text{font-size:14px;color:var(--text2);line-height:1.7;white-space:normal;word-wrap:break-word;}
@@ -519,6 +522,8 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
                   </div>
         <input type="text" id="product-input" placeholder="e.g. standing desk mat, collagen powder, fan..." oninput="onProductInput(this.value);"/>
         <button id="product-clear-btn" class="field-clear" onclick="clearProduct()">Clear</button>
+        <button class="field-clear" onclick="saveProduct()" style="color:var(--red);margin-left:2px;" title="Save for quick recall">★ Save</button>
+        <div id="saved-products-row" style="display:none;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;"></div>
 
       </div>
 
@@ -708,7 +713,8 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
             <span class="char-badge" id="title-char"></span>
           </div>
         </div>
-        <div class="result-title-text" id="result-title"></div>
+        <div id="ab-block" style="display:none;margin-bottom:10px;"></div>
+        <div class="result-title-text" id="result-title" contenteditable="true" spellcheck="false" oninput="onTitleEdit()" onkeydown="if(event.key==='Enter'){event.preventDefault();}"></div>
         <div class="copy-row">
           <button class="copy-btn" onclick="copyField('result-title','Copy title',this)">Copy title</button>
           <button class="regen-field-btn" onclick="regenField('title')">Regenerate title</button>
@@ -724,7 +730,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
             <span class="char-badge" id="desc-char"></span>
           </div>
         </div>
-        <div class="result-body-text" id="result-desc"></div>
+        <div class="result-body-text" id="result-desc" contenteditable="true" spellcheck="false" oninput="onDescEdit()"></div>
         <div class="copy-row">
           <button class="copy-btn" onclick="copyField('result-desc','Copy description',this)">Copy description</button>
           <button class="regen-field-btn" onclick="regenField('description')">Regenerate description</button>
@@ -734,7 +740,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div class="result-block">
         <div class="result-meta"><span class="result-label-text">Hashtags</span></div>
         <div class="tag-row" id="result-tags"></div>
-        <div class="copy-row"><button class="copy-btn" onclick="copyTags(this)">Copy hashtags</button></div>
+        <div class="copy-row"><button class="copy-btn" onclick="copyTags(this)">Copy hashtags</button><button class="regen-field-btn" onclick="regenField('hashtags')">Regenerate hashtags</button></div>
       </div>
 
       <div class="result-block">
@@ -764,7 +770,10 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     <div style="max-width:860px;margin:0 auto;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding:0 0.25rem;">
         <div style="font-size:13px;font-weight:600;color:var(--text3);letter-spacing:0.3px;" id="history-count-text">0 saved pins</div>
-        <button class="clear-history-btn" onclick="clearHistory()">Clear all</button>
+        <div style="display:flex;gap:6px;">
+          <button class="clear-history-btn" onclick="exportHistoryCSV()">Export CSV</button>
+          <button class="clear-history-btn" onclick="clearHistory()">Clear all</button>
+        </div>
       </div>
       <!-- Free user history nudge -->
       <div id="history-pro-nudge" style="display:none;margin-bottom:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,rgba(217,79,56,0.07),rgba(245,146,74,0.06));border:1.5px solid rgba(217,79,56,0.18);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
@@ -1253,6 +1262,7 @@ function updateQtyControls() {
 let autoDetectTimer = null, audienceTimer = null;
 let pinHistory = JSON.parse(localStorage.getItem('pinai_history') || '[]');
 let isDark = localStorage.getItem('pinlo_theme') === 'dark';
+let savedProducts = JSON.parse(localStorage.getItem('pinlo_saved_products')||'[]');
 if (isDark) {
   document.documentElement.setAttribute('data-theme', 'dark');
   document.addEventListener('DOMContentLoaded', () => {
@@ -1365,6 +1375,15 @@ function switchTab(tab) {
 document.addEventListener('DOMContentLoaded', () => {
   const t = new URLSearchParams(window.location.search).get('tab');
   if (t && document.getElementById('view-' + t)) switchTab(t);
+  // Plain-text paste for editable result fields (prevents rich-text formatting)
+  ['result-title','result-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('paste', e => {
+      e.preventDefault();
+      const text = (e.clipboardData||window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
+    });
+  });
 });
 
 function pickNiche(el, val) {
@@ -2128,20 +2147,20 @@ function renderScore(pin) {
 }
 
 function renderAB(titleA, titleB) {
-  return; // A/B removed
   const block = document.getElementById('ab-block');
-  const wrap = document.getElementById('ab-wrap');
-  wrap.innerHTML='';
-  block.style.display='block';
+  if (!block) return;
+  const titleEl = document.getElementById('result-title');
+  block.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text4);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Pick a title</div><div class="ab-wrap"></div>';
+  const wrap = block.querySelector('.ab-wrap');
+  block.style.display = 'block';
+  if (titleEl) titleEl.style.display = 'none';
   [titleA, titleB].forEach((t,i) => {
     const card = document.createElement('div');
-    card.className='ab-card'+(i===0?' selected':'');
-    card.innerHTML='<div class="ab-label">Option '+(i===1?'B':'A')+'</div><div class="ab-title">'+t+'</div>';
+    card.className = 'ab-card'+(i===0?' selected':'');
+    card.innerHTML = '<div class="ab-label">Option '+(i===0?'A':'B')+'</div><div class="ab-title">'+t+'</div>';
     card.onclick = () => {
-      document.querySelectorAll('.ab-card').forEach(c=>c.classList.remove('selected'));
-      card.classList.add('selected');
-      document.getElementById('result-title').textContent=t;
-      updateCharBar('title-bar','title-char',t.length,100);
+      if (titleEl) { titleEl.textContent = t; titleEl.style.display = ''; updateCharBar('title-bar','title-char',t.length,100); if (lastPinData) lastPinData.p.title = t; }
+      block.style.display = 'none';
     };
     wrap.appendChild(card);
   });
@@ -2159,14 +2178,15 @@ function updateCharBar(barId, badgeId, len, max) {
 function renderPin(p) {
   document.getElementById('empty-state').style.display='none';
   document.getElementById('result-panel').classList.add('show');
-  typeText(document.getElementById('result-title'), p.title);
+  const titleEl=document.getElementById('result-title');
+  if(titleEl) titleEl.style.display='';
+  typeText(titleEl, p.title);
   document.getElementById('result-desc').textContent=p.description;
   updateCharBar('title-bar','title-char',p.title.length,100);
   updateCharBar('desc-bar','desc-char',p.description.length,500);
   const tagsDiv=document.getElementById('result-tags');
   tagsDiv.innerHTML='';
   (p.hashtags||[]).forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t.startsWith('#')?t:'#'+t;tagsDiv.appendChild(s);});
-  // AB removed
   renderScore(p);
   
   
@@ -2188,6 +2208,8 @@ function renderPin(p) {
   // Show upgrade banner for free users
   const upsellBanner = document.getElementById('pro-upsell-banner');
   if (upsellBanner) upsellBanner.style.display = isPro ? 'none' : 'block';
+  // Background: fetch alt title for A/B picker
+  fetchAltTitle(p.title, product, niche);
 }
 
 async function fetchNicheTip(product, niche, el) {
@@ -2377,11 +2399,14 @@ async function regenField(field) {
   const sys='Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower. NO product name, NO brand names in output. Never reference the brand\'s country of origin or cultural background. Focus purely on what the product does and the problem it solves. Return ONLY valid JSON — no markdown, no backticks, no explanation.';
   const msg=field==='title'
     ?'Write a new Pinterest title different from: "'+p.title+'". Product: '+product+'. Niche: '+niche+'. Tone: '+getTone()+'. Under 100 chars. No product name, no brand names, no hyphens, no colons. If phrased as a question it must end with ?. Must sound like something a real person would search — not marketing copy. Return: {"title":"..."}'
+    :field==='hashtags'
+    ?'Write 12 new Pinterest hashtags different from the current ones. Product: '+product+'. Niche: '+niche+'. Mix: 4 broad niche tags, 5 mid-specificity tags for the problem or use case, 3 product-type tags. All lowercase, no spaces within a tag, start with #. Return: {"hashtags":["","","","","","","","","","","",""]}'
     :'Write a new Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+'. Audience: '+audience+'. Pain point: '+benefit+'. Exactly 2 sentences under 500 chars. Sentence 1 MUST open with the felt problem or frustration the buyer has before finding this product. Sentence 2 delivers the solution and outcome. Keyword-rich, no brand names. Return: {"description":"..."}';
   try {
     const result=await callClaude(sys,msg);
-    if (field==='title'&&result.title) { typeText(document.getElementById('result-title'),result.title); updateCharBar('title-bar','title-char',result.title.length,100); lastPinData.p.title=result.title; }
+    if (field==='title'&&result.title) { const t=fixTitlePunctuation(result.title); const titleEl=document.getElementById('result-title'); const abBlock=document.getElementById('ab-block'); if(abBlock) abBlock.style.display='none'; if(titleEl) titleEl.style.display=''; typeText(titleEl,t); updateCharBar('title-bar','title-char',t.length,100); lastPinData.p.title=t; }
     else if (field==='description'&&result.description) { document.getElementById('result-desc').textContent=result.description; updateCharBar('desc-bar','desc-char',result.description.length,500); lastPinData.p.description=result.description; }
+    else if (field==='hashtags'&&result.hashtags) { const tagsDiv=document.getElementById('result-tags'); tagsDiv.innerHTML=''; result.hashtags.forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t.startsWith('#')?t:'#'+t;tagsDiv.appendChild(s);}); lastPinData.p.hashtags=result.hashtags; }
   } catch(e) { console.error(e); alert('Regeneration failed. Try again.'); }
 }
 
@@ -2395,6 +2420,117 @@ function copyAll() {
 
 function copyField(id,label,btn) { navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{btn.textContent='✓ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent=label;btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
 function copyTags(btn) { const t=Array.from(document.querySelectorAll('#result-tags .tag')).map(x=>{const v=x.textContent.trim();return v.startsWith('#')?v:'#'+v;}).join(' '); navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copied';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy hashtags';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);}); }
+
+function onTitleEdit() {
+  const el = document.getElementById('result-title');
+  el.querySelectorAll('.typing-cursor').forEach(c => c.remove());
+  const t = el.textContent || el.innerText || '';
+  updateCharBar('title-bar','title-char',t.length,100);
+  if (lastPinData) lastPinData.p.title = t;
+}
+
+function onDescEdit() {
+  const el = document.getElementById('result-desc');
+  const t = el.textContent || el.innerText || '';
+  updateCharBar('desc-bar','desc-char',t.length,500);
+  if (lastPinData) lastPinData.p.description = t;
+}
+
+function exportHistoryCSV() {
+  if (!pinHistory.length) { alert('No pins in history to export.'); return; }
+  const rows = [['Title','Description','Hashtags','Niche','Product','Date']];
+  pinHistory.forEach(p => {
+    const tags = (p.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ');
+    rows.push([p.title,p.description,tags,p.niche||'',p.product||'',p.date||''].map(v=>'"'+(v||'').replace(/"/g,'""')+'"'));
+  });
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='pinlo-history.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function saveProduct() {
+  const product = document.getElementById('product-input').value.trim();
+  if (!product) return;
+  const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
+  if (savedProducts.some(s => s.product === product)) {
+    const btn = document.querySelector('button[onclick="saveProduct()"]');
+    if (btn) { btn.textContent='Already saved'; setTimeout(()=>{ btn.textContent='★ Save'; },1200); }
+    return;
+  }
+  savedProducts.unshift({product,niche});
+  if (savedProducts.length > 10) savedProducts = savedProducts.slice(0,10);
+  localStorage.setItem('pinlo_saved_products',JSON.stringify(savedProducts));
+  renderSavedProducts();
+  const btn = document.querySelector('button[onclick="saveProduct()"]');
+  if (btn) { btn.textContent='✓ Saved'; setTimeout(()=>{ btn.textContent='★ Save'; },1200); }
+}
+
+function loadSavedProduct(idx) {
+  const s = savedProducts[idx];
+  if (!s) return;
+  document.getElementById('product-input').value = s.product;
+  if (s.niche) {
+    let found = false;
+    document.querySelectorAll('.pill').forEach(p => {
+      if (p.getAttribute('onclick') && p.getAttribute('onclick').includes('"'+s.niche+'"')) { pickNiche(p, s.niche); found = true; }
+      else p.classList.remove('active');
+    });
+    if (!found) { document.getElementById('niche-custom-input').value = s.niche; activeNiche = s.niche; }
+  }
+  onProductInput(s.product);
+}
+
+function deleteSavedProduct(idx) {
+  savedProducts.splice(idx,1);
+  localStorage.setItem('pinlo_saved_products',JSON.stringify(savedProducts));
+  renderSavedProducts();
+}
+
+function renderSavedProducts() {
+  const container = document.getElementById('saved-products-row');
+  if (!container) return;
+  if (!savedProducts.length) { container.style.display='none'; return; }
+  container.style.display='flex';
+  let html='<span style="font-size:11px;color:var(--text4);white-space:nowrap;padding-top:2px;flex-shrink:0;">Saved:</span>';
+  savedProducts.forEach((s,i) => {
+    html += '<span onclick="loadSavedProduct('+i+')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:4px 8px 4px 10px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:var(--bg2);color:var(--text2);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;" title="'+s.product+'">'+
+      '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+s.product+(s.niche?' <span style="font-size:10px;color:var(--text4);">'+s.niche+'</span>':'')+'</span>'+
+      '<span onclick="event.stopPropagation();deleteSavedProduct('+i+')" style="cursor:pointer;color:var(--text4);font-size:14px;line-height:1;flex-shrink:0;" title="Remove">×</span></span>';
+  });
+  container.innerHTML = html;
+}
+
+async function fetchAltTitle(currentTitle, product, niche) {
+  if (!getGateEmail() || !product) return;
+  const block = document.getElementById('ab-block');
+  if (!block) return;
+  try {
+    const email = getGateEmail();
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      email, type:'niche-tip', model:'claude-haiku-4-5', max_tokens:80,
+      system:'Pinterest title writer. Write ONE alternative title. Rules: under 100 chars, no product name, no brand names, no hyphens, no colons. Must sound like a real person — not marketing copy. Must be completely different in angle from the provided title. Return ONLY valid JSON: {"title":"..."}',
+      messages:[{role:'user',content:'Current title: "'+currentTitle+'"\nProduct: "'+product+'" | Niche: '+(niche||'general')+'\nWrite a different title with a completely different hook or angle. Return JSON only.'}]
+    })});
+    if (!res.ok) return;
+    const data = await res.json();
+    const raw = (data.content||[]).map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    let altTitle;
+    try { altTitle = JSON.parse(raw).title; } catch(e) { const m = raw.match(/"title"\s*:\s*"([^"]+)"/); if (m) altTitle = m[1]; }
+    if (altTitle && document.getElementById('result-panel') && document.getElementById('result-panel').classList.contains('show')) {
+      renderAB(currentTitle, fixTitlePunctuation(altTitle));
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    const view = document.getElementById('view-generate');
+    if (view && view.classList.contains('active')) { e.preventDefault(); generatePin(); }
+  }
+});
 
 function formatPinDate(dateStr) {
   if (!dateStr) return '';
@@ -2438,6 +2574,7 @@ updateUsage();
 updateHistoryBadge();
 setTimeout(updateTabLabels, 200);
 setTimeout(renderPricingTab, 200);
+renderSavedProducts();
 
 let isAnnual = false;
 function toggleBilling() {

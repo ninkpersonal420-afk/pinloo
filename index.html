@@ -435,6 +435,20 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   shuffled.slice(0, 8).forEach((tag, i)  => place(tag, leftPos[i],  false, i));
   shuffled.slice(8, 16).forEach((tag, i) => place(tag, rightPos[i], true, i));
 })();
+
+(async function loadPinCounter() {
+  try {
+    const r = await fetch('/pin-count');
+    if (!r.ok) return;
+    const d = await r.json();
+    const count = parseInt(d.count) || 0;
+    if (count < 100) return;
+    const formatted = count >= 10000 ? Math.floor(count/1000)+'k+' : count >= 1000 ? (count/1000).toFixed(1).replace(/\.0$/,'')+'k+' : count.toLocaleString();
+    const el = document.getElementById('pin-counter');
+    const wrap = document.getElementById('pin-counter-wrap');
+    if (el && wrap) { el.textContent = formatted + ' pins generated and counting'; wrap.style.opacity = '1'; }
+  } catch(e) {}
+})();
 </script>
 
 <!-- CAPABILITY STRIP -->
