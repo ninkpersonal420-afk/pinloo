@@ -1726,7 +1726,7 @@ const STATIC_PAINS = {
   'Books & Education':['No time to read','Information overload','Expensive courses','Hard to focus'],
   'DIY & Crafts':['Wasted materials','Complex instructions','Limited tools','Project failures'],
   'Fashion & Style':['Outfit confusion','Fast fashion waste','Limited budget','Nothing to wear'],
-  'Fitness & Gym':['No motivation','Back pain from sitting','Hard to stay consistent','Expensive gym fees'],
+  'Fitness & Gym':['No motivation','Not seeing results','Hard to stay consistent','Low energy during workouts'],
   'Food & Recipes':['No time to cook','Recipe boredom','Unhealthy eating','Food waste'],
   'Gaming':['Back pain from gaming','Poor audio','Cluttered desk','Wrist strain'],
   'Hair Care':['Frizzy unmanageable hair','Heat damage','Scalp issues','Color fading fast'],
@@ -1741,7 +1741,7 @@ const STATIC_PAINS = {
   'Photography':['Bad lighting','Blurry photos','Expensive gear','Editing complexity'],
   'Self Improvement':['Lack of motivation','Bad habits','No consistency','Overwhelm'],
   'Stationery & Journaling':['Inconsistent planning','Chaotic schedule','Cannot stick to a system','Expensive supplies'],
-  'Supplements & Nutrition':['Constant fatigue','Hitting a plateau','Poor gut health','Slow recovery'],
+  'Supplements & Nutrition':['Constant fatigue','Muscle cramps & dehydration','Poor gut health','Slow recovery'],
   'Tech & Gadgets':['Slow devices','Cable mess','Poor battery life','Expensive upgrades'],
   'Travel':['Overpacking','Hidden costs','Poor planning','Missing out'],
   'Vintage & Thrift':['Items look worn','Hard to style vintage','No space for finds','Finding quality pieces'],
@@ -2670,16 +2670,55 @@ function onDescEdit() {
 
 function exportHistoryCSV() {
   if (!pinHistory.length) { showToast('No pins in history to export yet.', 'info'); return; }
-  const rows = [['Title','Description','Hashtags','Niche','Product','Date']];
-  pinHistory.forEach(p => {
+
+  const cards = pinHistory.map((p, i) => {
     const tags = (p.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ');
-    rows.push([p.title,p.description,tags,p.niche||'',p.product||'',p.date||''].map(v=>'"'+(v||'').replace(/"/g,'""')+'"'));
-  });
-  const csv = rows.map(r=>r.join(',')).join('\n');
-  const blob = new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+    const date = p.date ? new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    const metaBadges = [p.product, p.niche, date].filter(Boolean)
+      .map(v=>`<span class="badge">${esc(v)}</span>`).join('');
+    return `<div class="card">
+      <div class="card-num">PIN ${pinHistory.length - i}</div>
+      <div class="card-title">${esc(p.title||'')}</div>
+      <div class="card-desc">${esc(p.description||'').replace(/\n/g,'<br>')}</div>
+      ${tags ? `<div class="card-tags">${esc(tags)}</div>` : ''}
+      ${metaBadges ? `<div class="card-meta">${metaBadges}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pinloo Pin History</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#f7f7f5;color:#1a1a1a;padding:40px 20px}
+  .header{max-width:720px;margin:0 auto 32px}
+  .header h1{font-size:22px;font-weight:700;margin-bottom:4px}
+  .header p{font-size:13px;color:#888}
+  .card{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:24px;margin:0 auto 16px;max-width:720px}
+  .card-num{font-size:11px;font-weight:600;color:#bbb;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .card-title{font-size:17px;font-weight:700;line-height:1.35;margin-bottom:10px;color:#111}
+  .card-desc{font-size:13.5px;color:#444;line-height:1.65;margin-bottom:12px;white-space:pre-wrap}
+  .card-tags{font-size:12.5px;color:#d94f38;margin-bottom:12px;line-height:1.6}
+  .card-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .badge{font-size:11.5px;background:#f3f3f1;border-radius:100px;padding:3px 10px;color:#666}
+  @media print{body{background:#fff}.card{break-inside:avoid;border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Pinloo Pin History</h1>
+  <p>Exported ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} &middot; ${pinHistory.length} pin${pinHistory.length!==1?'s':''}</p>
+</div>
+${cards}
+</body>
+</html>`;
+
+  const blob = new Blob([html],{type:'text/html;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href=url; a.download='pinlo-history.csv'; a.click();
+  a.href=url; a.download='pinloo-pins.html'; a.click();
   URL.revokeObjectURL(url);
 }
 
