@@ -164,6 +164,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .audience-opt:hover,.pain-pill:hover{border-color:var(--border2);color:var(--text2);transform:translateY(-1px);}
 .audience-opt.active,.pain-pill.active{border-color:var(--red);background:var(--gradient-soft);color:var(--red);font-weight:600;box-shadow:0 2px 8px rgba(217,79,56,0.12);}
 .audience-opt.active::before,.pain-pill.active::before{content:'✓';font-size:11px;font-weight:800;line-height:1;}
+.pain-pill-locked{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border-radius:100px;border:1px dashed rgba(217,79,56,0.4);cursor:pointer;font-size:13px;font-weight:500;font-family:'Outfit',sans-serif;color:var(--red);background:rgba(217,79,56,0.05);transition:background 0.15s,border-color 0.15s;user-select:none;}
+.pain-pill-locked:hover{background:var(--gradient-soft);border-style:solid;}
 .audience-detecting{font-size:13px;color:var(--text4);font-style:italic;padding:6px 2px;width:100%;}
 .tone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
 .support-type-chip{padding:8px 17px;border:1px solid var(--border);border-radius:100px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text3);background:var(--bg);transition:border-color 0.14s,color 0.14s,background 0.14s;user-select:none;}
@@ -696,8 +698,8 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
           </div>
         </div>
         <div class="pain-pills" id="pain-pills"></div>
-        <input type="text" id="benefit-input" style="display:none;"/>
-        <button id="pain-clear-btn" class="field-clear" onclick="clearPainPoint()">Clear</button>
+        <input type="text" id="benefit-input" placeholder="or describe the problem this solves..." style="margin-top:9px;" oninput="updatePainCounter()"/>
+        <button id="pain-clear-btn" class="field-clear" style="display:none;" onclick="clearPainPoint()">Clear</button>
       </div>
 
       <div class="field">
@@ -1512,7 +1514,11 @@ function clearNicheSelection() {
 
 function applyNicheData(val) {
   const data = NICHE_DATA[val];
-  if (!data || !data.audience) return;
+  if (!data) return;
+  // Show niche-based pain pills unless this user is getting AI auto-fill (which
+  // populates them from the product instead).
+  if (!(isPro && painAutofillOn)) showStaticPainPills();
+  if (!data.audience) return;
   // Seed audience options from niche data, but never clobber AI results or user picks
   const container = document.getElementById('audience-options');
   if (!container) return;
@@ -1709,83 +1715,92 @@ function togglePainAutofill() {
     knob.style.left = '3px';
     label.style.color = 'var(--text3)';
     label.textContent = 'Auto-fill';
+    // Revert to static niche pills so the field isn't left showing stale AI suggestions
+    showStaticPainPills();
   }
+}
+
+// Static niche-based pain points shown to free users (and Pro users with auto-fill off)
+const STATIC_PAINS = {
+  'Beauty & Skincare':['Sensitive skin reactions','Expensive products','Confusing routines','Ineffective results'],
+  'Books & Education':['No time to read','Information overload','Expensive courses','Hard to focus'],
+  'DIY & Crafts':['Wasted materials','Complex instructions','Limited tools','Project failures'],
+  'Fashion & Style':['Outfit confusion','Fast fashion waste','Limited budget','Nothing to wear'],
+  'Fitness & Gym':['No motivation','Back pain from sitting','Hard to stay consistent','Expensive gym fees'],
+  'Food & Recipes':['No time to cook','Recipe boredom','Unhealthy eating','Food waste'],
+  'Gaming':['Back pain from gaming','Poor audio','Cluttered desk','Wrist strain'],
+  'Hair Care':['Frizzy unmanageable hair','Heat damage','Scalp issues','Color fading fast'],
+  'Health & Wellness':['Low energy all day','Trouble sleeping','Constant brain fog','Stress and anxiety'],
+  'Home Decor':['Home feels cold','Cheap-looking decor','No storage space','Hard to find a cohesive style'],
+  'Jewelry & Accessories':['Jewelry turns green','Generic gifts','Outfit feels unfinished','Allergic to cheap metals'],
+  'Kitchen & Cooking':['Meal prep stress','Food waste','Limited recipes','Equipment gaps'],
+  'Outdoor & Garden':['Plant deaths','Weather damage','Limited space','High maintenance'],
+  'Parenting & Family':['Sleep deprivation','Overwhelming choices','Safety concerns','Limited time'],
+  'Personal Finance':['Living paycheck to paycheck','Impulse spending','No savings','Debt stress'],
+  'Pets':['Vet costs','Behavior issues','Finding quality products','Limited time'],
+  'Photography':['Bad lighting','Blurry photos','Expensive gear','Editing complexity'],
+  'Self Improvement':['Lack of motivation','Bad habits','No consistency','Overwhelm'],
+  'Stationery & Journaling':['Inconsistent planning','Chaotic schedule','Cannot stick to a system','Expensive supplies'],
+  'Supplements & Nutrition':['Constant fatigue','Hitting a plateau','Poor gut health','Slow recovery'],
+  'Tech & Gadgets':['Slow devices','Cable mess','Poor battery life','Expensive upgrades'],
+  'Travel':['Overpacking','Hidden costs','Poor planning','Missing out'],
+  'Vintage & Thrift':['Items look worn','Hard to style vintage','No space for finds','Finding quality pieces'],
+  'Wedding & Events':['Budget overruns','Decision fatigue','Vendor stress','Time pressure']
+};
+
+// Render pain-point pills, preserving any already-selected ones. Pills are
+// pure selection — the typed custom input is kept separate (see getPainValue).
+function renderPainPills(pains, opts) {
+  const container = document.getElementById('pain-pills');
+  if (!container) return;
+  const active = new Set(Array.from(container.querySelectorAll('.pain-pill.active')).map(p => p.dataset.pain));
+  container.innerHTML = '';
+  pains.forEach(pain => {
+    const pp = document.createElement('span');
+    pp.className = 'pain-pill';
+    pp.dataset.pain = pain;
+    pp.textContent = pain;
+    if (active.has(pain)) pp.classList.add('active');
+    pp.onclick = () => { pp.classList.toggle('active'); updatePainCounter(); };
+    container.appendChild(pp);
+  });
+  if (opts && opts.locked) {
+    const proChip = document.createElement('span');
+    proChip.className = 'pain-pill-locked';
+    proChip.textContent = '🔒 AI suggestions';
+    proChip.onclick = () => showPaywall();
+    container.appendChild(proChip);
+  }
+  updatePainCounter();
+}
+
+// Free users (and Pro users with auto-fill off) get static niche-based pills
+function showStaticPainPills() {
+  const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
+  if (!niche) return;
+  const pains = STATIC_PAINS[niche] || ['Quality concerns','High costs','Limited options','Time constraints'];
+  renderPainPills(pains, { locked: !isPro });
+}
+
+// Combine selected pills + the typed custom pain into the value used for generation
+function getPainValue() {
+  const selected = Array.from(document.querySelectorAll('.pain-pill.active')).map(p => p.dataset.pain);
+  const custom = (document.getElementById('benefit-input').value || '').trim();
+  if (custom) selected.push(custom);
+  return selected.join('; ');
 }
 
 async function autoGeneratePains(product) {
   const container = document.getElementById('pain-pills');
   if (!container) return;
-  if (!isPro) {
-    // Free users get static pain point chips based on niche
-    const staticPains = {
-      'Beauty & Skincare':['Sensitive skin reactions','Expensive products','Confusing routines','Ineffective results'],
-      'Books & Education':['No time to read','Information overload','Expensive courses','Hard to focus'],
-      'DIY & Crafts':['Wasted materials','Complex instructions','Limited tools','Project failures'],
-      'Fashion & Style':['Outfit confusion','Fast fashion waste','Limited budget','Nothing to wear'],
-      'Fitness & Gym':['No motivation','Back pain from sitting','Hard to stay consistent','Expensive gym fees'],
-      'Food & Recipes':['No time to cook','Recipe boredom','Unhealthy eating','Food waste'],
-      'Gaming':['Back pain from gaming','Poor audio','Cluttered desk','Wrist strain'],
-      'Hair Care':['Frizzy unmanageable hair','Heat damage','Scalp issues','Color fading fast'],
-      'Health & Wellness':['Low energy all day','Trouble sleeping','Constant brain fog','Stress and anxiety'],
-      'Home Decor':['Home feels cold','Cheap-looking decor','No storage space','Hard to find a cohesive style'],
-      'Jewelry & Accessories':['Jewelry turns green','Generic gifts','Outfit feels unfinished','Allergic to cheap metals'],
-      'Kitchen & Cooking':['Meal prep stress','Food waste','Limited recipes','Equipment gaps'],
-      'Outdoor & Garden':['Plant deaths','Weather damage','Limited space','High maintenance'],
-      'Parenting & Family':['Sleep deprivation','Overwhelming choices','Safety concerns','Limited time'],
-      'Personal Finance':['Living paycheck to paycheck','Impulse spending','No savings','Debt stress'],
-      'Pets':['Vet costs','Behavior issues','Finding quality products','Limited time'],
-      'Photography':['Bad lighting','Blurry photos','Expensive gear','Editing complexity'],
-      'Self Improvement':['Lack of motivation','Bad habits','No consistency','Overwhelm'],
-      'Stationery & Journaling':['Inconsistent planning','Chaotic schedule','Cannot stick to a system','Expensive supplies'],
-      'Supplements & Nutrition':['Constant fatigue','Hitting a plateau','Poor gut health','Slow recovery'],
-      'Tech & Gadgets':['Slow devices','Cable mess','Poor battery life','Expensive upgrades'],
-      'Travel':['Overpacking','Hidden costs','Poor planning','Missing out'],
-      'Vintage & Thrift':['Items look worn','Hard to style vintage','No space for finds','Finding quality pieces'],
-      'Wedding & Events':['Budget overruns','Decision fatigue','Vendor stress','Time pressure']
-    };
-    const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
-    const pains = staticPains[niche] || ['Quality concerns','High costs','Limited options','Time constraints'];
-    container.innerHTML = '';
-    const updateBenefitFromPills = () => {
-      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.dataset.pain);
-      document.getElementById('benefit-input').value = selected.join('; ');
-      updatePainCounter();
-    };
-    pains.forEach(pain => {
-      const pp = document.createElement('span');
-      pp.className = 'pain-pill';
-      pp.dataset.pain = pain;
-      pp.textContent = pain;
-      pp.onclick = () => { pp.classList.toggle('active'); updateBenefitFromPills(); };
-      container.appendChild(pp);
-    });
-    const proChip = document.createElement('span');
-    proChip.innerHTML = '🔒 AI suggestions';
-    proChip.style.cssText = 'font-size:12px;padding:7px 14px;border-radius:20px;border:1px dashed rgba(217,79,56,0.4);cursor:pointer;color:var(--red);background:rgba(217,79,56,0.05);font-family:Outfit,sans-serif;';
-    proChip.onclick = () => showPaywall();
-    container.appendChild(proChip);
-    return;
-  }
+  if (!isPro) { showStaticPainPills(); return; }
   container.innerHTML = '<span style="font-size:12px;color:var(--text4);">Generating pain points...</span>';
   try {
     const sys = 'Pinterest affiliate pain-point generator. Return a JSON array of exactly 5 pain points (3–7 words each) that MOTIVATE someone to buy this product — the problem or frustration that existed BEFORE they found it. Rules: (1) Infer intent if product name has typo or is vague. (2) Each pain describes the PURCHASE TRIGGER — what made the buyer go looking. For fashion/clothing: focus on fit problems, comfort issues, or style frustrations that led them to seek this item. For tech: workflow friction, physical discomfort, or productivity problems. (3) Write from the buyer\'s first-person experience — something they would literally say or think. (4) Never describe problems caused BY the product — only problems SOLVED by it. (5) Each pain must be distinct and concrete (e.g. "jeans gap at the waist", "can\'t find trousers that fit thighs" — not "difficulty with fit"). (6) Output ONLY the JSON array, no markdown, no explanation.';
     const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
     const rawData = await callClaude(sys, 'Product: "' + product + '"' + (niche ? '\nNiche: ' + niche : ''));
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
-    container.innerHTML = '';
-    const updateBenefitFromPillsPro = () => {
-      const selected = [...document.querySelectorAll('.pain-pill.active')].map(x => x.dataset.pain);
-      document.getElementById('benefit-input').value = selected.join('; ');
-      updatePainCounter();
-    };
-    pains.forEach(pain => {
-      const pp = document.createElement('span');
-      pp.className = 'pain-pill';
-      pp.dataset.pain = pain;
-      pp.textContent = pain;
-      pp.onclick = () => { pp.classList.toggle('active'); updateBenefitFromPillsPro(); };
-      container.appendChild(pp);
-    });
+    renderPainPills(pains, { locked: false });
   } catch(e) {
     container.innerHTML = '';
     console.log('Pain gen error:', e);
@@ -1878,9 +1893,13 @@ function updateAudienceClear() {
 }
 
 function updatePainCounter() {
-  const n = document.querySelectorAll('.pain-pill.active').length;
+  const pills = document.querySelectorAll('.pain-pill.active').length;
+  const custom = (document.getElementById('benefit-input').value || '').trim() ? 1 : 0;
+  const n = pills + custom;
   const counter = document.getElementById('pain-selected-count');
   if (counter) { counter.textContent = n + ' selected'; counter.style.display = n > 0 ? '' : 'none'; }
+  const btn = document.getElementById('pain-clear-btn');
+  if (btn) btn.style.display = n > 0 ? '' : 'none';
 }
 
 let audienceFillSeq = 0;
@@ -2407,7 +2426,7 @@ async function generatePin() {
   const product=document.getElementById('product-input').value.trim();
   const niche=activeNiche||document.getElementById('niche-custom-input').value.trim();
   const audience=getAudienceValue();
-  const benefit=document.getElementById('benefit-input').value.trim();
+  const benefit=getPainValue();
   if (!product) { document.getElementById('product-input').focus(); return; }
   const qty=pinQty;
   const genBtn=document.getElementById('gen-btn');
