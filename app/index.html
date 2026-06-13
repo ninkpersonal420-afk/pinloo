@@ -1574,6 +1574,7 @@ function onProductInput(val) {
   clearTimeout(autoDetectTimer); clearTimeout(audienceTimer);
   const trimmed = val.trim();
   if (trimmed.length === 0) {
+    inferredProductDesc = '';
     if (nicheDetectEnabled) clearNicheSelection();
     if (audienceDetectEnabled) { audienceFillSeq++; resetAudienceOptions(); }
     document.getElementById('pain-pills').innerHTML = '';
@@ -1602,6 +1603,7 @@ function onCustomNicheInput(val) {
 }
 
 let nicheDetectSeq = 0;
+let inferredProductDesc = ''; // set by niche detection, used by audience + pain prompts
 async function autoDetectNicheAI(product) {
   if (document.getElementById('niche-custom-input').value.trim()) return;
   const mySeq = ++nicheDetectSeq;
@@ -1611,21 +1613,26 @@ async function autoDetectNicheAI(product) {
   if (autoTag) { autoTag.textContent = 'Detecting...'; autoTag.style.display = 'inline-block'; autoTag.style.opacity = '0.6'; }
   try {
     const email = getGateEmail() || 'autofill@pinlo.internal';
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:20,system:'Pinterest niche classifier. Pick the ONE niche where a Pinterest shopper would actually search for this exact product.\nRules:\n- If the input is a brand name, a typo, or vague, first infer what the product physically is, then classify it.\n- Classify by the product\'s core function and the buyer\'s main reason for buying — never by brand, country of origin, or material.\n- When a product could fit several niches, choose the one matching WHY people buy it. Example: an electrolyte mix is bought for hydration and recovery, so it is Supplements, not Fitness; a meal-prep container is bought to organise food, so it is Kitchen, not Health.\n- Output exactly one niche name from the list, copied character-for-character. No quotes, no punctuation, no commentary — your output is parsed by an exact string match and any extra characters break it.',messages:[{role:'user',content:'Product: "'+product+'"\n\nChoose the single best niche:\n'+nicheList+'\n\nOutput only the niche name, nothing else.'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',model:'claude-haiku-4-5',max_tokens:80,system:'Pinterest niche classifier. Infer what the product physically is (even if the input is a brand name, abbreviation, or has a typo), then return JSON with two fields:\n- "niche": the single best niche from the provided list, copied character-for-character\n- "what": one short phrase (6–12 words) describing what this product does and when/why someone uses it — written as product context, not marketing copy. Example: "electrolyte drink mix for hydration during exercise".\nChoose the niche matching WHY people buy it: an electrolyte mix → Supplements (hydration/recovery), not Fitness; a meal-prep container → Kitchen, not Health.\nOutput only valid JSON — no markdown, no explanation.',messages:[{role:'user',content:'Product: "'+product+'"\n\nNiches:\n'+nicheList+'\n\nReturn JSON: {"niche":"...","what":"..."}'}]})});
     if (!res.ok) { console.log('Niche detect skipped: server error', res.status); return; }
     // If a newer request has been fired, discard this stale result
     if (mySeq !== nicheDetectSeq) return;
     const data = await res.json();
     const raw = data.content.map(i=>i.text||'').join('').trim();
-    const detectedRaw = fuzzyMatchNiche(raw);
+    let nicheRaw = raw, whatDesc = '';
+    try {
+      const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+      nicheRaw = parsed.niche || raw;
+      whatDesc = parsed.what || '';
+    } catch(_) { /* fall back to treating raw as plain niche string */ }
+    if (whatDesc) inferredProductDesc = whatDesc;
+    const detectedRaw = fuzzyMatchNiche(nicheRaw);
     const detected = resolveToPillNiche(detectedRaw);
     if (detected && mySeq === nicheDetectSeq) {
       const label = NICHE_PILL_LABELS[detected];
       clearNicheSelection();
-      let found = false;
       document.querySelectorAll('.pill').forEach(p => {
         if (p.textContent.trim()===label) {
-          found = true;
           document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
           p.classList.add('active');
           activeNiche=detected;
@@ -1798,7 +1805,7 @@ async function autoGeneratePains(product) {
   try {
     const sys = 'You generate Pinterest pain points for an affiliate product. Return a JSON array of exactly 5 short pain points (3–6 words each) — the real frustrations that send someone looking for THIS exact product.\n\nEvery pain must be a problem THIS product solves. Example: an electrolyte mix → ["Cramping during long workouts","Drained after heavy sweating","Plain water is not enough","Headaches from dehydration","Energy crashing mid-afternoon"] — NOT "hitting a plateau" or "slow muscle gains" (those are generic supplement pains unrelated to electrolytes).\n\nRules — follow every one:\n1. If the product name is a brand, a typo, or vague, infer what it physically is first.\n2. Each pain is the BEFORE state — the frustration that existed before they found the product, written the way the buyer would actually feel or say it.\n3. Keep them concrete but natural — a problem a real person would nod at, not an oddly hyper-specific scenario.\n4. Never describe a problem the product CAUSES — only ones it SOLVES.\n5. Each pain is distinct — no two describe the same frustration.\n6. Output ONLY the JSON array — no markdown, no explanation.';
     const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
-    const rawData = await callClaude(sys, 'Product: "' + product + '"' + (niche ? '\nNiche: ' + niche : ''));
+    const rawData = await callClaude(sys, 'Product: "' + product + '"' + (inferredProductDesc ? '\nWhat it does: ' + inferredProductDesc : '') + (niche ? '\nNiche: ' + niche : ''));
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
     renderPainPills(pains, { locked: false });
   } catch(e) {
@@ -1920,7 +1927,7 @@ async function autoFillAudience(product) {
   try {
     const sys = 'You generate Pinterest buyer personas for an affiliate product. Return a plain comma-separated list of 3–5 audiences who would actually search for and buy THIS exact product.\n\nAnchor every persona to what the product physically does — its main job — not the broad category it sits in. Example: an electrolyte mix → "runners who cramp on long runs", "people who sweat heavily training", "anyone tired of plain water", "people fighting afternoon dehydration" — NOT "people building muscle" (that is generic supplement filler with nothing to do with electrolytes).\n\nRules — follow every one:\n1. If the product name is a brand, a typo, or vague, infer what it physically is first, then build personas around that.\n2. Each persona answers WHY they need THIS product — the situation, body need, goal, or moment of use — and it must be obvious how the product solves it.\n3. Write the way people describe themselves, not marketing labels. 4–7 words each, natural and specific enough that a real person reads it and thinks "that is me".\n4. NEVER use bare demographics ("women 25-45") or occupation labels ("professionals", "working moms", "students", "executives", "freelancers", "entrepreneurs") unless the product is literally work or office equipment.\n5. BANNED words — never output any of these: enthusiasts, lovers, fans, community, aficionados, connoisseurs, seekers, devotees, addicts, crowd. Replace them with what the person DOES (write "people who train 5 days a week", never "fitness enthusiasts").\n6. No two personas overlap — each is a genuinely different buyer.\n7. Output only the comma-separated list — no intro, no numbering. Return INVALID only if the product is truly unidentifiable even after inference.';
     const email = getGateEmail() || 'autofill@pinlo.internal';
-    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',max_tokens:80,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'"\nNiche: '+(niche||'general')+'\n\nList the buyer personas for this product. Format: persona1, persona2, persona3'}]})});
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'autofill',max_tokens:80,system:sys,messages:[{role:'user',content:'Product: "'+cleanProduct+'"'+(inferredProductDesc?'\nWhat it does: '+inferredProductDesc:'')+'\nNiche: '+(niche||'general')+'\n\nList the buyer personas for this product. Format: persona1, persona2, persona3'}]})});
     if (!res.ok) { console.log('Audience autofill skipped: server error', res.status); return; }
     // A newer detection has been fired — discard this stale result
     if (mySeq !== audienceFillSeq) return;
@@ -2118,7 +2125,9 @@ function fixTitlePunctuation(title) {
 }
 
 function buildMsg(product, niche, audience, benefit, extra) {
-  let m = 'Product: "'+product+'" | Write copy SPECIFICALLY about this product type and what it does, not generic category content.';
+  let m = 'Product: "'+product+'"';
+  if (inferredProductDesc) m += ' — '+inferredProductDesc;
+  m += ' | Write copy SPECIFICALLY about what this product does, not generic category content.';
   m += ' | Niche: '+(niche||'lifestyle');
   if (audience) m += ' | Audience: '+audience;
   if (benefit) m += ' | Core pain point: '+benefit+'. The description MUST open with this as a felt frustration the buyer experiences — not a feature of the product.';
