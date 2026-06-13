@@ -387,7 +387,10 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
       return;
     }
     if (localStorage.getItem('pinlo_verified') === 'true' && localStorage.getItem('pinlo_gate_email')) {
-      window.location.replace('/app');
+      // Skip redirect if user explicitly navigated to the homepage (e.g. from the app logo)
+      if (!new URLSearchParams(window.location.search).has('home')) {
+        window.location.replace('/app');
+      }
     }
   })();
 </script>
