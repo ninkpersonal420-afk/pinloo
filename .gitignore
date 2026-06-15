@@ -1,0 +1,17 @@
+# Cloudflare / Wrangler local state & build artifacts
+.wrangler/
+
+# Dependencies
+node_modules/
+
+# Local env / secrets
+.env
+.env.local
+.dev.vars
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Stray duplicate project copy (should not exist; ignored so it can't be committed)
+pinloo-main/

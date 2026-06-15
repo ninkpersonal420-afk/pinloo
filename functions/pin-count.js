@@ -1,7 +1,7 @@
 export async function onRequestGet(context) {
+  const { request } = context;
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json',
+    ...cors(request),
     'Cache-Control': 'public, max-age=60'
   };
 
@@ -16,12 +16,17 @@ export async function onRequestGet(context) {
   }
 }
 
-export async function onRequestOptions() {
-  return new Response(null, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS'
-    }
-  });
+export async function onRequestOptions({ request }) {
+  return new Response(null, { headers: cors(request) });
+}
+
+function cors(request) {
+  const origin = new URL(request.url).origin;
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Content-Type': 'application/json',
+    'Vary': 'Origin'
+  };
 }

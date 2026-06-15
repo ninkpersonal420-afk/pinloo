@@ -1,10 +1,5 @@
 export async function onRequestPost(context) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
+  const corsHeaders = cors(context.request);
 
   try {
     const { sessionId, email: clientEmail } = await context.request.json();
@@ -34,7 +29,10 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: 'Invalid session', valid: false }), { status: 400, headers: corsHeaders });
     }
 
-    const valid = session.payment_status === 'paid' || session.status === 'complete';
+    // Only treat this as a real upgrade if it's a completed subscription checkout.
+    const isSubscription = session.mode === 'subscription';
+    const paid = session.payment_status === 'paid' || session.status === 'complete';
+    const valid = isSubscription && paid;
     const stripeEmail = session.customer_details?.email || null;
 
     // Plan from the subscription's actual billing interval. The old amount_total
@@ -100,12 +98,17 @@ export async function onRequestPost(context) {
   }
 }
 
-export async function onRequestOptions() {
-  return new Response(null, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS'
-    }
-  });
+export async function onRequestOptions({ request }) {
+  return new Response(null, { headers: cors(request) });
+}
+
+function cors(request) {
+  const origin = new URL(request.url).origin;
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json',
+    'Vary': 'Origin'
+  };
 }
