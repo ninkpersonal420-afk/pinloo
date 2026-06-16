@@ -13,7 +13,11 @@
 //              and resolves that. Reliable for resolution/gap analysis, NOT for
 //              brand recognition or nondeterministic flapping.
 //
-// Run:  node tools/niche-stress-test.mjs
+// Run (simulated):  node tools/niche-stress-test.mjs
+// Run (live):        $env:ANTHROPIC_API_KEY="sk-ant-..."; node tools/niche-stress-test.mjs
+//   - Override runs-per-product (default 3):  $env:RUNS="1"
+//   - LIVE mode extracts the system prompt from app/index.html at runtime,
+//     so the test always matches production. ~100*RUNS Haiku calls per run.
 // ---------------------------------------------------------------------------
 
 import fs from 'node:fs';
@@ -220,7 +224,7 @@ function verdict(row, finalPill) {
   return 'WRONG';
 }
 
-function run() {
+function runSim() {
   const drift = driftCheck();
   const lines = [];
   lines.push('# Pinlo niche stress-test results');
@@ -256,4 +260,94 @@ function run() {
   console.log(out);
 }
 
-run();
+// ── LIVE mode ────────────────────────────────────────────────────────────────
+// API key: env var first, then a .dev.vars file (KEY=VALUE lines).
+function loadKey() {
+  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY.trim();
+  try {
+    const dv = fs.readFileSync(path.join(ROOT, '.dev.vars'), 'utf8');
+    const m = dv.match(/^\s*ANTHROPIC_API_KEY\s*=\s*(.+)$/m);
+    if (m) return m[1].trim().replace(/^["']|["']$/g, '');
+  } catch {}
+  return null;
+}
+
+// Extract the LIVE niche-detect system prompt straight from app/index.html so
+// the test can never drift from production.
+function extractSystemPrompt(html) {
+  const m = html.match(/max_tokens:80,system:'([\s\S]*?)',messages:/);
+  if (!m) throw new Error('Could not extract niche-detect system prompt from app/index.html');
+  return m[1].replace(/\\n/g, '\n').replace(/\\'/g, "'").replace(/\\\\/g, '\\');
+}
+
+const NICHE_LIST_STR = Object.keys(NICHE_PILL_LABELS).join(', ');
+const RUNS = parseInt(process.env.RUNS || '3', 10);
+
+async function classifyOnce(product, systemPrompt, key) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5', max_tokens: 80, system: systemPrompt,
+      messages: [{ role: 'user', content: 'Product: "' + product + '"\n\nNiches:\n' + NICHE_LIST_STR + '\n\nReturn JSON: {"niche":"...","what":"..."}' }]
+    })
+  });
+  if (!res.ok) throw new Error('API ' + res.status + ': ' + (await res.text()).slice(0, 160));
+  const data = await res.json();
+  const text = (data.content || []).map(c => c.text || '').join('').trim();
+  let niche = text, what = '';
+  try { const p = JSON.parse(text.replace(/```json|```/g, '').trim()); niche = p.niche || text; what = p.what || ''; } catch {}
+  return { niche, what };
+}
+
+async function runLive(key) {
+  const html = fs.readFileSync(APP, 'utf8');
+  const systemPrompt = extractSystemPrompt(html);
+  const drift = driftCheck();
+  const lines = [];
+  lines.push('# Pinlo niche stress-test results — LIVE (real API)');
+  lines.push('');
+  lines.push(`Model: claude-haiku-4-5 · runs/product: ${RUNS} · drift: ${drift.missing.length ? ('MISSING ' + drift.missing.join(',')) : 'clean (' + drift.ported + ' niches)'}`);
+  lines.push('');
+  lines.push('| # | cat | product | model→ (run1) | final pill | expected | verdict | what (run1) |');
+  lines.push('|--|--|--|--|--|--|--|--|');
+  const tally = {};
+  for (let i = 0; i < P.length; i++) {
+    const [cat, product, raw, expected, accept, brand, note] = P[i];
+    const pills = [], niches = []; let what1 = '';
+    for (let r = 0; r < RUNS; r++) {
+      try {
+        const { niche, what } = await classifyOnce(product, systemPrompt, key);
+        if (r === 0) what1 = what;
+        niches.push(niche); pills.push(pill(niche) || '(none)');
+      } catch (e) { niches.push('ERR'); pills.push('ERR'); if (i === 0 && r === 0) throw e; }
+    }
+    const flapping = new Set(pills).size > 1;
+    const finalPill = pills[0];
+    let v = verdict(P[i], finalPill);
+    if (flapping) v = 'FLAPPING';
+    tally[v] = (tally[v] || 0) + 1;
+    if (brand) tally.BRAND_RISK = (tally.BRAND_RISK || 0) + 1;
+    lines.push(`| ${i + 1} | ${cat} | ${product} | ${niches[0]} | ${flapping ? pills.join(' / ') : finalPill} | ${expected} | ${v}${brand ? ' +BRAND' : ''} | ${(what1 || '').replace(/\|/g, '/')} |`);
+    process.stderr.write(`\r[${i + 1}/${P.length}] ${product}                    `);
+  }
+  process.stderr.write('\n');
+  lines.push('');
+  lines.push('## Tally');
+  Object.entries(tally).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => lines.push(`- ${k}: ${v}`));
+  lines.push('');
+  lines.push('## Resolution mini-suite (raw string → final pill)');
+  lines.push('| raw | final pill |'); lines.push('|--|--|');
+  MINI.forEach(m => lines.push(`| ${JSON.stringify(m)} | ${pill(m) || '(none)'} |`));
+  const out = lines.join('\n');
+  fs.writeFileSync(path.join(__dirname, 'niche-stress-results.md'), out + '\n');
+  console.log(out);
+}
+
+const KEY = loadKey();
+if (KEY) {
+  runLive(KEY).catch(e => { console.error('\nLIVE run failed:', e.message); process.exit(1); });
+} else {
+  console.error('No API key (env ANTHROPIC_API_KEY or .dev.vars) — running SIMULATED mode.\n');
+  runSim();
+}
