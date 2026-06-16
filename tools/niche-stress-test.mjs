@@ -213,6 +213,48 @@ const P = [
   ['obscure','grow light','Outdoor & Garden','Outdoor & Garden',['Tech & Gadgets'],false,'indoor plants'],
 ];
 
+// ── EXPLORE set: unscored. Classified live, reported with the model's `what`
+// so a human can eyeball whether niche + description make sense. Heavy on
+// random real brands (the hard part) across every category. ────────────────
+const EXPLORE = [
+  // random brands — drinkware / kitchen
+  'Cirkul','Stojo','Caraway','Our Place','HexClad','Vitamix','Nespresso','Chemex','Ninja Creami','Lodge','Zwilling','Takeya','Simple Modern','RTIC','Carote','Always Pan',
+  // random brands — apparel / shoes / outdoor
+  'Crocs','Patagonia','Fjallraven','Osprey','Allbirds','Vuori','Gymshark','Alo Yoga','On Cloud','Vessi','Bombas','Darn Tough','Smartwool','Arcteryx','Columbia','Merrell',
+  // random brands — beauty / hair / grooming
+  'CeraVe','The Ordinary','Drunk Elephant','Rare Beauty','Charlotte Tilbury','Dr Squatch','Manscaped','Native deodorant','Dyson Airwrap','Revlon One Step','Mielle','Olaplex No 7',
+  // random brands — tech / home
+  'Dyson V15','Roomba','Shark robot vacuum','Bissell','Levoit air purifier','Govee lights','Philips Hue','Ring doorbell','Eufy','DJI Mini','GoPro','Insta360','Kindle Paperwhite','Remarkable 2','Rocketbook',
+  // random brands — fitness / health / supplements
+  'Fitbit','Oura ring','Whoop','Hyperice','Liquid IV','Liquid Death','AG1','Ritual vitamins','Seed probiotic','Gymshark leggings','Bala bangles','Hydro Jug',
+  // random brands — sleep / wellness
+  'Casper mattress','Purple pillow','Brooklinen sheets','Bearaby','Hatch alarm','Loop earplugs',
+  // random brands — outdoors / grill / pets
+  'Solo Stove','Traeger','Blackstone griddle','Nalgene','Garmin watch','Litter Robot','Fi collar',
+  // products — sports & rec
+  'kayak paddle','pickleball paddle set','cornhole boards','ski goggles','snowboard bindings','wetsuit','climbing harness','trekking poles','camping hammock','headlamp','disc golf set','roller skates','jiu jitsu gi','boxing hand wraps',
+  // products — hunting & fishing
+  'fly fishing reel','duck call','deer feeder','recurve bow','tackle bag','fish stringer','bowfishing reel',
+  // products — music
+  'midi keyboard','synthesizer','harmonica','violin rosin','drum throne','guitar capo','metronome','studio monitors','vinyl record','turntable',
+  // products — hobby / games (gap probes)
+  'gundam model kit','jigsaw puzzle','chess set','poker chip set','dnd miniatures','tarot deck','oracle cards','singing bowl','palo santo','crystal grid',
+  // products — stationery / art
+  'bullet journal','washi tape','fountain pen ink','calligraphy nib','gouache paint set','pottery wheel','knitting needles','crochet hook kit','macrame cord','candle making kit','soap mold',
+  // products — auto detailing / vehicle
+  'OBD2 scanner','tire inflator','jump starter','car seat gap filler','steering wheel cover','ceramic coating kit','microfiber towels','motorcycle gloves','bike chain lube','bike phone mount','balance bike',
+  // products — pets
+  'cat water fountain','automatic dog feeder','reptile heat lamp','aquarium heater','dog DNA test','slow feeder bowl','bird cage','hamster wheel',
+  // products — baby / parenting
+  'bottle warmer','pacifier clip','teething toy','stroller fan','nursing cover','potty training seat','diaper caddy','baby sound machine',
+  // products — finance / office / cleaning
+  'cash envelope wallet','budget binder','savings challenge book','desk cable organizer','under desk treadmill','steam mop','grout cleaner brush','shoe storage cabinet',
+  // products — food / kitchen oddballs
+  'matcha whisk','cocktail shaker','sourdough banneton','bread lame','meat thermometer','spice drawer organizer','electric milk frother','cold brew maker',
+  // genuinely weird / ambiguous
+  'lefty scissors','left handed mug','horse fly mask','chicken coop','snail bait','beard straightener','sauna blanket','red light therapy mask','posture corrector','grip strengthener','finger skateboard','sand free beach mat'
+];
+
 // ── Resolution mini-suite: feed raw strings straight into the resolver ───────
 const MINI = ['Car accessories','Phone accessories','Sports & Fitness','Health & Beauty','','Outdoors','Kids & Baby','Vehicles!!!','Automotive','Tools','Horseback riding'];
 
@@ -283,15 +325,26 @@ function extractSystemPrompt(html) {
 const NICHE_LIST_STR = Object.keys(NICHE_PILL_LABELS).join(', ');
 const RUNS = parseInt(process.env.RUNS || '3', 10);
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 async function classifyOnce(product, systemPrompt, key) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5', max_tokens: 80, system: systemPrompt,
-      messages: [{ role: 'user', content: 'Product: "' + product + '"\n\nNiches:\n' + NICHE_LIST_STR + '\n\nReturn JSON: {"niche":"...","what":"..."}' }]
-    })
-  });
+  let res;
+  for (let attempt = 0; ; attempt++) {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5', max_tokens: 80, system: systemPrompt,
+        messages: [{ role: 'user', content: 'Product: "' + product + '"\n\nNiches:\n' + NICHE_LIST_STR + '\n\nReturn JSON: {"niche":"...","what":"..."}' }]
+      })
+    });
+    // Back off and retry on rate-limit / overloaded / transient server errors
+    if ((res.status === 429 || res.status === 529 || res.status >= 500) && attempt < 5) {
+      await sleep(1500 * (attempt + 1));
+      continue;
+    }
+    break;
+  }
   if (!res.ok) throw new Error('API ' + res.status + ': ' + (await res.text()).slice(0, 160));
   const data = await res.json();
   const text = (data.content || []).map(c => c.text || '').join('').trim();
@@ -335,6 +388,19 @@ async function runLive(key) {
   lines.push('');
   lines.push('## Tally');
   Object.entries(tally).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => lines.push(`- ${k}: ${v}`));
+  lines.push('');
+  lines.push(`## EXPLORE (${EXPLORE.length} unscored — eyeball niche + what)`);
+  lines.push('| # | product | model→ | final pill | what |');
+  lines.push('|--|--|--|--|--|');
+  for (let i = 0; i < EXPLORE.length; i++) {
+    const product = EXPLORE[i];
+    let niche = 'ERR', what = '';
+    try { const r = await classifyOnce(product, systemPrompt, key); niche = r.niche; what = r.what; }
+    catch (e) { niche = 'ERR'; what = e.message.slice(0, 40); }
+    lines.push(`| ${i + 1} | ${product} | ${niche} | ${pill(niche) || '(none)'} | ${(what || '').replace(/\|/g, '/')} |`);
+    process.stderr.write(`\r[explore ${i + 1}/${EXPLORE.length}] ${product}                    `);
+  }
+  process.stderr.write('\n');
   lines.push('');
   lines.push('## Resolution mini-suite (raw string → final pill)');
   lines.push('| raw | final pill |'); lines.push('|--|--|');
