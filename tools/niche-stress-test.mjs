@@ -410,8 +410,50 @@ async function runLive(key) {
   console.log(out);
 }
 
+// ── FLAP mode: classify the most-borderline products N times each (default 5)
+// to measure nondeterministic niche stability. Run: $env:FLAP="1"; node ... ──
+const BORDERLINE = [
+  'compression socks','Yeti','Lululemon','EDC knife','EDC flashlight','phone tripod',
+  'torque wrench','beard oil','enamel pins','sourdough starter','Stanley','GoPro',
+  'washi tape','beekeeping suit','Solo Stove','protein bar','foam roller','massage gun',
+  'Hydro Flask','standing desk','diffuser','running shoes','microfiber towels',
+  'calligraphy nib','horse halter','saddle','board','mat','Patagonia','Smartwool'
+];
+
+async function runFlap(key) {
+  const html = fs.readFileSync(APP, 'utf8');
+  const systemPrompt = extractSystemPrompt(html);
+  const n = parseInt(process.env.RUNS || '5', 10);
+  const lines = [];
+  lines.push(`# Pinlo niche flapping check (${n} runs per product)`);
+  lines.push('');
+  lines.push('| product | distinct pills | stable? |');
+  lines.push('|--|--|--|');
+  let flaps = 0;
+  for (const product of BORDERLINE) {
+    const pills = [];
+    for (let r = 0; r < n; r++) {
+      try { const { niche } = await classifyOnce(product, systemPrompt, key); pills.push(pill(niche) || '(none)'); }
+      catch { pills.push('ERR'); }
+    }
+    const distinct = [...new Set(pills)];
+    const stable = distinct.length === 1;
+    if (!stable) flaps++;
+    lines.push(`| ${product} | ${distinct.join(' / ')} | ${stable ? 'stable' : 'FLAPS — ' + pills.join(', ')} |`);
+    process.stderr.write(`\r[flap ${product}]                    `);
+  }
+  process.stderr.write('\n');
+  lines.push('');
+  lines.push(`**${flaps}/${BORDERLINE.length} products flapped across ${n} runs.**`);
+  const out = lines.join('\n');
+  fs.writeFileSync(path.join(__dirname, 'niche-flap-results.md'), out + '\n');
+  console.log(out);
+}
+
 const KEY = loadKey();
-if (KEY) {
+if (KEY && process.env.FLAP) {
+  runFlap(KEY).catch(e => { console.error('\nFLAP run failed:', e.message); process.exit(1); });
+} else if (KEY) {
   runLive(KEY).catch(e => { console.error('\nLIVE run failed:', e.message); process.exit(1); });
 } else {
   console.error('No API key (env ANTHROPIC_API_KEY or .dev.vars) — running SIMULATED mode.\n');
