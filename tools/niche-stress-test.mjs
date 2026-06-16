@@ -256,7 +256,8 @@ const EXPLORE = [
 ];
 
 // ── Resolution mini-suite: feed raw strings straight into the resolver ───────
-const MINI = ['Car accessories','Phone accessories','Sports & Fitness','Health & Beauty','','Outdoors','Kids & Baby','Vehicles!!!','Automotive','Tools','Horseback riding'];
+const MINI = ['Car accessories','Phone accessories','Sports & Fitness','Health & Beauty','','Outdoors','Kids & Baby','Vehicles!!!','Automotive','Tools','Horseback riding',
+  'Pet Supplies','Beauty & Personal Care','Home & Kitchen','Health & Household','Toys & Games','Garden & Outdoor','Sports & Outdoors','Office Products','Baby Products','Musical Instruments','Arts & Crafts','Cell Phones','Grocery','Patio & Garden'];
 
 function verdict(row, finalPill) {
   const [cat, product, raw, expected, accept, brand] = row;
