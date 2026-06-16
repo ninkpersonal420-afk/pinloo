@@ -9,6 +9,9 @@ node_modules/
 .env.local
 .dev.vars
 
+# Generated test artifacts (harness output)
+tools/niche-stress-results.md
+
 # OS
 .DS_Store
 Thumbs.db
