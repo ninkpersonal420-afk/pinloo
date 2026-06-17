@@ -217,7 +217,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .loading-bar{height:3px;background:var(--bg3);border-radius:100px;overflow:hidden;margin:0 auto 1.25rem;max-width:240px;}
 @keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
 @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.loading-fill{height:100%;width:50%;background:var(--gradient);border-radius:100px;animation:load 1.2s var(--ease) infinite;}
+.loading-fill{height:100%;width:50%;background:var(--gradient);border-radius:100px;animation:load 1.4s linear infinite;}
+.gen-spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:10px;flex-shrink:0;}
 .loading-text{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1.6px;text-transform:uppercase;}
 
 /* ── EMPTY STATE ── */
@@ -751,7 +752,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
 
     <div class="btn-row">
-      <button class="gen-btn" id="gen-btn" onclick="generatePin()"><span id="gen-btn-label">Generate 1 Pin</span><span id="gen-btn-spinner" style="display:none;margin-left:8px;">⟳</span></button>
+      <button class="gen-btn" id="gen-btn" onclick="generatePin()" style="display:flex;align-items:center;justify-content:center;"><span id="gen-btn-label">Generate 1 Pin</span><span id="gen-btn-spinner" class="gen-spinner"></span></button>
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <div class="qty-wrap">
           <button class="qty-btn" id="qty-down" onclick="changeQty(-1)" disabled>&#8722;</button>
@@ -2493,7 +2494,7 @@ async function generatePin() {
   genBtn.disabled=true;
   document.getElementById('gen-btn-label').textContent='Generating...';
   const spinner=document.getElementById('gen-btn-spinner');
-  if(spinner){spinner.style.display='inline-block';spinner.style.animation='spin 0.8s linear infinite';}
+  if(spinner){spinner.style.display='inline-block';}
   document.getElementById('qty-down').disabled=true;
   document.getElementById('qty-up').disabled=true;
   document.getElementById('loading').classList.add('show');
