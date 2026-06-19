@@ -21,8 +21,12 @@ export async function onRequestPost(context) {
 
     const { email, type, system, messages } = body;
 
-    // Model and token limits are set server-side — never read from client
-    const MODEL = 'claude-haiku-4-5';
+    // Model and token limits are set server-side — never read from client.
+    // Cheap, simple helpers (autofill, niche-tip) stay on Haiku; the actual pin
+    // generation uses Sonnet — measurably higher copy quality (named-product
+    // titles, clean grammar, relevant hashtags) for ~1 cent per pin.
+    const isHelper = type === 'autofill' || type === 'niche-tip';
+    const MODEL = isHelper ? 'claude-haiku-4-5' : 'claude-sonnet-4-6';
     const MAX_TOKENS = type === 'autofill' ? 80 : type === 'niche-tip' ? 150 : 900;
 
     // Valid email required for all request types
