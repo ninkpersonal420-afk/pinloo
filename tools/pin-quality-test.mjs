@@ -1,23 +1,27 @@
-// PINLO PIN-GENERATION QUALITY HARNESS
+// PINLO PIN-GENERATION QUALITY HARNESS — "perfect sweep" edition
 // ---------------------------------------------------------------------------
 // Runs realistic (product, niche, audience, pain point) cases through the REAL
-// production prompt (buildSys/buildMsg extracted verbatim from app/index.html,
-// so this can never drift), then grades every pin two ways:
+// production prompt (buildSys/buildMsg/PIN_ANGLES/validatePin are extracted
+// verbatim from app/index.html at runtime, so this can never drift), then
+// grades every pin three ways:
 //
-//   1. DETERMINISTIC checks  — char limits, sentence count, hashtag count/format,
-//      banned words, brand/product-name leakage, and (critically) verbatim
-//      pain-point pasting + input-fidelity backstops.
-//   2. LLM-AS-JUDGE          — a second model call rates each pin on whether it
-//      uses the pain point naturally, reflects the audience, is grammatical,
-//      sounds human, and stays on-topic. This catches the semantic failures
-//      that deterministic checks can't see.
+//   HARD checks (objective, must be zero):
+//     char limits, exactly-2-sentences, 12-hashtag count + format, banned
+//     words, brand/product-name leak, verbatim pain-point paste, title format
+//     (no hyphen/colon, question-mark rule).
+//   JUDGE (a STRONGER model grades semantics):
+//     pain point used + phrased naturally, audience reflected, grammatical,
+//     human voice, title is a real hook + on-product, sentence 2 delivers a
+//     solution, hashtags relevant & well-mixed, overall on-topic.
+//   HEURISTIC (low-confidence backstops): token-overlap fidelity hints.
 //
-// Needs an API key (env ANTHROPIC_API_KEY or a .dev.vars file with
-// ANTHROPIC_API_KEY=...). Writes tools/pin-quality-results.md.
+// Reliability: every case is generated RUNS times (default 2) so intermittent
+// failures surface. A representative subset is also run across ALL 10 pin
+// angles to test hook-style robustness + title distinctness.
 //
-// Run:        node tools/pin-quality-test.mjs
-//   JUDGE_MODEL=claude-sonnet-4-6 node tools/pin-quality-test.mjs   (stronger judge)
-//   ANGLES=1   -> also test 3 pin "angle" hook styles per case (3x calls)
+// Needs ANTHROPIC_API_KEY (env or .dev.vars). Writes tools/pin-quality-results.md
+// Run:   node tools/pin-quality-test.mjs
+//        RUNS=3 JUDGE_MODEL=claude-sonnet-4-6 node tools/pin-quality-test.mjs
 // ---------------------------------------------------------------------------
 
 import fs from 'node:fs';
@@ -27,8 +31,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const APP = path.join(ROOT, 'app', 'index.html');
-const GEN_MODEL = 'claude-haiku-4-5'; // must match callClaude in app/index.html
-const JUDGE_MODEL = process.env.JUDGE_MODEL || 'claude-haiku-4-5';
+const GEN_MODEL = 'claude-haiku-4-5';                          // must match production callClaude
+let   JUDGE_MODEL = process.env.JUDGE_MODEL || 'claude-sonnet-4-6'; // stronger judge by default
+const RUNS = parseInt(process.env.RUNS || '2', 10);
 
 // ── Extract production prompt builders verbatim (zero drift) ─────────────────
 function extractProductionLogic(html) {
@@ -38,253 +43,293 @@ function extractProductionLogic(html) {
   const buildMsg  = grab(/(function buildMsg\(product, niche, audience, benefit, extra\) \{[\s\S]*?\n\})/, 'buildMsg');
   const fixTitle  = grab(/(function fixTitlePunctuation\(title\) \{[\s\S]*?\n\})/, 'fixTitlePunctuation');
   const validate  = grab(/(function validatePin\(p\) \{[\s\S]*?\n\})/, 'validatePin');
-  const src = `
+  const angleCount = (pinAngles.match(/`/g) || []).length / 2 || 10;
+  // eslint-disable-next-line no-new-func
+  const api = new Function(`
     let inferredProductDesc = '';
     const PIN_ANGLES = ${pinAngles};
-    ${buildSys}
-    ${buildMsg}
-    ${fixTitle}
-    ${validate}
-    return {
-      buildSys, buildMsg, fixTitlePunctuation, validatePin,
-      setDesc: d => { inferredProductDesc = d || ''; }
-    };
-  `;
-  // eslint-disable-next-line no-new-func
-  return new Function(src)();
+    ${buildSys}${buildMsg}${fixTitle}${validate}
+    return { buildSys, buildMsg, fixTitlePunctuation, validatePin, angleCount: PIN_ANGLES.length,
+             setDesc: d => { inferredProductDesc = d || ''; } };
+  `)();
+  return api;
 }
 
-// ── Banned words/phrases (kept in sync with buildSys) ───────────────────────
 const BANNED = ['game-changer','unlock','elevate','transform','revolutionize','empower','discover','boost your','maximize','optimize your','achieve your goals','perfect for','lifestyle','journey','amazing','incredible','must-have','level up','next level','step up','unleash','supercharge','harness'];
 
-// ── Test cases: real products across niches. Some intentionally omit audience
-// and/or pain point to verify the "optional input" handling. ────────────────
+// ── Cases: every one of the 30 niches + edge cases. brand[] = tokens that must
+// NOT appear in copy. firstAudience = the one the model should write to. ─────
 const CASES = [
-  { product:'Adidas gym duffel bag', niche:'Fitness & Gym', audience:'People commuting to early morning workouts', pain:'Gym bag always a disorganized mess' },
-  { product:'non-slip yoga mat', niche:'Fitness & Gym', audience:'beginners starting yoga at home', pain:'Mat slides around on hard floors' },
+  { product:'leather car seat covers', niche:'Automotive & Vehicles', audience:'people who drive with kids and pets', pain:'Seats get dirty and worn fast' },
+  { product:'vitamin C face serum', niche:'Beauty & Skincare', audience:'people with dull tired-looking skin', pain:'Skin looks dull and uneven' },
+  { product:'clip-on book reading light', niche:'Books & Education', audience:'people who read in bed beside a partner', pain:'Reading in bed keeps your partner awake' },
+  { product:'under-sink storage organizer', niche:'Cleaning & Organization', audience:'people with cluttered bathroom cabinets', pain:'Nowhere to store cleaning supplies' },
+  { product:'resin art starter kit', niche:'DIY & Crafts', audience:'beginners wanting a first craft project', pain:'Craft projects turn out messy' },
+  { product:'high-waisted seamless shapewear', niche:'Fashion & Style', audience:'people dressing for a special event', pain:'Bulges show through fitted dresses' },
+  { product:'Adidas gym duffel bag', niche:'Fitness & Gym', audience:'people commuting to early morning workouts', pain:'Gym bag always a disorganized mess', brand:['adidas'] },
+  { product:'weekly meal planning recipe binder', niche:'Food & Recipes', audience:'people who never know what to cook', pain:'Run out of dinner ideas every week' },
+  { product:'XL RGB gaming mouse pad', niche:'Gaming', audience:'people building a desk battlestation', pain:'Mouse runs out of pad space mid-game' },
+  { product:'silk hair bonnet', niche:'Hair Care', audience:'people with curly hair', pain:'Curls get frizzy and flat overnight' },
+  { product:'weighted sleep mask', niche:'Health & Wellness', audience:'people who struggle to fall asleep', pain:"Can't shut your mind off at night" },
+  { product:'textured ceramic vase set', niche:'Home Decor', audience:'people restyling a living room', pain:'Shelves look bare and unstyled' },
+  { product:'spinning fishing reel combo', niche:'Hunting & Fishing', audience:'beginners getting into fishing', pain:'Cheap reels tangle and seize up' },
+  { product:'hypoallergenic gold hoop earrings', niche:'Jewelry & Accessories', audience:'people whose ears react to cheap metal', pain:'Earrings turn ears red and itchy' },
+  { product:'pre-seasoned cast iron skillet', niche:'Kitchen & Cooking', audience:'people learning to cook real meals', pain:'Food always sticks to the pan' },
+  { product:'acoustic guitar capo', niche:'Music & Instruments', audience:'beginner guitarists', pain:'Barre chords are too hard to play' },
+  { product:'raised garden bed kit', niche:'Outdoor & Garden', audience:'people with a small backyard', pain:'Soil is too poor to grow anything' },
+  { product:'large diaper bag backpack', niche:'Parenting & Family', audience:'new parents of a newborn', pain:'Diaper bag is always a chaotic mess' },
+  { product:'cash envelope budgeting wallet', niche:'Personal Finance', audience:'people who overspend every month', pain:'Money disappears before payday' },
+  { product:'no-pull dog harness', niche:'Pets', audience:'owners of large strong dogs', pain:'Dog pulls hard on every walk' },
+  { product:'phone camera lens kit', niche:'Photography', audience:'people who shoot only on their phone', pain:'Phone photos look flat and amateur' },
+  { product:'daily habit tracker journal', niche:'Self Improvement', audience:'people who keep breaking their habits', pain:'New habits never stick past a week' },
+  { product:'healing crystal starter set', niche:'Spirituality & Crystals', audience:'', pain:'' },
+  { product:'pop-up beach sun shelter', niche:'Sports & Recreation', audience:'families spending the day at the beach', pain:'No shade at the beach' },
+  { product:'fountain pen starter set', niche:'Stationery & Journaling', audience:'people who love handwriting', pain:'Cheap pens skip and smudge' },
   { product:'electrolyte powder packets', niche:'Supplements & Nutrition', audience:'runners training for a marathon', pain:'Cramping on long runs' },
   { product:'electric standing desk', niche:'Tech & Gadgets', audience:'people working from home all day', pain:'Back pain from sitting too long' },
-  { product:'pre-seasoned cast iron skillet', niche:'Kitchen & Cooking', audience:'people learning to cook real meals', pain:'Food always sticks to the pan' },
-  { product:'resistance bands set', niche:'Fitness & Gym', audience:'people with no room for a home gym', pain:'No space for bulky equipment' },
-  { product:'vitamin C face serum', niche:'Beauty & Skincare', audience:'people with sensitive acne-prone skin', pain:'Breakouts that never fully clear' },
-  { product:'no-pull dog harness', niche:'Pets', audience:'owners of large strong dogs', pain:'Dog pulls hard on every walk' },
-  { product:'beginner tarot deck', niche:'Spirituality & Crystals', audience:'people new to tarot', pain:'Hard to know where to start' },
-  { product:'pop-up camping tent', niche:'Sports & Recreation', audience:'weekend campers', pain:'Tents take forever to set up' },
-  { product:'large diaper bag backpack', niche:'Parenting & Family', audience:'new parents of a newborn', pain:'Diaper bag is always a chaotic mess' },
-  { product:'waterproof car seat cover', niche:'Automotive & Vehicles', audience:'people who drive with their dog', pain:'Muddy paws ruin the seats' },
-  { product:'daily undated planner', niche:'Stationery & Journaling', audience:'people who keep abandoning planners', pain:'Can never stick to a planner' },
-  { product:'whey protein powder', niche:'Supplements & Nutrition', audience:'people lifting weights 4 days a week', pain:'Slow recovery between workouts' },
-  { product:'robot vacuum cleaner', niche:'Tech & Gadgets', audience:'busy people who hate cleaning', pain:'No time to vacuum every day' },
-  { product:'insulated water bottle', niche:'Fitness & Gym', audience:'people who hike on weekends', pain:'Water goes warm halfway through' },
-  { product:'ergonomic baby carrier', niche:'Parenting & Family', audience:'', pain:'Back and shoulder pain from carrying baby' },
-  { product:'beginner knitting kit', niche:'DIY & Crafts', audience:'total beginners who want a first project', pain:'Patterns are confusing to follow' },
-  { product:'cushioned running shoes', niche:'Sports & Recreation', audience:'people just starting to run', pain:'Feet and knees hurt after running' },
-  { product:'healing crystal starter set', niche:'Spirituality & Crystals', audience:'', pain:'' },
-  { product:'glass meal prep containers', niche:'Kitchen & Cooking', audience:'people meal prepping for the week', pain:'Leftovers get soggy and leak' },
-  { product:'LED strip lights', niche:'Tech & Gadgets', audience:'gamers setting up a bedroom battlestation', pain:'Room feels boring and flat' },
   { product:'carry-on travel backpack', niche:'Travel', audience:'people who fly carry-on only', pain:'Always overpacking and paying bag fees' },
+  { product:'vinyl record cleaning kit', niche:'Vintage & Thrift', audience:'people collecting vinyl records', pain:'Old records crackle and skip' },
+  { product:'eucalyptus table garland', niche:'Wedding & Events', audience:'people planning a wedding on a budget', pain:'Venue decor is way over budget' },
+  // ── edge cases ──
+  { product:'Stanley tumbler', niche:'Kitchen & Cooking', audience:'people who want a drink cold all day', pain:'Drinks go warm within an hour', brand:['stanley'] },
+  { product:'insulated water bottle', niche:'Fitness & Gym', audience:'people who hike on weekends, office workers, students, new moms', firstAudience:'people who hike on weekends', pain:'Water goes warm halfway through' },
   { product:'scented soy candle', niche:'Home Decor', audience:'', pain:'' },
+  { product:'glass meal prep containers', niche:'Kitchen & Cooking', audience:'people meal prepping for the week', pain:'Leftovers get soggy and leak everywhere' },
+  { product:'wireles earbuds for runnning', niche:'Tech & Gadgets', audience:'people who run with music', pain:'Earbuds fall out mid-run' },
+  { product:'anxiety relief weighted blanket', niche:'Health & Wellness', audience:'people who feel anxious at night', pain:'Racing thoughts keep you awake' },
 ];
 
-// ── Deterministic checks on one pin ─────────────────────────────────────────
-const STOP = new Set(['the','a','an','and','or','for','with','your','you','of','to','in','on','that','this','always','never','my','it','is','are','be','i']);
-const tokens = s => (s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w => w.length>2 && !STOP.has(w));
+// products run across ALL angles to test hook-style robustness + distinctness
+const ANGLE_PRODUCTS = [
+  { product:'Adidas gym duffel bag', niche:'Fitness & Gym', audience:'people commuting to early morning workouts', pain:'Gym bag always a disorganized mess', brand:['adidas'] },
+  { product:'vitamin C face serum', niche:'Beauty & Skincare', audience:'people with dull tired-looking skin', pain:'Skin looks dull and uneven' },
+  { product:'electric standing desk', niche:'Tech & Gadgets', audience:'people working from home all day', pain:'Back pain from sitting too long' },
+];
 
-function sentenceCount(desc) {
-  return (desc||'').split(/[.!?]+(?:\s|$)/).map(s=>s.trim()).filter(Boolean).length;
-}
-function firstSentence(desc) {
-  const m = (desc||'').match(/^.*?[.!?](?:\s|$)/);
-  return (m ? m[0] : (desc||'')).trim();
-}
+// ── Deterministic checks → [{sev, cat, msg}] ────────────────────────────────
+const STOP = new Set(['the','a','an','and','or','for','with','your','you','of','to','in','on','that','this','always','never','my','it','is','are','be','i','they','them','who','get','gets']);
+const tok = s => (s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w => w.length>2 && !STOP.has(w));
+const firstSentence = d => { const m=(d||'').match(/^.*?[.!?](?:\s|$)/); return (m?m[0]:(d||'')).trim(); };
+const sentenceCount = d => (d||'').split(/[.!?]+(?:\s|$)/).map(s=>s.trim()).filter(Boolean).length;
 
-function deterministicChecks(c, pin) {
-  const issues = [];
-  const title = pin.title || '';
-  const desc = pin.description || '';
-  const tags = pin.hashtags || [];
+function hardChecks(c, pin) {
+  const out = [];
+  const add = (cat, msg, sev='HARD') => out.push({ sev, cat, msg });
+  const title = pin.title || '', desc = pin.description || '', tags = pin.hashtags || [];
   const t = title.toLowerCase(), d = desc.toLowerCase();
 
-  // Title
-  if (title.length > 100) issues.push(`title ${title.length} chars (>100 Pinterest limit)`);
-  if (title.length < 15) issues.push(`title too short (${title.length})`);
-  if (title.includes('-')) issues.push('title has a hyphen (banned)');
-  if (title.includes(':')) issues.push('title has a colon (banned)');
-  if (/[.,!;]$/.test(title.trim())) issues.push('title has trailing punctuation');
+  if (title.length > 100) add('TITLE_LENGTH', `title ${title.length} chars (>100)`);
+  if (title.length < 15) add('TITLE_LENGTH', `title too short (${title.length})`);
+  if (title.includes('-')) add('TITLE_FORMAT', 'title has hyphen');
+  if (title.includes(':')) add('TITLE_FORMAT', 'title has colon');
+  if (/[.,!;]$/.test(title.trim())) add('TITLE_FORMAT', 'title has trailing punctuation');
   const isQ = /^(who|what|when|where|why|can|could|should|would|are|is|do|does|did)\b/i.test(title) || /^how\b(?!\s+(to|i|we|you)\b)/i.test(title);
-  if (isQ && !title.trim().endsWith('?')) issues.push('question title missing ?');
-  if (!isQ && title.trim().endsWith('?')) issues.push('non-question title ends with ?');
+  if (isQ && !title.trim().endsWith('?')) add('TITLE_QUESTION', 'question title missing ?');
+  if (!isQ && title.trim().endsWith('?')) add('TITLE_QUESTION', 'non-question title ends with ?');
 
-  // Description
   const sc = sentenceCount(desc);
-  if (sc !== 2) issues.push(`description has ${sc} sentences (want exactly 2)`);
-  if (desc.length > 500) issues.push(`description ${desc.length} chars (>500)`);
-  if (desc.length < 50) issues.push(`description too short (${desc.length})`);
+  if (sc !== 2) add('DESC_SENTENCES', `${sc} sentences (want 2)`);
+  if (desc.length > 500) add('DESC_LENGTH', `description ${desc.length} chars (>500)`);
+  if (desc.length < 50) add('DESC_LENGTH', `description too short (${desc.length})`);
 
-  // Hashtags
-  if (tags.length !== 12) issues.push(`${tags.length} hashtags (want 12)`);
+  if (tags.length !== 12) add('HASHTAG_COUNT', `${tags.length} hashtags (want 12)`);
   tags.forEach(tag => {
-    const v = String(tag);
-    if (/\s/.test(v.replace(/^#/, ''))) issues.push(`hashtag has space: "${v}"`);
-    if (v.replace(/^#/, '') !== v.replace(/^#/, '').toLowerCase()) issues.push(`hashtag not lowercase: "${v}"`);
+    const v = String(tag).replace(/^#/, '');
+    if (/\s/.test(v)) add('HASHTAG_FORMAT', `hashtag has space: "${tag}"`);
+    if (v !== v.toLowerCase()) add('HASHTAG_FORMAT', `hashtag not lowercase: "${tag}"`);
   });
 
-  // Banned words
   const hit = BANNED.filter(b => t.includes(b) || d.includes(b));
-  if (hit.length) issues.push(`banned word(s): ${hit.join(', ')}`);
+  if (hit.length) add('BANNED_WORD', `banned: ${hit.join(', ')}`);
 
-  // Brand/product-name leak: flag capitalized brand-like tokens from the product
-  // (skip the generic nouns that legitimately appear, e.g. "bag", "mat").
-  const brandTokens = (c.product.match(/\b[A-Z][a-zA-Z]+\b/g) || []);
-  const leaked = brandTokens.filter(bt => t.includes(bt.toLowerCase()) || d.includes(bt.toLowerCase()));
-  if (leaked.length) issues.push(`possible brand/product-name leak: ${leaked.join(', ')}`);
+  const brands = (c.brand || []).filter(b => t.includes(b) || d.includes(b));
+  if (brands.length) add('BRAND_LEAK', `brand name in copy: ${brands.join(', ')}`);
 
-  // Verbatim pain-point paste (the grammar-break bug)
-  if (c.pain && d.includes(c.pain.toLowerCase())) issues.push(`pain point pasted VERBATIM: "${c.pain}"`);
+  if (c.pain && d.includes(c.pain.toLowerCase())) add('VERBATIM_PASTE', `pain pasted verbatim: "${c.pain}"`);
 
-  // Input-fidelity backstops (heuristic; LLM judge is authoritative)
+  // heuristic backstops (low confidence — judge is authoritative)
   if (c.pain) {
-    const pt = tokens(c.pain), s1 = new Set(tokens(firstSentence(desc)));
-    if (pt.length && !pt.some(w => s1.has(w))) issues.push('sentence 1 may not reflect the pain point (no token overlap)');
+    const pt = tok(c.pain), s1 = new Set(tok(firstSentence(desc)));
+    if (pt.length && !pt.some(w => s1.has(w))) add('PAINPOINT_FIDELITY', 'sentence 1 may not reflect pain (no token overlap)', 'HEURISTIC');
   }
-  if (c.audience) {
-    const at = tokens(c.audience), body = new Set([...tokens(title), ...tokens(desc)]);
-    if (at.length && !at.some(w => body.has(w))) issues.push('audience may be ignored (no token overlap in title/desc)');
+  const aud = c.firstAudience || c.audience;
+  if (aud) {
+    const at = tok(aud), body = new Set([...tok(title), ...tok(desc)]);
+    if (at.length && !at.some(w => body.has(w))) add('AUDIENCE_FIDELITY', 'audience may be ignored (no token overlap)', 'HEURISTIC');
   }
-  return issues;
+  return out;
 }
 
 // ── API plumbing ────────────────────────────────────────────────────────────
 function loadKey() {
   if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY.trim();
-  try {
-    const dv = fs.readFileSync(path.join(ROOT, '.dev.vars'), 'utf8');
-    const m = dv.match(/^\s*ANTHROPIC_API_KEY\s*=\s*(.+)$/m);
-    if (m) return m[1].trim().replace(/^["']|["']$/g, '');
-  } catch {}
+  try { const m = fs.readFileSync(path.join(ROOT, '.dev.vars'), 'utf8').match(/^\s*ANTHROPIC_API_KEY\s*=\s*(.+)$/m); if (m) return m[1].trim().replace(/^["']|["']$/g, ''); } catch {}
   return null;
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-async function callApi(key, model, system, userContent, maxTokens) {
-  for (let attempt = 0; ; attempt++) {
+async function callApi(key, model, system, content, maxTokens) {
+  for (let a = 0; ; a++) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: 'user', content: userContent }] })
+      body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: 'user', content }] })
     });
-    if ((res.status === 429 || res.status === 529 || res.status >= 500) && attempt < 5) { await sleep(1500 * (attempt + 1)); continue; }
-    if (!res.ok) throw new Error('API ' + res.status + ': ' + (await res.text()).slice(0, 160));
+    if ((res.status === 429 || res.status === 529 || res.status >= 500) && a < 5) { await sleep(1500 * (a + 1)); continue; }
+    if (!res.ok) throw new Error('API ' + res.status + ': ' + (await res.text()).slice(0, 140));
     const data = await res.json();
-    return (data.content || []).map(c => c.text || '').join('').trim();
+    return (data.content || []).map(x => x.text || '').join('').trim();
   }
 }
-function parseJson(raw) {
-  try { return JSON.parse(raw.replace(/```json|```/g, '').trim()); }
-  catch { const m = raw.match(/\{[\s\S]*\}/); if (m) { try { return JSON.parse(m[0]); } catch {} } return null; }
-}
+const parseJson = raw => { try { return JSON.parse(raw.replace(/```json|```/g, '').trim()); } catch { const m = raw.match(/\{[\s\S]*\}/); if (m) try { return JSON.parse(m[0]); } catch {} return null; } };
 
-const JUDGE_SYS = `You are a strict QA reviewer for Pinterest affiliate pin copy. You are given the INPUTS a user selected and the GENERATED pin. Judge ONLY against the inputs. Return ONLY JSON:
-{"usesPainPoint":true/false,"painPointNatural":true/false,"reflectsAudience":true/false,"grammatical":true/false,"soundsHuman":true/false,"onTopicForProduct":true/false,"issues":["short specific problems, [] if none"]}
-- usesPainPoint: does sentence 1 of the description express the SAME frustration as the given pain point (not a different one)? If no pain point was given, return true.
-- painPointNatural: is it phrased as natural grammar, NOT a pasted sentence-fragment? If no pain point, true.
-- reflectsAudience: does the title OR description reflect the given audience's specific situation? If no audience given, true.
-- grammatical: is every sentence grammatically complete and correct?
-- soundsHuman: would a real person write this, free of marketing-bot filler?
-- onTopicForProduct: is the copy specifically about THIS product (not generic niche copy)?`;
+const JUDGE_SYS = `You are a ruthless QA reviewer for Pinterest affiliate pin copy. You receive the INPUTS the user chose and the GENERATED pin. Grade ONLY against those inputs and Pinterest best practice. Return ONLY JSON:
+{"painPointUsed":bool,"painPointNatural":bool,"audienceReflected":bool,"titleHooks":bool,"titleOnProduct":bool,"grammatical":bool,"humanVoice":bool,"descSolution":bool,"hashtagsRelevant":bool,"onTopic":bool,"verdict":"pass|weak|fail","issues":["short specific problems"]}
+Definitions (if an input was not given, that field is automatically true):
+- painPointUsed: sentence 1 expresses the SAME frustration as the given pain point, not a different one.
+- painPointNatural: that frustration reads as a natural, grammatically complete sentence — NOT a pasted fragment (e.g. "Your gym bag always a disorganized mess" is a FAIL).
+- audienceReflected: the title OR description concretely reflects the FIRST given audience's situation (routine/moment/setting), not generic everyone-copy.
+- titleHooks: the title is a genuine scroll-stopping Pinterest hook, not flat or generic.
+- titleOnProduct: the title clearly concerns THIS product, not just the pain in the abstract.
+- grammatical: every sentence is complete and correct.
+- humanVoice: sounds like a real person; no marketing-bot filler or clichés.
+- descSolution: sentence 2 delivers a concrete solution/outcome tied to the product.
+- hashtagsRelevant: the 12 tags are real, relevant, and well-mixed (not repetitive or generic filler).
+- onTopic: overall copy is specifically about THIS product.
+verdict: "fail" if any core field is false or copy is unusable; "weak" if technically ok but bland/loose; "pass" if genuinely good.`;
 
 async function judge(key, c, pin) {
-  const userContent = `INPUTS\nProduct: ${c.product}\nNiche: ${c.niche}\nAudience: ${c.audience || '(none given)'}\nPain point: ${c.pain || '(none given)'}\n\nGENERATED PIN\nTitle: ${pin.title}\nDescription: ${pin.description}`;
-  const raw = await callApi(key, JUDGE_MODEL, JUDGE_SYS, userContent, 300);
-  return parseJson(raw) || { issues: ['judge parse failed'] };
+  const content = `INPUTS
+Product: ${c.product}
+Niche: ${c.niche}
+Audience (write for the first): ${c.audience || '(none)'}
+Pain point: ${c.pain || '(none)'}
+
+GENERATED PIN
+Title: ${pin.title}
+Description: ${pin.description}
+Hashtags: ${(pin.hashtags || []).join(' ')}`;
+  return parseJson(await callApi(key, JUDGE_MODEL, JUDGE_SYS, content, 400)) || { verdict: 'fail', issues: ['judge parse failed'] };
 }
+function judgeFindings(j) {
+  const f = [];
+  const M = { painPointUsed:['PAINPOINT_FIDELITY','ignores/changes the pain point'], painPointNatural:['PAINPOINT_NATURAL','pain point unnatural or a pasted fragment'], audienceReflected:['AUDIENCE_FIDELITY','ignores the audience'], titleHooks:['TITLE_HOOK','title is flat/generic, not a hook'], titleOnProduct:['OFFTOPIC','title not clearly about this product'], grammatical:['GRAMMAR','grammar error'], humanVoice:['ROBOTIC','robotic/marketing-bot voice'], descSolution:['DESC_SOLUTION','sentence 2 lacks a concrete solution'], hashtagsRelevant:['HASHTAG_RELEVANCE','hashtags weak/irrelevant/repetitive'], onTopic:['OFFTOPIC','copy generic, not about this product'] };
+  for (const k in M) if (j[k] === false) f.push({ sev: 'JUDGE', cat: M[k][0], msg: M[k][1] });
+  (j.issues || []).forEach(i => i && f.push({ sev: 'JUDGE', cat: 'JUDGE_NOTE', msg: i }));
+  return f;
+}
+
+const jaccard = (a, b) => { const A = new Set(tok(a)), B = new Set(tok(b)); if (!A.size || !B.size) return 0; let i = 0; A.forEach(x => B.has(x) && i++); return i / (A.size + B.size - i); };
 
 // ── Main ────────────────────────────────────────────────────────────────────
 async function main() {
   const key = loadKey();
-  if (!key) { console.error('No API key (env ANTHROPIC_API_KEY or .dev.vars). Cannot run quality sweep.'); process.exit(2); }
-  const html = fs.readFileSync(APP, 'utf8');
-  const P = extractProductionLogic(html);
-  const useAngles = !!process.env.ANGLES;
-  const angleIdxs = useAngles ? [0, 1, 2] : [0];
+  if (!key) { console.error('No API key.'); process.exit(2); }
+  const P = extractProductionLogic(fs.readFileSync(APP, 'utf8'));
 
-  const rows = [];
-  let pinNum = 0;
+  // probe judge model; fall back to haiku if unavailable
+  try { await callApi(key, JUDGE_MODEL, 'Reply OK.', 'ping', 8); }
+  catch (e) { console.error(`judge model ${JUDGE_MODEL} unavailable (${e.message.slice(0,40)}); falling back to ${GEN_MODEL}`); JUDGE_MODEL = GEN_MODEL; }
+
+  const rows = [];   // { c, run, angle, pin, findings[] }
+  const genOne = async (c, angle) => {
+    P.setDesc('');
+    const raw = await callApi(key, GEN_MODEL, P.buildSys(angle), P.buildMsg(c.product, c.niche, c.audience, c.pain, ''), 900);
+    const pin = parseJson(raw);
+    if (pin && pin.title) pin.title = P.fixTitlePunctuation(pin.title);
+    return pin;
+  };
+
+  let n = 0, total = CASES.length * RUNS + ANGLE_PRODUCTS.length * P.angleCount;
+  // core sweep: every case, RUNS times, angle 0
   for (const c of CASES) {
-    for (const ai of angleIdxs) {
-      pinNum++;
-      P.setDesc(''); // no inferred description in the harness; mirrors a fresh product
-      const sys = P.buildSys(ai);
-      const msg = P.buildMsg(c.product, c.niche, c.audience, c.pain, '');
-      let pin = null, genErr = null;
-      try {
-        const raw = await callApi(key, GEN_MODEL, sys, msg, 900);
-        pin = parseJson(raw);
-        if (pin && pin.title) pin.title = P.fixTitlePunctuation(pin.title);
-      } catch (e) { genErr = e.message; }
-      process.stderr.write(`\r[${pinNum}] ${c.product} (angle ${ai})            `);
-
-      if (!pin) { rows.push({ c, ai, pin: null, det: ['GENERATION FAILED: ' + (genErr || 'bad JSON')], j: null }); continue; }
-      const det = deterministicChecks(c, pin);
-      let j = null;
-      try { j = await judge(key, c, pin); } catch (e) { j = { issues: ['judge error: ' + e.message] }; }
-      rows.push({ c, ai, pin, det, j });
+    for (let run = 0; run < RUNS; run++) {
+      n++; process.stderr.write(`\r[${n}/${total}] core: ${c.product} (run ${run + 1})            `);
+      let pin = null, findings = [];
+      try { pin = await genOne(c, 0); } catch (e) { findings.push({ sev: 'HARD', cat: 'GEN_FAIL', msg: 'gen error: ' + e.message }); }
+      if (!pin) { if (!findings.length) findings.push({ sev: 'HARD', cat: 'GEN_FAIL', msg: 'unparseable JSON' }); rows.push({ c, run, angle: 0, pin, findings }); continue; }
+      findings = hardChecks(c, pin);
+      try { findings = findings.concat(judgeFindings(await judge(key, c, pin))); } catch (e) { findings.push({ sev: 'JUDGE', cat: 'JUDGE_NOTE', msg: 'judge error: ' + e.message }); }
+      rows.push({ c, run, angle: 0, pin, findings });
     }
+  }
+  // angle robustness: subset across all angles
+  const angleRows = [];
+  for (const c of ANGLE_PRODUCTS) {
+    const titles = [];
+    for (let ang = 0; ang < P.angleCount; ang++) {
+      n++; process.stderr.write(`\r[${n}/${total}] angle: ${c.product} (angle ${ang})            `);
+      let pin = null, findings = [];
+      try { pin = await genOne(c, ang); } catch (e) { findings.push({ sev: 'HARD', cat: 'GEN_FAIL', msg: 'gen error: ' + e.message }); }
+      if (pin) { findings = hardChecks(c, pin); try { findings = findings.concat(judgeFindings(await judge(key, c, pin))); } catch {} titles.push(pin.title || ''); }
+      angleRows.push({ c, angle: ang, pin, findings });
+    }
+    // distinctness across this product's angle titles
+    for (let i = 0; i < titles.length; i++) for (let j = i + 1; j < titles.length; j++)
+      if (jaccard(titles[i], titles[j]) > 0.6) angleRows.push({ c, angle: -1, pin: null, findings: [{ sev: 'JUDGE', cat: 'DISTINCTNESS', msg: `angles ${i} & ${j} near-duplicate titles` }] });
   }
   process.stderr.write('\n');
 
-  // ── Report ────────────────────────────────────────────────────────────────
-  const judgeFlags = j => {
-    if (!j) return [];
-    const f = [];
-    if (j.usesPainPoint === false) f.push('IGNORES pain point');
-    if (j.painPointNatural === false) f.push('pain point unnatural/fragment');
-    if (j.reflectsAudience === false) f.push('IGNORES audience');
-    if (j.grammatical === false) f.push('grammar error');
-    if (j.soundsHuman === false) f.push('robotic voice');
-    if (j.onTopicForProduct === false) f.push('off-topic/generic');
-    (j.issues || []).forEach(i => i && f.push(i));
-    return f;
-  };
+  // ── Aggregate ──────────────────────────────────────────────────────────────
+  const all = [...rows, ...angleRows];
+  const catTally = {}, sevTally = {};
+  all.forEach(r => r.findings.forEach(f => { catTally[f.cat] = (catTally[f.cat] || 0) + 1; sevTally[f.sev] = (sevTally[f.sev] || 0) + 1; }));
+
+  // per-case consistency (core sweep)
+  const byCase = new Map();
+  rows.forEach(r => { const k = r.c.product; if (!byCase.has(k)) byCase.set(k, []); byCase.get(k).push(r); });
+  let cleanCases = 0, flakyCases = 0, brokenCases = 0;
+  const caseSummary = [];
+  for (const [prod, rs] of byCase) {
+    const runsClean = rs.filter(r => r.pin && !r.findings.some(f => f.sev !== 'HEURISTIC')).length;
+    const status = runsClean === rs.length ? 'clean' : runsClean === 0 ? 'broken' : 'flaky';
+    if (status === 'clean') cleanCases++; else if (status === 'broken') brokenCases++; else flakyCases++;
+    caseSummary.push({ prod, niche: rs[0].c.niche, runsClean, total: rs.length, status, rs });
+  }
 
   const L = [];
   L.push('# Pinlo pin-generation quality sweep');
   L.push('');
-  L.push(`Gen model: ${GEN_MODEL} · Judge model: ${JUDGE_MODEL} · cases: ${CASES.length}${useAngles ? ' × 3 angles' : ''}`);
+  L.push(`Gen: ${GEN_MODEL} · Judge: ${JUDGE_MODEL} · ${CASES.length} cases × ${RUNS} runs + ${ANGLE_PRODUCTS.length}×${P.angleCount} angle pins = ${all.length} graded pins`);
   L.push('');
-  let clean = 0, flagged = 0, failed = 0;
-  const detail = [];
-  rows.forEach((r, i) => {
-    const jf = judgeFlags(r.j);
-    const all = [...r.det, ...jf];
-    if (r.pin === null) failed++;
-    else if (all.length === 0) clean++;
-    else flagged++;
-    const status = r.pin === null ? '💥 FAIL' : all.length === 0 ? '✅ clean' : '⚠️ ' + all.length;
-    detail.push({ i, r, all, status });
-  });
-  L.push(`**${clean} clean · ${flagged} flagged · ${failed} generation-failed** out of ${rows.length} pins.`);
+  L.push(`**Cases: ${cleanCases} clean · ${flakyCases} flaky (fail some runs) · ${brokenCases} broken (fail all runs)**`);
+  L.push(`Findings by severity: ${Object.entries(sevTally).map(([k,v])=>`${k} ${v}`).join(' · ') || 'none'}`);
   L.push('');
-  L.push('## Flagged & failed pins');
-  detail.filter(x => x.r.pin === null || x.all.length).forEach(({ i, r, all, status }) => {
+  L.push('## Root-cause tally (issues by category, all pins)');
+  Object.entries(catTally).sort((a,b)=>b[1]-a[1]).forEach(([k,v]) => L.push(`- ${k}: ${v}`));
+  if (!Object.keys(catTally).length) L.push('- none 🎉');
+
+  L.push('');
+  L.push('## Cases that are flaky or broken');
+  caseSummary.filter(c => c.status !== 'clean').sort((a,b)=>a.runsClean-b.runsClean).forEach(c => {
     L.push('');
-    L.push(`### ${i + 1}. ${status} — ${r.c.product}`);
-    L.push(`- niche: ${r.c.niche} · audience: ${r.c.audience || '(none)'} · pain: ${r.c.pain || '(none)'}`);
-    if (r.pin) {
-      L.push(`- title: ${r.pin.title}`);
-      L.push(`- desc: ${r.pin.description}`);
-    }
-    all.forEach(x => L.push(`  - ❗ ${x}`));
+    L.push(`### ${c.status.toUpperCase()} — ${c.prod} (${c.niche}) — ${c.runsClean}/${c.total} runs clean`);
+    c.rs.forEach((r, i) => {
+      if (!r.pin) { L.push(`- run ${i+1}: 💥 ${r.findings.map(f=>f.msg).join('; ')}`); return; }
+      const probs = r.findings.filter(f => f.sev !== 'HEURISTIC');
+      L.push(`- run ${i+1}: ${probs.length ? '⚠️' : '✅'} title: ${r.pin.title}`);
+      if (probs.length) { L.push(`    desc: ${r.pin.description}`); probs.forEach(f => L.push(`    ❗ [${f.sev}/${f.cat}] ${f.msg}`)); }
+    });
   });
+
   L.push('');
-  L.push('## All clean pins (for spot-checking)');
-  detail.filter(x => x.r.pin && x.all.length === 0).forEach(({ i, r }) => {
-    L.push(`- **${r.c.product}** — ${r.pin.title}`);
+  L.push('## Angle-robustness findings');
+  const angleProb = angleRows.filter(r => r.findings.some(f => f.sev !== 'HEURISTIC'));
+  if (!angleProb.length) L.push('- all angles clean across all subset products 🎉');
+  angleProb.forEach(r => {
+    L.push(`- ${r.c.product} angle ${r.angle}: ${r.pin ? r.pin.title : '(distinctness)'}`);
+    r.findings.filter(f => f.sev !== 'HEURISTIC').forEach(f => L.push(`    ❗ [${f.sev}/${f.cat}] ${f.msg}`));
+  });
+
+  L.push('');
+  L.push('## Clean cases (spot-check sample)');
+  caseSummary.filter(c => c.status === 'clean').forEach(c => {
+    const r = c.rs.find(x => x.pin);
+    L.push(`- **${c.prod}** — ${r.pin.title}`);
   });
 
   const out = L.join('\n');
   fs.writeFileSync(path.join(__dirname, 'pin-quality-results.md'), out + '\n');
-  console.log(out);
+  console.log(out.split('\n').slice(0, 60).join('\n'));
+  console.log(`\n...full report: tools/pin-quality-results.md`);
 }
-
 main().catch(e => { console.error('\nRun failed:', e.message); process.exit(1); });
