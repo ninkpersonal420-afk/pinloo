@@ -31,7 +31,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const APP = path.join(ROOT, 'app', 'index.html');
-const GEN_MODEL = 'claude-haiku-4-5';                          // must match production callClaude
+const GEN_MODEL = process.env.GEN_MODEL || 'claude-haiku-4-5';  // production uses haiku; override to A/B
 let   JUDGE_MODEL = process.env.JUDGE_MODEL || 'claude-sonnet-4-6'; // stronger judge by default
 const RUNS = parseInt(process.env.RUNS || '2', 10);
 
@@ -144,7 +144,7 @@ function hardChecks(c, pin) {
   const brands = (c.brand || []).filter(b => t.includes(b) || d.includes(b));
   if (brands.length) add('BRAND_LEAK', `brand name in copy: ${brands.join(', ')}`);
 
-  if (c.pain && d.includes(c.pain.toLowerCase())) add('VERBATIM_PASTE', `pain pasted verbatim: "${c.pain}"`);
+  if (c.pain && d.includes(c.pain.toLowerCase())) add('VERBATIM_PASTE', `pain reused verbatim: "${c.pain}"`, 'HEURISTIC');
 
   // heuristic backstops (low confidence — judge is authoritative)
   if (c.pain) {
@@ -239,9 +239,12 @@ async function main() {
     return pin;
   };
 
-  let n = 0, total = CASES.length * RUNS + ANGLE_PRODUCTS.length * P.angleCount;
+  const CASE_LIMIT = parseInt(process.env.CASE_LIMIT || '0', 10);
+  const useCases = CASE_LIMIT ? CASES.slice(0, CASE_LIMIT) : CASES;
+  const skipAngles = !!process.env.NO_ANGLES;
+  let n = 0, total = useCases.length * RUNS + (skipAngles ? 0 : ANGLE_PRODUCTS.length * P.angleCount);
   // core sweep: every case, RUNS times, angle 0
-  for (const c of CASES) {
+  for (const c of useCases) {
     for (let run = 0; run < RUNS; run++) {
       n++; process.stderr.write(`\r[${n}/${total}] core: ${c.product} (run ${run + 1})            `);
       let pin = null, findings = [];
@@ -254,7 +257,7 @@ async function main() {
   }
   // angle robustness: subset across all angles
   const angleRows = [];
-  for (const c of ANGLE_PRODUCTS) {
+  for (const c of (skipAngles ? [] : ANGLE_PRODUCTS)) {
     const titles = [];
     for (let ang = 0; ang < P.angleCount; ang++) {
       n++; process.stderr.write(`\r[${n}/${total}] angle: ${c.product} (angle ${ang})            `);
