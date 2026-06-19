@@ -12,6 +12,7 @@ node_modules/
 # Generated test artifacts (harness output)
 tools/niche-stress-results.md
 tools/niche-flap-results.md
+tools/pin-quality-results.md
 tools/_*.log
 
 # OS
