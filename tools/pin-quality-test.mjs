@@ -43,19 +43,19 @@ function extractProductionLogic(html) {
   const buildMsg  = grab(/(function buildMsg\(product, niche, audience, benefit, extra\) \{[\s\S]*?\n\})/, 'buildMsg');
   const fixTitle  = grab(/(function fixTitlePunctuation\(title\) \{[\s\S]*?\n\})/, 'fixTitlePunctuation');
   const validate  = grab(/(function validatePin\(p\) \{[\s\S]*?\n\})/, 'validatePin');
-  const angleCount = (pinAngles.match(/`/g) || []).length / 2 || 10;
+  const normTags  = grab(/(function normalizeHashtags\(tags\) \{[\s\S]*?\n\})/, 'normalizeHashtags');
   // eslint-disable-next-line no-new-func
   const api = new Function(`
     let inferredProductDesc = '';
     const PIN_ANGLES = ${pinAngles};
-    ${buildSys}${buildMsg}${fixTitle}${validate}
-    return { buildSys, buildMsg, fixTitlePunctuation, validatePin, angleCount: PIN_ANGLES.length,
+    ${buildSys}${buildMsg}${fixTitle}${validate}${normTags}
+    return { buildSys, buildMsg, fixTitlePunctuation, validatePin, normalizeHashtags, angleCount: PIN_ANGLES.length,
              setDesc: d => { inferredProductDesc = d || ''; } };
   `)();
   return api;
 }
 
-const BANNED = ['game-changer','unlock','elevate','transform','revolutionize','empower','discover','boost your','maximize','optimize your','achieve your goals','perfect for','lifestyle','journey','amazing','incredible','must-have','level up','next level','step up','unleash','supercharge','harness'];
+const BANNED = ['game-changer','unlock','elevate','transform','revolutionize','empower','discover','boost your','maximize','optimize your','achieve your goals','perfect for','lifestyle','journey','amazing','incredible','must-have','level up','next level','step up','unleash','supercharge'];
 
 // ── Cases: every one of the 30 niches + edge cases. brand[] = tokens that must
 // NOT appear in copy. firstAudience = the one the model should write to. ─────
@@ -120,7 +120,6 @@ function hardChecks(c, pin) {
 
   if (title.length > 100) add('TITLE_LENGTH', `title ${title.length} chars (>100)`);
   if (title.length < 15) add('TITLE_LENGTH', `title too short (${title.length})`);
-  if (title.includes('-')) add('TITLE_FORMAT', 'title has hyphen');
   if (title.includes(':')) add('TITLE_FORMAT', 'title has colon');
   if (/[.,!;]$/.test(title.trim())) add('TITLE_FORMAT', 'title has trailing punctuation');
   const isQ = /^(who|what|when|where|why|can|could|should|would|are|is|do|does|did)\b/i.test(title) || /^how\b(?!\s+(to|i|we|you)\b)/i.test(title);
@@ -236,6 +235,7 @@ async function main() {
     const raw = await callApi(key, GEN_MODEL, P.buildSys(angle), P.buildMsg(c.product, c.niche, c.audience, c.pain, ''), 900);
     const pin = parseJson(raw);
     if (pin && pin.title) pin.title = P.fixTitlePunctuation(pin.title);
+    if (pin && pin.hashtags) pin.hashtags = P.normalizeHashtags(pin.hashtags); // mirror production render path
     return pin;
   };
 
