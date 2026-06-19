@@ -181,22 +181,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .tone-card{padding:14px 10px;border:1px solid var(--border);border-radius:12px;cursor:pointer;text-align:center;background:var(--bg);transition:border-color 0.14s,background 0.14s,box-shadow 0.14s,transform 0.14s;}
 .tone-card:hover{border-color:var(--border2);transform:translateY(-1px);}
 .tone-card.active{border-color:var(--red);background:var(--gradient-soft);box-shadow:0 3px 14px rgba(217,79,56,0.12);}
-.tone-card-icon{font-size:22px;margin-bottom:6px;}
-.tone-card-label{font-size:13px;font-weight:500;color:var(--text3);letter-spacing:0.2px;}
-.tone-card.active .tone-card-label{color:var(--red);font-weight:700;}
-.seasonal-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
-.season-chip{font-size:13px;font-weight:500;padding:8px 16px;border-radius:100px;border:1px solid var(--border);cursor:pointer;color:var(--text3);background:var(--bg);transition:border-color 0.14s,color 0.14s,background 0.14s,box-shadow 0.14s;font-family:'Outfit',sans-serif;user-select:none;}
-.season-chip:hover{border-color:var(--border2);color:var(--text2);}
-.season-chip.active{background:var(--amber-bg);border-color:var(--amber);color:var(--amber-text);font-weight:600;box-shadow:0 2px 8px rgba(180,83,9,0.14);}
-.template-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px;}
-.template-card{padding:15px 18px;border:1px solid var(--border);border-radius:14px;cursor:pointer;background:var(--bg);transition:border-color 0.16s,background 0.16s,box-shadow 0.16s,transform 0.16s;display:flex;align-items:center;gap:14px;text-align:left;}
-.template-card:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:var(--shadow);}
-.template-card.active{border-color:var(--red);background:var(--gradient-soft);box-shadow:0 3px 16px rgba(217,79,56,0.13);}
-.template-card-icon{font-size:25px;flex-shrink:0;line-height:1;}
-.template-card-label{font-size:14px;font-weight:600;color:var(--text2);}
-.template-card-desc{font-size:12px;color:var(--text3);margin-top:3px;line-height:1.35;}
-.template-card.active .template-card-label{color:var(--red);}
-.template-card.active .template-card-desc{color:var(--red);opacity:0.8;}
 
 /* ── GENERATE ROW ── */
 .btn-row{display:flex;gap:10px;margin-bottom:1.5rem;}
@@ -489,12 +473,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   .pin-img-strip{margin:-1.1rem -0.875rem 0;border-radius:15px 15px 0 0;}
   .pin-preview-bar{margin:0 -0.875rem 1.1rem;padding:0.75rem 0.875rem;}
   .panel-title{font-size:17px;margin-bottom:1rem;}
-  .tone-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
-  .template-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
-  .template-card{padding:11px 8px;}
-  .template-card-icon{font-size:18px;}
-  .template-card-label{font-size:12.5px;}
-  .template-card-desc{font-size:10.5px;}
+
   .btn-row{flex-direction:column;gap:8px;}
   .ab-wrap{grid-template-columns:1fr;}
   .field{margin-bottom:1.1rem;}
@@ -504,7 +483,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   .pill{font-size:11.5px;padding:6px 12px;}
   .pain-pills{gap:5px;}
   .pain-pill{font-size:12.5px;padding:9px 13px;}
-  .season-chip{font-size:12px;padding:6px 13px;}
+
   .suggestion-chip{font-size:12px;padding:5px 12px;}
   .gen-btn{padding:15px;font-size:15px;}
   .qty-wrap{min-width:100px;}
@@ -709,46 +688,6 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
         <button id="pain-clear-btn" class="field-clear" style="display:none;" onclick="clearPainPoint()">Clear</button>
       </div>
 
-      <div class="field">
-        <div class="field-header"><label>Pin goal</label></div>
-        <div class="template-grid">
-          <div class="template-card active" onclick="pickTemplate(this,'drive_clicks')">
-            <div class="template-card-icon">🖱️</div>
-            <div class="template-card-label">Drive clicks</div>
-            <div class="template-card-desc">Maximize link taps</div>
-          </div>
-          <div class="template-card" onclick="pickTemplate(this,'get_saves')">
-            <div class="template-card-icon">🔖</div>
-            <div class="template-card-label">Get saves</div>
-            <div class="template-card-desc">Build long-term reach</div>
-          </div>
-          <div class="template-card" onclick="pickTemplate(this,'sell_product')">
-            <div class="template-card-icon">💰</div>
-            <div class="template-card-label">Sell product</div>
-            <div class="template-card-desc">Push purchase intent</div>
-          </div>
-<div class="template-card" onclick="pickTemplate(this,'inspire')">
-            <div class="template-card-icon">✨</div>
-            <div class="template-card-label">Inspire</div>
-            <div class="template-card-desc">Emotional connection</div>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="field">
-        <div class="field-header"><label>Seasonal angle</label><span style="font-size:10px;color:var(--text4);">optional</span></div>
-        <div class="seasonal-row">
-          <span class="season-chip active" onclick="pickSeason(this,'')">None</span>
-          <span class="season-chip" onclick="pickSeason(this,'Spring refresh')">Spring</span>
-          <span class="season-chip" onclick="pickSeason(this,'Summer')">Summer</span>
-          <span class="season-chip" onclick="pickSeason(this,'Fall cozy season')">Fall</span>
-          <span class="season-chip" onclick="pickSeason(this,'Holiday gift guide')">Holiday</span>
-          <span class="season-chip" onclick="pickSeason(this,'New Year new habits')">New Year</span>
-          <span class="season-chip" onclick="pickSeason(this,'Back to school')">Back to School</span>
-          <span class="season-chip" onclick="pickSeason(this,'Valentines Day')">Valentine's</span>
-        </div>
-      </div>
     </div>
 
     <div class="btn-row">
@@ -915,16 +854,6 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
           <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Educate</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">How-to content — high saves, builds authority</div></div>
           <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Inspire</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Emotional hooks — great for lifestyle niches</div></div>
           <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Build followers</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Drives people to your profile, not just a product</div></div>
-        </div>
-      </div>
-
-      <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">🎨</div>
-          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Tone</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;padding-left:42px;">
-          <div style="font-size:13px;color:var(--text2);line-height:1.6;">Tone is set automatically based on your pin goal — urgent for clicks, casual for selling, inspirational for saves and inspire pins. This keeps the copy consistent without extra decisions.</div>
         </div>
       </div>
 
@@ -1352,8 +1281,8 @@ async function verifyStripeSession(sessionId) {
     updateQtyControls();
   });
 })();
-let activeNiche = '', activeSeason = '', activePlan = 'mo', activeTemplate = 'drive_clicks';
-function getTone() { return {drive_clicks:'urgent',get_saves:'inspirational',sell_product:'casual',inspire:'inspirational'}[activeTemplate]||'inspirational'; }
+let activeNiche = '', activePlan = 'mo';
+
 let pinQty = 1, lastPinData = null;
 
 // Show/hide bulk controls based on Pro status
@@ -2010,8 +1939,7 @@ function resetAudienceOptions() {
   updateAudienceClear();
 }
 
-function pickSeason(el, val) { document.querySelectorAll('.season-chip').forEach(s=>s.classList.remove('active')); el.classList.add('active'); activeSeason=val; }
-function pickTemplate(el, val) { document.querySelectorAll('.template-card').forEach(t=>t.classList.remove('active')); el.classList.add('active'); activeTemplate=val; }
+
 function pickPlan(p) { activePlan=p; document.getElementById('plan-mo').classList.toggle('sel',p==='mo'); document.getElementById('plan-yr').classList.toggle('sel',p==='yr'); }
 function showPaywall(reason) {
   // reason: 'limit' (after free pins used), 'pain', 'bulk', 'niche-tip', or undefined (generic Pro feature)
@@ -2148,12 +2076,9 @@ function validatePin(p) {
 }
 
 function buildSys(pinIndex) {
-  const goals = {drive_clicks:'get clicks',get_saves:'get saves',sell_product:'sell',inspire:'inspire'};
-  const goal = goals[activeTemplate]||'get clicks';
-  const season = activeSeason ? ' SEASONAL ANGLE — '+activeSeason+': the title hook and at least 2 hashtags MUST reflect this season.' : '';
   const angle = pinIndex !== undefined ? PIN_ANGLES[pinIndex % PIN_ANGLES.length] : '';
   const angleInstruction = angle ? ' REQUIRED HOOK STYLE FOR THIS PIN: '+angle+'. The title MUST use this specific angle — do not default to a generic hook.' : '';
-  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words and phrases (never use any of these): game-changer, unlock, elevate, transform, revolutionize, empower, discover, boost your, maximize, optimize your, achieve your goals, perfect for, lifestyle, journey, amazing, incredible, must-have, level up, next level, step up, unleash, supercharge, harness.\n\nRULES:\n- Every line must be grounded in what THIS specific product physically does and the exact problem it solves. Never write a title or description that could equally describe any other product in the same niche.\n- Tone: '+getTone()+'. Goal: '+goal+'.\n- NO product name, NO brand names anywhere in title or description. Never reference the brand\'s country of origin or cultural background in the copy — focus purely on what the product does and the problem it solves.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars. Sentence 1 MUST be rooted in the exact \"Pain point\" from the input — write it as a felt experience in the buyer\'s own voice, not a feature statement. Do NOT substitute a different frustration. Sentence 2 delivers the solution and outcome. Keyword-rich, human voice, no brand names.'+season+'\n- Audience: if \"Target audience\" is provided, write as if speaking directly to the FIRST audience listed. Their specific situation must shape the copy — do not write generic copy that ignores who they are.\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag. Mix: 4 broad niche tags (e.g. #homedecor, #fitness, #skincare), 5 mid-specificity tags that describe the problem or use case (e.g. #smallkitchenideas, #homegymsetup), 3 product-type tags (e.g. #standingdeskmat, #foamroller). All must be real searchable Pinterest tags relevant to the actual product — never reuse the skincare examples for non-beauty products.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
+  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words and phrases (never use any of these): game-changer, unlock, elevate, transform, revolutionize, empower, discover, boost your, maximize, optimize your, achieve your goals, perfect for, lifestyle, journey, amazing, incredible, must-have, level up, next level, step up, unleash, supercharge, harness.\n\nRULES:\n- Every line must be grounded in what THIS specific product physically does and the exact problem it solves. Never write a title or description that could equally describe any other product in the same niche.\n- NO product name, NO brand names anywhere in title or description. Never reference the brand\'s country of origin or cultural background in the copy — focus purely on what the product does and the problem it solves.\n- Title: under 80 chars, no hyphens, no colons, no trailing punctuation EXCEPT questions must end with ?. A title is a question only if it starts with: Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, under 500 chars. Sentence 1 MUST be rooted in the exact \"Pain point\" from the input — write it as a felt experience in the buyer\'s own voice, not a feature statement. Do NOT substitute a different frustration. Sentence 2 delivers the solution and outcome. Keyword-rich, human voice, no brand names.\n- Audience: if \"Target audience\" is provided, write as if speaking directly to the FIRST audience listed. Their specific situation must shape the copy — do not write generic copy that ignores who they are.\n- Hashtags: exactly 12 lowercase tags, no spaces within a tag. Mix: 4 broad niche tags (e.g. #homedecor, #fitness, #skincare), 5 mid-specificity tags that describe the problem or use case (e.g. #smallkitchenideas, #homegymsetup), 3 product-type tags (e.g. #standingdeskmat, #foamroller). All must be real searchable Pinterest tags relevant to the actual product — never reuse the skincare examples for non-beauty products.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
 
 
 }
@@ -2639,7 +2564,7 @@ async function regenField(field) {
   const {p,product,niche,audience,benefit}=lastPinData;
   const sys='Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words: game-changer, unlock, elevate, transform your life, revolutionize, empower. NO product name, NO brand names in output. Never reference the brand\'s country of origin or cultural background. Focus purely on what the product does and the problem it solves. Return ONLY valid JSON — no markdown, no backticks, no explanation.';
   const msg=field==='title'
-    ?'Write a new Pinterest title different from: "'+p.title+'". Product: '+product+'. Niche: '+niche+'. Tone: '+getTone()+'. Under 100 chars. No product name, no brand names, no hyphens, no colons. If phrased as a question it must end with ?. Must sound like something a real person would search — not marketing copy. Return: {"title":"..."}'
+    ?'Write a new Pinterest title different from: "'+p.title+'". Product: '+product+'. Niche: '+niche+'. Under 100 chars. No product name, no brand names, no hyphens, no colons. If phrased as a question it must end with ?. Must sound like something a real person would search — not marketing copy. Return: {"title":"..."}'
     :field==='hashtags'
     ?'Write 12 new Pinterest hashtags different from the current ones. Product: '+product+'. Niche: '+niche+'. Mix: 4 broad niche tags, 5 mid-specificity tags for the problem or use case, 3 product-type tags. All lowercase, no spaces within a tag, start with #. Return: {"hashtags":["","","","","","","","","","","",""]}'
     :'Write a new Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+'. Audience: '+audience+'. Pain point: '+benefit+'. Exactly 2 sentences under 500 chars. Sentence 1 MUST open with the felt problem or frustration the buyer has before finding this product. Sentence 2 delivers the solution and outcome. Keyword-rich, no brand names. Return: {"description":"..."}';
