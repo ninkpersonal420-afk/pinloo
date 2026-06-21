@@ -111,7 +111,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 /* ── LAYOUT ── */
 .main{max-width:860px;margin:0 auto;padding:1.75rem 1.5rem;}
 .view{display:none;background:transparent;min-height:calc(100vh - 120px);}
-.view.active{display:block;animation:viewIn 0.3s var(--ease);}
+.view.active{display:block;animation:viewIn 0.3s cubic-bezier(0.22,1,0.36,1);}
 @keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── USAGE BAR ── */
@@ -198,10 +198,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 /* ── LOADING ── */
 .loading{display:none;text-align:center;padding:2.25rem 2rem;}
 .loading.show{display:block;}
-.loading-bar{height:3px;background:var(--bg3);border-radius:100px;overflow:hidden;margin:0 auto 1.25rem;max-width:240px;}
+.loading-bar{height:5px;background:var(--bg3);border-radius:100px;overflow:hidden;margin:0 auto 1.25rem;max-width:280px;}
 @keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
 @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.loading-fill{height:100%;width:50%;background:var(--gradient);border-radius:100px;animation:load 1.4s linear infinite;}
+.loading-fill{height:100%;width:45%;background:var(--gradient);border-radius:100px;animation:load 1.2s linear infinite;}
+.loading-spinner{width:26px;height:26px;border:3px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin 0.75s linear infinite;margin:0 auto 1rem;}
 .gen-spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:10px;flex-shrink:0;}
 .loading-text{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1.6px;text-transform:uppercase;}
 
@@ -213,7 +214,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 
 /* ── RESULT PANEL ── */
 .result-panel{background:var(--bg2);border:1px solid var(--hairline);border-radius:20px;padding:1.75rem;margin-bottom:1.25rem;display:none;box-shadow:var(--shadow-md);}
-.result-panel.show{display:block;animation:fadeUp 0.4s var(--ease);}
+.result-panel.show{display:block;animation:fadeUp 0.4s cubic-bezier(0.22,1,0.36,1);}
 
 /* ── EMAIL GATE ── */
 .email-gate-overlay{position:fixed;inset:0;background:rgba(20,10,6,0.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.22s;}
@@ -270,7 +271,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 
 /* ── STAGGERED RESULT REVEAL ── */
 @keyframes blockIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.result-panel.show .result-block{animation:blockIn 0.4s var(--ease) both;}
+.result-panel.show .result-block{animation:blockIn 0.4s cubic-bezier(0.22,1,0.36,1) both;}
 .result-panel.show .result-block:nth-of-type(1){animation-delay:0.07s;}
 .result-panel.show .result-block:nth-of-type(2){animation-delay:0.15s;}
 .result-panel.show .result-block:nth-of-type(3){animation-delay:0.23s;}
@@ -421,7 +422,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 /* ── PAYWALL & MODALS ── */
 .paywall-overlay{position:fixed;inset:0;background:rgba(15,8,5,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:2rem;z-index:9999;overflow-y:auto;}
 .paywall-overlay.show{display:flex;}
-.paywall-box{background:var(--bg2);border:1px solid var(--hairline);border-radius:24px;padding:2.25rem;max-width:420px;width:100%;text-align:center;box-shadow:0 32px 90px rgba(15,8,5,0.45),0 6px 20px rgba(15,8,5,0.2);animation:fadeUp 0.32s var(--ease);}
+.paywall-box{background:var(--bg2);border:1px solid var(--hairline);border-radius:24px;padding:2.25rem;max-width:420px;width:100%;text-align:center;box-shadow:0 32px 90px rgba(15,8,5,0.45),0 6px 20px rgba(15,8,5,0.2);animation:fadeUp 0.32s cubic-bezier(0.22,1,0.36,1);}
 .pw-eyebrow{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--red);text-transform:uppercase;margin-bottom:0.75rem;}
 .pw-title{font-family:'Playfair Display',serif;font-size:23px;font-weight:600;color:var(--text);margin-bottom:0.75rem;line-height:1.25;letter-spacing:-0.3px;}
 .pw-sub{font-size:13.5px;color:var(--text3);line-height:1.65;margin-bottom:1.5rem;font-weight:400;}
@@ -702,6 +703,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
 
     <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
       <div class="loading-bar"><div class="loading-fill"></div></div>
       <div class="loading-text" id="loading-text">Crafting your pin</div>
     </div>
