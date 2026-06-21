@@ -789,7 +789,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
         <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
           <div>
             <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">Get more out of every pin</div>
-            <div style="font-size:12px;color:var(--text3);line-height:1.5;">SEO score · A/B title testing · Bulk generate up to 10 pins · Unlimited pins</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5;">SEO score · Niche strategy tips · Bulk generate up to 10 pins · Unlimited pins</div>
           </div>
           <button onclick="showPaywall()" style="flex-shrink:0;padding:9px 18px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(217,79,56,0.25);">Upgrade to Pro →</button>
         </div>
@@ -2423,9 +2423,14 @@ async function generatePin() {
   document.getElementById('score-wrap').style.display='none';
   
   document.getElementById('niche-tips-wrap').style.display='none';
+  let _loadingCycle = null;
   try {
     if (qty===1) {
-      document.getElementById('loading-text').textContent='Crafting your pin';
+      const _loadMsgs=['Crafting your pin','Writing your title','Choosing the hook','Adding hashtags','Almost ready'];
+      let _loadMi=0;
+      const _loadEl=document.getElementById('loading-text');
+      _loadEl.textContent=_loadMsgs[0];
+      _loadingCycle=setInterval(()=>{ _loadMi=(_loadMi+1)%_loadMsgs.length; _loadEl.textContent=_loadMsgs[_loadMi]; },1600);
       let p=await callClaude(buildSys(0),buildMsg(product,niche,audience,benefit,''));
       if (!validatePin(p)) {
         p = await callClaude(buildSys(3), buildMsg(product,niche,audience,benefit,'Make the title feel like something a real person would genuinely say.'));
@@ -2545,7 +2550,7 @@ async function generatePin() {
     updateUsage();
     if (pinsUsed>=FREE_LIMIT&&!isPro) setTimeout(()=>showPaywall('limit'),2000);
   } catch(e) { if (e.message !== 'free_limit_reached') { alert('Something went wrong. Please try again.'); } console.error(e); }
-  finally { const gb=document.getElementById('gen-btn'); if(gb) gb.disabled=false; const qd=document.getElementById('qty-down'); if(qd) qd.disabled=pinQty<=1; const qu=document.getElementById('qty-up'); if(qu) qu.disabled=pinQty>=(isPro?10:3); document.getElementById('loading').classList.remove('show'); document.getElementById('loading-text').textContent='Crafting your pin'; document.title = 'Pinlo — Pinterest Pin Generator';
+  finally { if (_loadingCycle) clearInterval(_loadingCycle); const gb=document.getElementById('gen-btn'); if(gb) gb.disabled=false; const qd=document.getElementById('qty-down'); if(qd) qd.disabled=pinQty<=1; const qu=document.getElementById('qty-up'); if(qu) qu.disabled=pinQty>=(isPro?10:3); document.getElementById('loading').classList.remove('show'); document.getElementById('loading-text').textContent='Crafting your pin'; document.title = 'Pinlo — Pinterest Pin Generator';
     const lbl=document.getElementById('gen-btn-label');
     if(lbl) lbl.textContent='Generate '+(pinQty===1?'1 Pin':pinQty+' Pins');
     const sp=document.getElementById('gen-btn-spinner');
@@ -2768,7 +2773,7 @@ function renderSavedProducts() {
 }
 
 async function fetchAltTitle(currentTitle, product, niche) {
-  if (!isPro || !getGateEmail() || !product) return;
+  if (!getGateEmail() || !product) return;
   const block = document.getElementById('ab-block');
   if (!block) return;
   try {
@@ -3532,12 +3537,10 @@ function renderPricingTab() {
         <div style="padding:1.5rem 1.75rem;">
           <div style="font-size:12px;color:var(--text3);margin-bottom:1.25rem;" id="billing-note">Billed monthly · Cancel anytime</div>
           <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Unlimited pins</strong> — no daily cap, ever</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">A/B title testing</strong> — pick the best hook from two options every time</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Unlimited pins</strong> — no monthly cap, ever</div></div>
             <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Bulk generate up to 10 pins</strong> — batch a full week in one session</div></div>
             <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Full SEO score</strong> — see exactly how well-optimized each pin is</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">AI niche strategy tips</strong> — specific to what you're promoting</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Niche strategy tips</strong> — specific to what you're promoting, not generic advice</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">AI niche strategy tips</strong> — specific to your product, not generic advice</div></div>
           </div>
         </div>
         <div style="background:var(--bg3);padding:1rem 1.75rem;border-top:1px solid var(--border);">
