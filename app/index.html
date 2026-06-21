@@ -674,11 +674,10 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
           <div style="display:flex;align-items:center;gap:6px;"><label>Pain point</label><span style="font-size:10px;color:var(--text4);">optional</span><span id="pain-selected-count" style="display:none;font-size:10px;font-weight:700;color:var(--red);background:rgba(217,79,56,0.08);padding:2px 7px;border-radius:20px;">0 selected</span></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
             <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="togglePainAutofill()">
-              <span id="pain-autofill-label" style="font-size:12px;color:var(--text3);font-weight:600;text-transform:none;">Auto-fill</span>
-              <div id="pain-autofill-toggle" style="width:36px;height:20px;border-radius:10px;background:var(--border2);border:1px solid var(--border2);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
-                <div id="pain-autofill-knob" style="position:absolute;top:3px;left:3px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
+              <span id="pain-autofill-label" style="font-size:12px;color:#F4705A;font-weight:600;text-transform:none;">Auto-fill ON</span>
+              <div id="pain-autofill-toggle" style="width:36px;height:20px;border-radius:10px;background:#F4705A;border:1px solid #F4705A;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
+                <div id="pain-autofill-knob" style="position:absolute;top:3px;left:17px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
               </div>
-              <span style="font-size:10px;font-weight:700;padding:2px 7px;background:var(--gradient);color:#fff;border-radius:20px;">PRO</span>
             </div>
             <span style="font-size:11px;color:var(--text4);text-transform:none;font-weight:400;">Suggests pain points as you type</span>
           </div>
@@ -790,7 +789,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
         <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
           <div>
             <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">Get more out of every pin</div>
-            <div style="font-size:12px;color:var(--text3);line-height:1.5;">SEO score · A/B title testing · Bulk generate up to 10 pins · Pain point suggestions · Unlimited pins</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5;">SEO score · A/B title testing · Bulk generate up to 10 pins · Unlimited pins</div>
           </div>
           <button onclick="showPaywall()" style="flex-shrink:0;padding:9px 18px;background:var(--gradient);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(217,79,56,0.25);">Upgrade to Pro →</button>
         </div>
@@ -1058,8 +1057,8 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg3);border-radius:12px;">
         <span style="font-size:22px;flex-shrink:0;width:28px;text-align:center;">🧠</span>
         <div style="line-height:1.4;">
-          <span style="font-size:14px;font-weight:700;color:var(--text);">AI pain points & niche tips</span>
-          <span style="font-size:14px;color:var(--text3);"> — specific to your product, not generic</span>
+          <span style="font-size:14px;font-weight:700;color:var(--text);">AI niche strategy tips</span>
+          <span style="font-size:14px;color:var(--text3);"> — specific to what you're promoting, not generic advice</span>
         </div>
       </div>
 
@@ -1163,15 +1162,6 @@ function activatePro(plan) {
   localStorage.setItem('pinlo_pins_used', 0);
   localStorage.setItem('pinlo_pro_cache', '1');
   setTimeout(updateTabLabels, 100);
-  // Enable pain autofill for Pro users
-  setTimeout(() => {
-    const toggle = document.getElementById('pain-autofill-toggle');
-    const knob = document.getElementById('pain-autofill-knob');
-    const label = document.getElementById('pain-autofill-label');
-    if (toggle && !painAutofillOn) {
-      // Don't auto-enable, just make it available (grey out removed)
-    }
-  }, 200);
   const proBtnEl = document.querySelector('.pro-btn');
   if (proBtnEl) { proBtnEl.onclick = null; proBtnEl.style.cursor = 'default'; proBtnEl.style.pointerEvents = 'none'; proBtnEl.style.opacity = '0.85'; }
   const badge = document.getElementById('plan-badge');
@@ -1465,7 +1455,7 @@ function applyNicheData(val) {
   if (!data) return;
   // Show niche-based pain pills unless this user is getting AI auto-fill (which
   // populates them from the product instead).
-  if (!(isPro && painAutofillOn)) showStaticPainPills();
+  if (!painAutofillOn) showStaticPainPills();
   if (!data.audience) return;
   // Seed audience options from niche data, but never clobber AI results or user picks
   const container = document.getElementById('audience-options');
@@ -1541,7 +1531,7 @@ function onProductInput(val) {
     }, 300);
   }
   audienceTimer = setTimeout(() => autoFillAudience(trimmed), 2500);
-  if (painAutofillOn && isPro) {
+  if (painAutofillOn) {
     clearTimeout(painTimer);
     painTimer = setTimeout(() => autoGeneratePains(trimmed), 1200);
   }
@@ -1677,10 +1667,9 @@ function resolveToPillNiche(detected) {
 }
 
 let painTimer = null;
-let painAutofillOn = false; // OFF by default, Pro only
+let painAutofillOn = true;
 
 function togglePainAutofill() {
-  if (!isPro) { showPaywall('pain'); return; }
   painAutofillOn = !painAutofillOn;
   const toggle = document.getElementById('pain-autofill-toggle');
   const knob = document.getElementById('pain-autofill-knob');
@@ -1705,7 +1694,7 @@ function togglePainAutofill() {
   }
 }
 
-// Static niche-based pain points shown to free users (and Pro users with auto-fill off)
+// Static niche-based pain points shown when auto-fill is off
 const STATIC_PAINS = {
   'Automotive & Vehicles':['Uncomfortable stock seat','Back pain on long drives','Cluttered car interior','Cheap seat covers slide and bunch up'],
   'Beauty & Skincare':['Sensitive skin reactions','Moisturizer sits greasy all day','Breakouts that won\'t clear up','Product buildup clogs pores'],
@@ -1784,7 +1773,6 @@ function getPainValue() {
 async function autoGeneratePains(product) {
   const container = document.getElementById('pain-pills');
   if (!container) return;
-  if (!isPro) { showStaticPainPills(); return; }
   container.innerHTML = '<span style="font-size:12px;color:var(--text4);">Generating pain points...</span>';
   try {
     const sys = 'You generate Pinterest pain points for an affiliate product. Return a JSON array of exactly 5 short pain points (3–6 words each) — the real frustrations that send someone looking for THIS exact product.\n\nEvery pain must be a problem THIS product solves. Example: an electrolyte mix → ["Cramping during long workouts","Drained after heavy sweating","Plain water is not enough","Headaches from dehydration","Energy crashing mid-afternoon"] — NOT "hitting a plateau" or "slow muscle gains" (those are generic supplement pains unrelated to electrolytes).\n\nRules — follow every one:\n1. If a "What it does" line is provided, treat it as the authoritative description and anchor every pain to it. Otherwise, if the product name is a brand, a typo, or vague, infer what it physically is first.\n2. Each pain is the BEFORE state — the frustration that existed before they found the product, written the way the buyer would actually feel or say it.\n3. Keep them concrete but natural — a problem a real person would nod at, not an oddly hyper-specific scenario.\n4. Never describe a problem the product CAUSES — only ones it SOLVES.\n5. Each pain is distinct — no two describe the same frustration.\n6. Output ONLY the JSON array — no markdown, no explanation.';
@@ -1954,9 +1942,9 @@ function showPaywall(reason) {
     headline.textContent = "You're out of free pins";
     subtext.textContent = "You've used your "+FREE_LIMIT+" free pins for this month. Pro removes the limit — or your free pins come back next month.";
   } else if (reason === 'pain') {
-    eyebrow.textContent = 'Pro feature';
-    headline.textContent = 'Unlock AI pain points';
-    subtext.textContent = 'Pain point auto-fill is a Pro feature. Upgrade and you get the rest too.';
+    eyebrow.textContent = 'Upgrade to Pro';
+    headline.textContent = 'Unlock unlimited pins';
+    subtext.textContent = 'You\'ve used all your free pins this month. Upgrade for unlimited generation.';
   } else if (reason === 'bulk') {
     eyebrow.textContent = 'Pro feature';
     headline.textContent = 'Unlock bulk generation';
@@ -3496,8 +3484,8 @@ function renderPricingTab() {
         </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow);">
           <div style="font-size:24px;margin-bottom:10px;">💡</div>
-          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;">Pain point suggestions</div>
-          <div style="font-size:12px;color:var(--text3);line-height:1.55;">Generated for your exact product, not a generic dropdown.</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;">AI pain point suggestions</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.55;">Generated for your exact product as you type — free for everyone.</div>
         </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow);">
           <div style="font-size:24px;margin-bottom:10px;">🗺️</div>
@@ -3548,7 +3536,7 @@ function renderPricingTab() {
             <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">A/B title testing</strong> — pick the best hook from two options every time</div></div>
             <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Bulk generate up to 10 pins</strong> — batch a full week in one session</div></div>
             <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Full SEO score</strong> — see exactly how well-optimized each pin is</div></div>
-            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Pain point suggestions</strong> — tailored to your exact product</div></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">AI niche strategy tips</strong> — specific to what you're promoting</div></div>
             <div style="display:flex;align-items:flex-start;gap:10px;"><span style="width:20px;height:20px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;margin-top:1px;">✓</span><div style="font-size:14px;color:var(--text2);line-height:1.4;"><strong style="color:var(--text);">Niche strategy tips</strong> — specific to what you're promoting, not generic advice</div></div>
           </div>
         </div>
