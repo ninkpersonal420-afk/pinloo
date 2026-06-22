@@ -2313,15 +2313,18 @@ function renderAB(titleA, titleB) {
   block.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text4);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Pick a title</div><div class="ab-wrap"></div>';
   const wrap = block.querySelector('.ab-wrap');
   block.style.display = 'block';
-  if (titleEl) titleEl.style.display = 'none';
+  const cards = [];
   [titleA, titleB].forEach((t,i) => {
     const card = document.createElement('div');
     card.className = 'ab-card'+(i===0?' selected':'');
     card.innerHTML = '<div class="ab-label">Option '+(i===0?'A':'B')+'</div><div class="ab-title">'+esc(t)+'</div>';
     card.onclick = () => {
-      if (titleEl) { titleEl.textContent = t; titleEl.style.display = ''; updateCharBar('title-bar','title-char',t.length,100); if (lastPinData) { lastPinData.p.title = t; renderScore(lastPinData.p); } }
-      block.style.display = 'none';
+      cards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      if (titleEl) { titleEl.textContent = t; updateCharBar('title-bar','title-char',t.length,100); }
+      if (lastPinData) { lastPinData.p.title = t; renderScore(lastPinData.p); }
     };
+    cards.push(card);
     wrap.appendChild(card);
   });
 }
