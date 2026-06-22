@@ -33,9 +33,9 @@ export async function onRequestPost(context) {
     }
 
     const now = Math.floor(Date.now() / 1000);
-    // past_due keeps access until the current period ends (Stripe is still retrying)
+    // past_due/canceled keep access until the current period ends
     const isPro = row.status === 'active' || row.status === 'trialing' ||
-                  (row.status === 'past_due' && row.current_period_end && row.current_period_end > now);
+                  ((row.status === 'past_due' || row.status === 'canceled') && row.current_period_end && row.current_period_end > now);
 
     return jsonResponse({
       isPro,

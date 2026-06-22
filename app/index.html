@@ -2090,7 +2090,18 @@ function updateUsage() {
   const usageRow = document.getElementById('usage-row');
   if (usageRow) usageRow.style.display = 'flex';
   const proBtn = document.getElementById('header-pro-btn');
-  if (proBtn) proBtn.style.display = '';
+  if (proBtn) {
+    proBtn.style.display = '';
+    proBtn.textContent = 'Upgrade to Pro';
+    proBtn.style.pointerEvents = '';
+    proBtn.style.cursor = '';
+    proBtn.style.opacity = '';
+    proBtn.style.background = '';
+    proBtn.style.color = '';
+    proBtn.style.border = '';
+    proBtn.onclick = function() { showPaywall(); };
+  }
+  updateAvatarDropdownItems();
   const pct = Math.min(Math.round((pinsUsed/FREE_LIMIT)*100),100);
   const fillEl = document.getElementById('usage-fill');
   const textEl = document.getElementById('usage-text');
@@ -3080,6 +3091,20 @@ function closeAvatarDropdown() {
 document.addEventListener('click', function(e) {
   const wrap = document.getElementById('avatar-wrap');
   if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
+  // Click outside the modal card closes both overlays
+  const paywallOverlay = document.getElementById('paywall-overlay');
+  if (paywallOverlay && paywallOverlay.classList.contains('show') && e.target === paywallOverlay) closePaywall();
+  const manageOverlay = document.getElementById('manage-overlay');
+  if (manageOverlay && manageOverlay.classList.contains('show') && e.target === manageOverlay) closeManageModal();
+});
+
+// When the browser restores this page from bfcache (e.g. after going to the Stripe
+// billing portal and pressing Back), close any overlays that were open when we left.
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) {
+    closePaywall();
+    closeManageModal();
+  }
 });
 
 // "Switch" link in footer - clears the gate email and reloads as a fresh user.
