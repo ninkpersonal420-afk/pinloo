@@ -2319,7 +2319,7 @@ function renderAB(titleA, titleB) {
     card.className = 'ab-card'+(i===0?' selected':'');
     card.innerHTML = '<div class="ab-label">Option '+(i===0?'A':'B')+'</div><div class="ab-title">'+esc(t)+'</div>';
     card.onclick = () => {
-      if (titleEl) { titleEl.textContent = t; titleEl.style.display = ''; updateCharBar('title-bar','title-char',t.length,100); if (lastPinData) lastPinData.p.title = t; }
+      if (titleEl) { titleEl.textContent = t; titleEl.style.display = ''; updateCharBar('title-bar','title-char',t.length,100); if (lastPinData) { lastPinData.p.title = t; renderScore(lastPinData.p); } }
       block.style.display = 'none';
     };
     wrap.appendChild(card);
@@ -2570,9 +2570,9 @@ async function regenField(field) {
     :'Write a NEW Pinterest description different from the current one. Product: '+product+'. Niche: '+niche+(audience?'. Target audience (write for the first listed): '+audience:'')+(benefit?'. Pain point (sentence 1 MUST use this exact frustration, do not substitute another): '+benefit:'')+'. Exactly 2 sentences under 500 chars. Sentence 1 opens with the buyer\'s felt frustration'+(benefit?'':' that this product solves')+' in their own voice, not a feature statement. Sentence 2 delivers the solution and outcome. Keyword-rich, no brand names. Return: {"description":"..."}';
   try {
     const result=await callClaude(sys,msg);
-    if (field==='title'&&result.title) { const t=fixTitlePunctuation(result.title); const titleEl=document.getElementById('result-title'); const abBlock=document.getElementById('ab-block'); if(abBlock) abBlock.style.display='none'; if(titleEl) titleEl.style.display=''; typeText(titleEl,t); updateCharBar('title-bar','title-char',t.length,100); lastPinData.p.title=t; }
-    else if (field==='description'&&result.description) { document.getElementById('result-desc').textContent=result.description; updateCharBar('desc-bar','desc-char',result.description.length,500); lastPinData.p.description=result.description; }
-    else if (field==='hashtags'&&result.hashtags) { result.hashtags=normalizeHashtags(result.hashtags); renderHashtags(document.getElementById('result-tags'), result.hashtags); lastPinData.p.hashtags=result.hashtags; }
+    if (field==='title'&&result.title) { const t=fixTitlePunctuation(result.title); const titleEl=document.getElementById('result-title'); const abBlock=document.getElementById('ab-block'); if(abBlock) abBlock.style.display='none'; if(titleEl) titleEl.style.display=''; typeText(titleEl,t); updateCharBar('title-bar','title-char',t.length,100); lastPinData.p.title=t; renderScore(lastPinData.p); }
+    else if (field==='description'&&result.description) { document.getElementById('result-desc').textContent=result.description; updateCharBar('desc-bar','desc-char',result.description.length,500); lastPinData.p.description=result.description; renderScore(lastPinData.p); }
+    else if (field==='hashtags'&&result.hashtags) { result.hashtags=normalizeHashtags(result.hashtags); renderHashtags(document.getElementById('result-tags'), result.hashtags); lastPinData.p.hashtags=result.hashtags; renderScore(lastPinData.p); }
   } catch(e) { console.error(e); showToast('Regeneration failed — please try again.', 'error'); }
 }
 
