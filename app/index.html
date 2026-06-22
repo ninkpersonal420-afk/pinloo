@@ -2692,36 +2692,62 @@ function exportHistoryCSV() {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pinloo Pin History</title>
+<title>Pinlo Pin History</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#f7f7f5;color:#1a1a1a;padding:40px 20px}
   .header{max-width:720px;margin:0 auto 32px}
   .header h1{font-size:22px;font-weight:700;margin-bottom:4px}
-  .header p{font-size:13px;color:#888}
+  .header p{font-size:13px;color:#888;margin-bottom:16px}
+  .search-wrap{position:relative}
+  .search-input{width:100%;padding:10px 14px 10px 36px;border:1px solid #e0e0de;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1a1a1a;outline:none}
+  .search-input:focus{border-color:#d94f38;box-shadow:0 0 0 3px rgba(217,79,56,0.08)}
+  .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;color:#aaa;pointer-events:none}
+  .search-count{font-size:12px;color:#aaa;margin-top:8px}
   .card{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:24px;margin:0 auto 16px;max-width:720px}
+  .card[hidden]{display:none}
   .card-num{font-size:11px;font-weight:600;color:#bbb;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
   .card-title{font-size:17px;font-weight:700;line-height:1.35;margin-bottom:10px;color:#111}
   .card-desc{font-size:13.5px;color:#444;line-height:1.65;margin-bottom:12px;white-space:pre-wrap}
   .card-tags{font-size:12.5px;color:#d94f38;margin-bottom:12px;line-height:1.6}
   .card-meta{display:flex;flex-wrap:wrap;gap:6px}
   .badge{font-size:11.5px;background:#f3f3f1;border-radius:100px;padding:3px 10px;color:#666}
-  @media print{body{background:#fff}.card{break-inside:avoid;border:1px solid #ddd}}
+  @media print{body{background:#fff}.card{break-inside:avoid;border:1px solid #ddd}.search-wrap,.search-count{display:none}}
 </style>
 </head>
 <body>
 <div class="header">
-  <h1>Pinloo Pin History</h1>
+  <h1>Pinlo Pin History</h1>
   <p>Exported ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} &middot; ${pinHistory.length} pin${pinHistory.length!==1?'s':''}</p>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="search" type="search" placeholder="Search titles, descriptions, products, hashtags…" oninput="filterCards(this.value)">
+  </div>
+  <div class="search-count" id="search-count"></div>
 </div>
 ${cards}
+<script>
+function filterCards(q){
+  var cards=document.querySelectorAll('.card');
+  var term=q.trim().toLowerCase();
+  var shown=0;
+  cards.forEach(function(c){
+    var text=(c.textContent||'').toLowerCase();
+    if(!term||text.includes(term)){c.removeAttribute('hidden');shown++;}
+    else{c.setAttribute('hidden','');}
+  });
+  var el=document.getElementById('search-count');
+  if(term){el.textContent=shown+' of ${pinHistory.length} pins match';}
+  else{el.textContent='';}
+}
+</script>
 </body>
 </html>`;
 
   const blob = new Blob([html],{type:'text/html;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href=url; a.download='pinloo-pins.html'; a.click();
+  a.href=url; a.download='pinlo-pins.html'; a.click();
   URL.revokeObjectURL(url);
 }
 
