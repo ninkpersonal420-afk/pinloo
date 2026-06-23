@@ -451,8 +451,163 @@ async function runFlap(key) {
   console.log(out);
 }
 
+// ── QA mode: guardrail sweep of the open-text prompts (audience/pain/pin) ─────
+// Extracts the live prompts from app/index.html (eval of the real literals =
+// no drift) and runs automated rule-violation detectors. Run: $env:QA="1"; ...
+function evalLiteral(lit) { return Function('return (' + lit + ')')(); }
+
+function extractPrompts(html) {
+  const aud = html.match(/const sys = ('You generate Pinterest buyer personas[\s\S]*?');\r?\n/);
+  const pain = html.match(/const sys = ('You generate Pinterest pain points[\s\S]*?');\r?\n/);
+  const angles = html.match(/const PIN_ANGLES = (\[[\s\S]*?\]);/);
+  const buildSysBody = html.match(/function buildSys\(pinIndex\) \{\r?\n([\s\S]*?)\r?\n\}/);
+  if (!aud || !pain || !angles || !buildSysBody) throw new Error('prompt extraction failed (audience/pain/angles/buildSys)');
+  const PIN_ANGLES = evalLiteral(angles[1]);
+  const pinSys = Function('getTone', 'activeTemplate', 'activeSeason', 'PIN_ANGLES', 'pinIndex', buildSysBody[1])
+    (() => 'urgent', 'drive_clicks', '', PIN_ANGLES, 0);
+  return { audienceSys: evalLiteral(aud[1]), painSys: evalLiteral(pain[1]), pinSys };
+}
+
+function cleanProduct(product) {
+  return product.replace(/(20\d\d)/g, '').replace(/[A-Z]{2,}[0-9]+\w*/g, '')
+    .replace(/(upgraded|premium|pro|plus|ultra|deluxe|new|improved|original|authentic|genuine|official)/gi, '')
+    .replace(/\s+/g, ' ').trim();
+}
+function buildPinMsg(product, niche, audience, benefit, what) {
+  let m = 'Product: "' + product + '"';
+  if (what) m += ' — ' + what;
+  m += ' | Write copy SPECIFICALLY about what this product does, not generic category content.';
+  m += ' | Niche: ' + (niche || 'lifestyle');
+  if (audience) m += ' | Audience: ' + audience;
+  if (benefit) m += ' | Core pain point: ' + benefit + '. The description MUST open with this as a felt frustration the buyer experiences — not a feature of the product.';
+  m += ' | IMPORTANT: The title and description must clearly relate to the specific product ("' + product + '") — not just the pain point in isolation.';
+  return m;
+}
+
+async function callMessages(system, userMsg, maxTokens, key) {
+  let res;
+  for (let a = 0; ; a++) {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: maxTokens, system, messages: [{ role: 'user', content: userMsg }] })
+    });
+    if ((res.status === 429 || res.status === 529 || res.status >= 500) && a < 5) { await sleep(1500 * (a + 1)); continue; }
+    break;
+  }
+  if (!res.ok) throw new Error('API ' + res.status + ': ' + (await res.text()).slice(0, 160));
+  const d = await res.json();
+  return (d.content || []).map(c => c.text || '').join('').trim();
+}
+
+function checkAudience(text) {
+  const v = []; const t = text.trim().replace(/^["']|["']$/g, '');
+  if (!t || /^invalid$/i.test(t) || /not a real|not enough context|cannot provide|don't have enough/i.test(t)) return { v: ['EMPTY/INVALID'], personas: [] };
+  if (/\b(enthusiasts?|lovers?|fans?|community|aficionados?|connoisseurs?|seekers?|devotees?|addicts?|crowd)\b/i.test(t)) v.push('BANNED-WORD');
+  if (/\b(taxi|postal|courier|rideshare|warehouse)\b/i.test(t) || /\bdelivery (driver|worker|guy|person)/i.test(t) || /\bgig (worker|economy)/i.test(t)) v.push('OCCUPATIONAL-MICRO');
+  if (/\b(women|men|girls|guys|males|females)\s*(aged\s*)?\d{2}\s*[-–to ]+\s*\d{2}/i.test(t) || /\b\d{2}\s*[-–]\s*\d{2}\b/.test(t)) v.push('DEMOGRAPHIC-AGE');
+  if (/\b(professionals|working moms|students|executives|freelancers|entrepreneurs)\b/i.test(t)) v.push('OCCUPATION-LABEL');
+  const personas = t.split(',').map(s => s.trim()).filter(Boolean);
+  if (personas.length < 2 || personas.length > 6) v.push('COUNT(' + personas.length + ')');
+  return { v, personas };
+}
+function checkPain(raw) {
+  let arr; try { arr = JSON.parse(raw.replace(/```json|```/g, '').trim()); } catch { return { v: ['BAD-JSON'], arr: [] }; }
+  if (!Array.isArray(arr)) return { v: ['NOT-ARRAY'], arr: [] };
+  const v = []; if (arr.length !== 5) v.push('COUNT(' + arr.length + ')');
+  if (/\b(high costs?|limited options?|quality concerns?|time constraints?|limited time)\b/i.test(arr.join(' | '))) v.push('GENERIC-FILLER');
+  return { v, arr };
+}
+function checkPin(raw, product, isBrand) {
+  let p; try { p = JSON.parse(raw.replace(/```json|```/g, '').trim()); if (!p || !p.title) { p = JSON.parse(raw.match(/\{[\s\S]*\}/)[0]); } } catch { return { v: ['BAD-JSON'], p: null }; }
+  const v = []; const title = (p.title || '').trim(), desc = (p.description || '').trim(), tags = p.hashtags || [];
+  const blob = (title + ' ' + desc).toLowerCase(); const pl = product.toLowerCase();
+  if (/\b(game[- ]?changer|unlock|elevate|transform|revolutioniz|empower|discover|boost your|maximize|optimize your|achieve your goals|perfect for|lifestyle|journey|amazing|incredible|must[- ]?have|level up|next level|step up|unleash|supercharge)\b/i.test(blob)) v.push('CLICHE');
+  // Brand-name leak is the hard violation. Generic product-type words (e.g.
+  // "candle", "planner") are allowed and good for SEO, so not flagged.
+  if (isBrand) { const tok = pl.split(/\s+/)[0]; if (tok.length > 2 && new RegExp('\\b' + tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b').test(blob)) v.push('BRAND-LEAK'); }
+  if (title.length > 80) v.push('TITLE-LEN(' + title.length + ')');
+  if (title.includes(':')) v.push('TITLE-COLON');
+  if (title.includes('-')) v.push('TITLE-HYPHEN');
+  const sentences = (desc.match(/[.!?](\s|$)/g) || []).length;
+  if (desc.length > 500) v.push('DESC-LEN(' + desc.length + ')');
+  if (sentences < 2 || sentences > 3) v.push('DESC-SENTENCES(' + sentences + ')');
+  if (tags.length !== 12) v.push('TAGS(' + tags.length + ')');
+  return { v, p };
+}
+
+// [product, isBrand]
+const QA_PRODUCTS = [
+  ['Stanley',1],['Yeti',1],['Theragun',1],['Olaplex',1],['Jackery',1],['Lululemon',1],['CeraVe',1],['Roomba',1],['Oura ring',1],['AG1',1],['Gymshark',1],['Diptyque',1],['Nespresso',1],
+  ['motorcycle saddle',0],['fishing rod',0],['yoga mat',0],['dog leash',0],['baby monitor',0],['tarot deck',0],['guitar capo',0],['budget planner',0],['essential oil diffuser',0],['cordless drill',0],['telescope',0],['protein powder',0],['cast iron skillet',0],['running shoes',0],['crochet hook kit',0],['gaming headset',0],['wedding centerpiece',0],['scented candle',0],['car seat cover',0],['hiking boots',0],['reptile heat lamp',0],['sunscreen',0],['electrolyte powder',0],
+  ['compression socks',0],['saddle pad',0],['standing desk',0],['beard oil',0],['microfiber towels',0],['label maker',0]
+];
+
+async function runQA(key) {
+  const html = fs.readFileSync(APP, 'utf8');
+  const sysPrompts = extractPrompts(html);
+  const nicheSys = extractSystemPrompt(html);
+  const rounds = parseInt(process.env.RUNS || '3', 10);
+  const lines = [], rows = [];
+  const tally = { audience: {}, pain: {}, pin: {} };
+  const bump = (k, vs) => vs.forEach(x => { const key = x.replace(/\(.*/, ''); tally[k][key] = (tally[k][key] || 0) + 1; });
+  let totalAud = 0, totalPain = 0, totalPin = 0;
+  const limit = Math.min(parseInt(process.env.LIMIT || QA_PRODUCTS.length, 10), QA_PRODUCTS.length);
+  for (let i = 0; i < limit; i++) {
+    const [product, isBrand] = QA_PRODUCTS[i];
+    // niche + what once per product
+    let niche = '', what = '';
+    try { const r = await classifyOnce(product, nicheSys, key); niche = pill(r.niche) || r.niche; what = r.what; } catch {}
+    for (let rnd = 0; rnd < rounds; rnd++) {
+      // audience
+      let audRes = { v: ['ERR'], personas: [] }, painRes = { v: ['ERR'], arr: [] }, pinRes = { v: ['ERR'], p: null };
+      try { const out = await callMessages(sysPrompts.audienceSys, 'Product: "' + cleanProduct(product) + '"' + (what ? '\nWhat it does: ' + what : '') + '\nNiche: ' + (niche || 'general') + '\n\nList the buyer personas for this product. Format: persona1, persona2, persona3', 80, key); audRes = checkAudience(out); audRes.out = out; } catch (e) { audRes = { v: ['ERR'], out: e.message.slice(0, 50), personas: [] }; }
+      try { const out = await callMessages(sysPrompts.painSys, 'Product: "' + product + '"' + (what ? '\nWhat it does: ' + what : '') + (niche ? '\nNiche: ' + niche : ''), 800, key); painRes = checkPain(out); painRes.out = out; } catch (e) { painRes = { v: ['ERR'], out: e.message.slice(0, 50), arr: [] }; }
+      const sampleAud = audRes.personas[0] || '', sampleBenefit = painRes.arr[0] || '';
+      try { const out = await callMessages(sysPrompts.pinSys, buildPinMsg(product, niche, sampleAud, sampleBenefit, what), 800, key); pinRes = checkPin(out, product, isBrand); pinRes.out = out; } catch (e) { pinRes = { v: ['ERR'], out: e.message.slice(0, 50), p: null }; }
+      totalAud++; totalPain++; totalPin++;
+      bump('audience', audRes.v); bump('pain', painRes.v); bump('pin', pinRes.v);
+      rows.push({ product, isBrand, niche, what, rnd, audRes, painRes, pinRes });
+      process.stderr.write(`\r[QA ${i + 1}/${QA_PRODUCTS.length} r${rnd + 1}] ${product}            `);
+    }
+  }
+  process.stderr.write('\n');
+  lines.push('# Pinlo open-text guardrail sweep (QA)');
+  lines.push('');
+  lines.push(`${QA_PRODUCTS.length} products × ${rounds} rounds. Audience/Pain/Pin calls: ${totalAud}/${totalPain}/${totalPin}.`);
+  const fmtTally = obj => Object.keys(obj).length ? Object.entries(obj).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k}=${n}`).join(', ') : 'none';
+  lines.push('');
+  lines.push('## Violation tallies (lower = better; 0 is the target for the hard rules)');
+  lines.push(`- AUDIENCE: ${fmtTally(tally.audience)}`);
+  lines.push(`- PAIN: ${fmtTally(tally.pain)}`);
+  lines.push(`- PIN: ${fmtTally(tally.pin)}`);
+  lines.push('');
+  lines.push('## Every flagged row (for eyeballing — clean rows omitted)');
+  lines.push('| product | niche | prompt | flags | output |');
+  lines.push('|--|--|--|--|--|');
+  for (const r of rows) {
+    if (r.audRes.v.length) lines.push(`| ${r.product} | ${r.niche} | audience | ${r.audRes.v.join(',')} | ${(r.audRes.out || '').replace(/\|/g, '/').slice(0, 160)} |`);
+    if (r.painRes.v.length) lines.push(`| ${r.product} | ${r.niche} | pain | ${r.painRes.v.join(',')} | ${(r.painRes.out || '').replace(/\|/g, '/').slice(0, 160)} |`);
+    if (r.pinRes.v.length) lines.push(`| ${r.product} | ${r.niche} | pin | ${r.pinRes.v.join(',')} | ${((r.pinRes.p && r.pinRes.p.title) || r.pinRes.out || '').replace(/\|/g, '/').slice(0, 120)} |`);
+  }
+  lines.push('');
+  lines.push('## Sample outputs (round 1, first 12 products — eyeball quality)');
+  let shown = 0;
+  for (const r of rows) { if (r.rnd !== 0) continue; if (shown++ >= 12) break;
+    lines.push(`**${r.product}** → niche=${r.niche} · what="${r.what}"`);
+    lines.push(`- audience: ${(r.audRes.out || '').replace(/\n/g, ' ')}`);
+    lines.push(`- pain: ${(r.painRes.out || '').replace(/\n/g, ' ')}`);
+    lines.push(`- pin: ${r.pinRes.p ? (r.pinRes.p.title + ' // ' + r.pinRes.p.description) : (r.pinRes.out || '')}`);
+    lines.push('');
+  }
+  const out = lines.join('\n');
+  fs.writeFileSync(path.join(__dirname, 'niche-qa-results.md'), out + '\n');
+  console.log(out);
+}
+
 const KEY = loadKey();
-if (KEY && process.env.FLAP) {
+if (KEY && process.env.QA) {
+  runQA(KEY).catch(e => { console.error('\nQA run failed:', e.message); process.exit(1); });
+} else if (KEY && process.env.FLAP) {
   runFlap(KEY).catch(e => { console.error('\nFLAP run failed:', e.message); process.exit(1); });
 } else if (KEY) {
   runLive(KEY).catch(e => { console.error('\nLIVE run failed:', e.message); process.exit(1); });
