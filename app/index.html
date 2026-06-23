@@ -1779,7 +1779,7 @@ async function autoGeneratePains(product) {
   try {
     const sys = 'You generate Pinterest pain points for an affiliate product. Return a JSON array of exactly 5 short pain points (3–6 words each) — the real frustrations that send someone looking for THIS exact product.\n\nEvery pain must be a problem THIS product solves. Example: an electrolyte mix → ["Cramping during long workouts","Drained after heavy sweating","Plain water is not enough","Headaches from dehydration","Energy crashing mid-afternoon"] — NOT "hitting a plateau" or "slow muscle gains" (those are generic supplement pains unrelated to electrolytes).\n\nRules — follow every one:\n1. If a "What it does" line is provided, treat it as the authoritative description and anchor every pain to it. Otherwise, if the product name is a brand, a typo, or vague, infer what it physically is first.\n2. Each pain is the BEFORE state — the frustration that existed before they found the product, written the way the buyer would actually feel or say it.\n3. Keep them concrete but natural — a problem a real person would nod at, not an oddly hyper-specific scenario.\n4. Never describe a problem the product CAUSES — only ones it SOLVES.\n5. Each pain is distinct — no two describe the same frustration.\n6. Output ONLY the JSON array — no markdown, no explanation.';
     const niche = activeNiche || document.getElementById('niche-custom-input').value.trim() || '';
-    const rawData = await callClaude(sys, 'Product: "' + product + '"' + (inferredProductDesc ? '\nWhat it does: ' + inferredProductDesc : '') + (niche ? '\nNiche: ' + niche : ''));
+    const rawData = await callClaude(sys, 'Product: "' + product + '"' + (inferredProductDesc ? '\nWhat it does: ' + inferredProductDesc : '') + (niche ? '\nNiche: ' + niche : ''), 'autofill');
     const pains = Array.isArray(rawData) ? rawData : JSON.parse(typeof rawData === 'string' ? rawData : JSON.stringify(rawData));
     renderPainPills(pains, { locked: false });
   } catch(e) {
@@ -2050,6 +2050,21 @@ const PIN_ANGLES = [
   'honest contrarian take — e.g. "You don\'t need to spend $100 on this" or "I thought this was overhyped until I actually tried it for a week"'
 ];
 
+// Distinct SELLING ANGLES for bulk pins. PIN_ANGLES only varies the hook's
+// grammatical shape; without this, every bulk pin orbits the one selected pain
+// (e.g. ten "smells like raw chicken" cutting-board pins). Rotating focus makes
+// each pin sell a genuinely different reason to buy.
+const PIN_FOCUS = [
+  'the specific problem or frustration this product solves',
+  'how durable or long-lasting it is versus the cheaper alternatives',
+  'the look, finish, or aesthetic upgrade it gives',
+  'how quick or effortless it is to use, set up, or clean',
+  'the value for money compared to pricier options',
+  'who it is genuinely best for and the situation they are in',
+  'an everyday moment where it quietly makes life easier',
+  'the thing people wish they had known or done sooner'
+];
+
 function validatePin(p) {
   const title = p.title || '';
   const desc  = p.description || '';
@@ -2083,6 +2098,17 @@ function fixTitlePunctuation(title) {
   let t = title.trim();
   // Strip trailing period
   t = t.replace(/\.+$/, '');
+  // Repair malformed questions that drop the auxiliary verb, e.g.
+  // "Why your board still smells like raw chicken" — a real question needs
+  // "Why DOES your board...". We can't reliably re-conjugate the verb, so we
+  // demote it to a clean, grammatical statement by dropping the question word.
+  // Only why/where/when, which strictly require an auxiliary — NOT what/which/how,
+  // whose noun-phrase titles ("What your skin needs at night") are valid as-is.
+  const auxMissing = /^(why|where|when)\s+(your|my|our|their|the|this|that|these|those|a|an|you|it|they|i)\b/i.test(t);
+  if (auxMissing) {
+    t = t.replace(/^(why|where|when)\s+/i, '');
+    t = t.charAt(0).toUpperCase() + t.slice(1);
+  }
   // Question detection: starts with interrogative word, but exclude "how to" / "how I"
   // which are statement phrases ("How to lose weight" = guide, not question).
   const isQuestion =
@@ -2106,9 +2132,14 @@ function buildMsg(product, niche, audience, benefit, extra) {
   return m;
 }
 
-async function callClaude(sys, msg) {
+// type: omit for pin generation (Sonnet, counts toward quota); pass 'autofill'
+// or 'niche-tip' for cheap helpers (Haiku, no quota). The server picks the model
+// and token budget from `type` — the client cannot override it.
+async function callClaude(sys, msg, type) {
   const email = getGateEmail() || '';
-  const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,model:'claude-haiku-4-5',max_tokens:800,system:sys,messages:[{role:'user',content:msg}]})});
+  const payload = {email,system:sys,messages:[{role:'user',content:msg}]};
+  if (type) payload.type = type;
+  const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   if (res.status === 402) {
     const errData = await res.json();
     if (errData.error === 'free_limit_reached') {
@@ -2511,7 +2542,18 @@ async function generatePin() {
         const batchResults = await Promise.all(
           batchNums.map(async n => {
             try {
-              const r = await callClaude(buildSys(n), buildMsg(product, niche, audience, benefit, 'This is pin '+(n+1)+' — use the required hook style above and make it feel distinct from other pins about this topic.'));
+              // Pin 1 leads with the user's selected pain; the rest each take a
+              // distinct selling angle and steer away from that same pain so the
+              // batch doesn't collapse into one repeated topic.
+              const focus = PIN_FOCUS[n % PIN_FOCUS.length];
+              const pinBenefit = n === 0 ? benefit : '';
+              let extra = 'This is pin '+(n+1)+' — use the required hook style above and make it feel distinct from the other pins.';
+              if (n !== 0) {
+                extra += ' Center this pin on a DIFFERENT angle than the others: '+focus+'.'
+                  + (benefit ? ' Do NOT build it around "'+benefit+'" — another pin already covers that.' : '')
+                  + ' Each pin must sell a genuinely different reason to buy this specific product.';
+              }
+              const r = await callClaude(buildSys(n), buildMsg(product, niche, audience, pinBenefit, extra));
               return (r && r.title) ? r : null;
             } catch(e) { return null; }
           })

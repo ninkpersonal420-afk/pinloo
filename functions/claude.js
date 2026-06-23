@@ -27,7 +27,7 @@ export async function onRequestPost(context) {
     // titles, clean grammar, relevant hashtags) for ~1 cent per pin.
     const isHelper = type === 'autofill' || type === 'niche-tip';
     const MODEL = isHelper ? 'claude-haiku-4-5' : 'claude-sonnet-4-6';
-    const MAX_TOKENS = type === 'autofill' ? 80 : type === 'niche-tip' ? 150 : 900;
+    const MAX_TOKENS = type === 'autofill' ? 150 : type === 'niche-tip' ? 150 : 900;
 
     // Valid email required for all request types
     if (!email || typeof email !== 'string' || !email.includes('@')) {
