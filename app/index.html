@@ -655,11 +655,14 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
           <div style="display:flex;align-items:center;gap:6px;"><label>Target audience</label><span id="audience-selected-count" style="display:none;font-size:10px;font-weight:700;color:var(--red);background:rgba(217,79,56,0.08);padding:2px 7px;border-radius:20px;">0 selected</span></div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span class="auto-tag" id="audience-auto-tag">Detected</span>
-            <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleAudienceDetect()">
-              <span id="audience-detect-label" style="font-size:12px;color:#F4705A;font-weight:600;text-transform:none;">Auto-detect ON</span>
-              <div id="audience-detect-toggle" style="width:36px;height:20px;border-radius:10px;background:#F4705A;border:1px solid #F4705A;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
-                <div id="audience-detect-knob" style="position:absolute;top:3px;left:17px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+              <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleAudienceDetect()">
+                <span id="audience-detect-label" style="font-size:12px;color:#F4705A;font-weight:600;text-transform:none;">Auto-detect ON</span>
+                <div id="audience-detect-toggle" style="width:36px;height:20px;border-radius:10px;background:#F4705A;border:1px solid #F4705A;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
+                  <div id="audience-detect-knob" style="position:absolute;top:3px;left:17px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left 0.2s;"></div>
+                </div>
               </div>
+              <span style="font-size:11px;color:var(--text4);text-transform:none;font-weight:400;">Auto-detects audience as you type</span>
             </div>
           </div>
         </div>
@@ -1535,7 +1538,7 @@ function onProductInput(val) {
   audienceTimer = setTimeout(() => autoFillAudience(trimmed), 2500);
   if (painAutofillOn) {
     clearTimeout(painTimer);
-    painTimer = setTimeout(() => autoGeneratePains(trimmed), 1200);
+    painTimer = setTimeout(() => autoGeneratePains(trimmed), 500);
   }
 }
 
