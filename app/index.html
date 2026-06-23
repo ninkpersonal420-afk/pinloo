@@ -1469,6 +1469,14 @@ function applyNicheData(val) {
   const isDetecting = container.querySelector('.audience-detecting') &&
                       container.querySelector('.audience-detecting').textContent === 'Detecting audience...';
   if (hasOptions || isDetecting) return;
+  // With AI auto-detect on and a product entered, the model returns personas
+  // built around what the product actually does. Seeding the generic per-niche
+  // list here would briefly show audiences unrelated to the specific product
+  // (e.g. broad "cooking" personas for a bamboo cutting board), so skip it and
+  // let autoFillAudience populate. Only fall back to the niche list when AI is
+  // off or no product has been typed yet.
+  const prod = document.getElementById('product-input').value.trim();
+  if (audienceDetectEnabled && prod) return;
   const auds = data.audience.split(',').map(a => a.trim()).filter(a => a);
   if (auds.length) renderAudienceOptions(auds, true);
 }
@@ -1535,7 +1543,7 @@ function onProductInput(val) {
       autoDetectNicheAI(trimmed);
     }, 300);
   }
-  audienceTimer = setTimeout(() => autoFillAudience(trimmed), 2500);
+  audienceTimer = setTimeout(() => autoFillAudience(trimmed), 900);
   if (painAutofillOn) {
     clearTimeout(painTimer);
     painTimer = setTimeout(() => autoGeneratePains(trimmed), 500);
