@@ -2325,14 +2325,38 @@ function calculateSEOScore(pin) {
   ];
 
   const weakest = breakdown.reduce((a, b) => (a.raw / a.max < b.raw / b.max ? a : b));
-  const tips = {
-    'Title':       'Best titles are 45–75 characters and open with a searchable keyword or a specific number.',
-    'Description': 'Aim for 150–380 characters. Echo a keyword from your title and include a problem→solution phrase.',
-    'Hashtags':    'Use exactly 12 hashtags — a mix of short broad tags and longer niche-specific ones.',
-    'Hook':        'The strongest hooks open with a number, a genuine question, or a direct "you/stop/never" phrase.',
-  };
 
-  return { total, breakdown, tip: tips[weakest.label] };
+  // Diagnostic tip: describe what THIS pin actually got wrong (exact lengths,
+  // clichés, missing keywords) instead of reciting a generic rule.
+  let tip;
+  if (weakest.label === 'Title') {
+    const cliche = cliches.find(c => tl.includes(c));
+    if (cliche)                  tip = 'Your title leans on "'+cliche+'" — swap it for plain, specific wording about what the product does.';
+    else if (tLen > 90)          tip = 'Your title is '+tLen+' characters — Pinterest cuts off long titles in the feed, so trim it under 75.';
+    else if (tLen > 75)          tip = 'Your title is '+tLen+' characters — shave it under 75 so it doesn\'t get truncated mid-scroll.';
+    else if (tLen < 20)          tip = 'Your title is only '+tLen+' characters — too short to rank; add a searchable keyword to reach 45–75.';
+    else if (tLen < 45)          tip = 'Your title is '+tLen+' characters — add a keyword or specific detail to hit the 45–75 sweet spot.';
+    else if (!/^\d/.test(title)) tip = 'Good length — opening with a specific number (e.g. "3 reasons…") would push the title score higher.';
+    else                         tip = 'Lead with a searchable keyword in the first few words so it surfaces in Pinterest search.';
+  } else if (weakest.label === 'Description') {
+    if (dLen > 380)              tip = 'Your description is '+dLen+' characters — tighten it under 380 so the key message stays up front.';
+    else if (dLen < 80)          tip = 'Your description is only '+dLen+' characters — expand to 150–380 and echo a keyword from your title.';
+    else if (dLen < 150)         tip = 'Your description is '+dLen+' characters — add one more sentence to reach the 150–380 range.';
+    else if (overlap === 0)      tip = 'None of your title keywords appear in the description — repeat one or two so Pinterest links them.';
+    else                         tip = 'Add a clear problem→solution phrase (e.g. "so you can…") to strengthen the description.';
+  } else if (weakest.label === 'Hashtags') {
+    if (tc !== 12)               tip = 'You have '+tc+' hashtag'+(tc===1?'':'s')+' — use exactly 12 for the widest reach.';
+    else if (avgTagLen < 8)      tip = 'Your hashtags are mostly short and broad — add a few longer niche tags like #smallkitchenideas.';
+    else if (avgTagLen > 16)     tip = 'Your hashtags run long — mix in a few short broad tags like #home or #fitness.';
+    else                         tip = 'Solid hashtag mix — keep blending broad-reach tags with specific niche ones.';
+  } else { // Hook
+    if (cliches.some(c => tl.includes(c)))       tip = 'Your hook leans on a cliché — open with a number, a real question, or a direct "you/stop/never" line instead.';
+    else if (isQuestion && !title.endsWith('?')) tip = 'Your title reads as a question but has no "?" — add one to land the hook.';
+    else if (!isQuestion && !hasNumber && !strongVerb) tip = 'Weak hook — start with a number, a genuine question, or a direct "you/stop/never" phrase.';
+    else                         tip = 'Strong hook already — leading with a specific number is the one thing that scores even higher.';
+  }
+
+  return { total, breakdown, tip };
 }
 
 function renderScore(pin) {
