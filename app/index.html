@@ -2306,14 +2306,22 @@ function calculateSEOScore(pin) {
   if (avgTagLen >= 8 && avgTagLen <= 16) tagScore = Math.min(tagScore + 2, 20);
 
   // ── Hook strength (0–20 pts) ──────────────────────────────
-  let hookScore = 11; // baseline
-  const isQuestion = /^(who|what|when|where|why|how(?!\s+to\b)|can|could|should|would|are|is|do|does|did)\b/i.test(title);
-  const hasNumber  = startsWithNumber;
-  const strongVerb = /^(stop |never |always |you |i |this |the |here|want|need|get )/i.test(title);
-  if (isQuestion && title.endsWith('?')) hookScore = 20;
-  else if (hasNumber)                    hookScore = 18;
-  else if (isQuestion)                   hookScore = 16;
-  else if (strongVerb)                   hookScore = 15;
+  // Reward the hook styles Pinlo actually writes — questions, numbers,
+  // first-person discovery, curiosity gaps, comparisons — so the scorer
+  // doesn't flag its own well-formed hooks as "weak". A clear declarative
+  // still hooks, so the floor is generous; only clichés are penalised.
+  const isQuestion   = /^(who|what|when|where|why|how(?!\s+to\b)|can|could|should|would|are|is|do|does|did)\b/i.test(title);
+  const hasNumber    = startsWithNumber;
+  const firstPerson  = /^(i|i'?ve|i'?m|my|we|we'?ve|you|your)\b/i.test(title);
+  const curiosityGap = /\b(the (secret|thing|trick|reason|truth|one|move|hack)|here'?s|what happens|what nobody|why everyone|actually|finally|turns out|nobody tells you)\b/i.test(title);
+  const comparison   = /\b(better than|instead of|vs\.?|versus|swapped|replaced|stopped (buying|using)|cheaper than|over the)\b/i.test(title);
+  const strongOpener = /^(stop |never |always |this |the |here|want|need|get )/i.test(title);
+  let hookScore;
+  if (isQuestion && title.endsWith('?'))                            hookScore = 20;
+  else if (hasNumber)                                              hookScore = 18;
+  else if (isQuestion || firstPerson || curiosityGap || comparison) hookScore = 16;
+  else if (strongOpener)                                           hookScore = 14;
+  else                                                             hookScore = 13;
   if (cliches.some(c => tl.includes(c))) hookScore = Math.max(hookScore - 10, 3);
   hookScore = Math.min(hookScore, 20);
 
@@ -2354,10 +2362,11 @@ function calculateSEOScore(pin) {
     else if (avgTagLen > 16)     tip = 'Your hashtags run long — mix in a few short broad tags like #home or #fitness.';
     else                         tip = 'Solid hashtag mix — keep blending broad-reach tags with specific niche ones.';
   } else { // Hook
-    if (cliches.some(c => tl.includes(c)))       tip = 'Your hook leans on a cliché — open with a number, a real question, or a direct "you/stop/never" line instead.';
-    else if (isQuestion && !title.endsWith('?')) tip = 'Your title reads as a question but has no "?" — add one to land the hook.';
-    else if (!isQuestion && !hasNumber && !strongVerb) tip = 'Weak hook — start with a number, a genuine question, or a direct "you/stop/never" phrase.';
-    else                         tip = 'Strong hook already — leading with a specific number is the one thing that scores even higher.';
+    if (cliches.some(c => tl.includes(c)))       tip = 'This hook leans on a cliché — try the B option, or open with a number or a direct question instead.';
+    else if (isQuestion && !title.endsWith('?')) tip = 'This title reads as a question but is missing its "?" — add one to land the hook.';
+    else if (!isQuestion && !hasNumber && !firstPerson && !curiosityGap && !comparison)
+                                                 tip = 'Decent hook — leading with a number or a question (try the B option) would make it punch harder.';
+    else                                         tip = 'Strong hook already — opening with a specific number is about the only thing that scores higher.';
   }
 
   return { total, breakdown, tip };
