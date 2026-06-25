@@ -2268,8 +2268,10 @@ function calculateSEOScore(pin) {
   else if (tLen >  75 && tLen <= 90) titleScore = 20;
   else if (tLen >= 20)               titleScore = 13;
   else                               titleScore = 6;
-  // Bonus: starts with a number (listicle performs well)
-  if (/^\d/.test(title)) titleScore = Math.min(titleScore + 4, 30);
+  // Bonus: starts with a number (listicle performs well). Allow a leading
+  // currency symbol or "#" so "$40 ..." and "#1 ..." still count as number-led.
+  const startsWithNumber = /^\W{0,2}\d/.test(title);
+  if (startsWithNumber) titleScore = Math.min(titleScore + 4, 30);
   // Cliché penalty
   if (cliches.some(c => tl.includes(c))) titleScore = Math.max(titleScore - 14, 4);
   titleScore = Math.min(titleScore, 30);
@@ -2306,7 +2308,7 @@ function calculateSEOScore(pin) {
   // ── Hook strength (0–20 pts) ──────────────────────────────
   let hookScore = 11; // baseline
   const isQuestion = /^(who|what|when|where|why|how(?!\s+to\b)|can|could|should|would|are|is|do|does|did)\b/i.test(title);
-  const hasNumber  = /^\d/.test(title);
+  const hasNumber  = startsWithNumber;
   const strongVerb = /^(stop |never |always |you |i |this |the |here|want|need|get )/i.test(title);
   if (isQuestion && title.endsWith('?')) hookScore = 20;
   else if (hasNumber)                    hookScore = 18;
@@ -2336,14 +2338,16 @@ function calculateSEOScore(pin) {
     else if (tLen > 75)          tip = 'Your title is '+tLen+' characters — shave it under 75 so it doesn\'t get truncated mid-scroll.';
     else if (tLen < 20)          tip = 'Your title is only '+tLen+' characters — too short to rank; add a searchable keyword to reach 45–75.';
     else if (tLen < 45)          tip = 'Your title is '+tLen+' characters — add a keyword or specific detail to hit the 45–75 sweet spot.';
-    else if (!/^\d/.test(title)) tip = 'Good length — opening with a specific number (e.g. "3 reasons…") would push the title score higher.';
+    else if (!startsWithNumber)  tip = 'Good length — opening with a specific number (e.g. "3 reasons…") would push the title score higher.';
     else                         tip = 'Lead with a searchable keyword in the first few words so it surfaces in Pinterest search.';
   } else if (weakest.label === 'Description') {
     if (dLen > 380)              tip = 'Your description is '+dLen+' characters — tighten it under 380 so the key message stays up front.';
     else if (dLen < 80)          tip = 'Your description is only '+dLen+' characters — expand to 150–380 and echo a keyword from your title.';
     else if (dLen < 150)         tip = 'Your description is '+dLen+' characters — add one more sentence to reach the 150–380 range.';
     else if (overlap === 0)      tip = 'None of your title keywords appear in the description — repeat one or two so Pinterest links them.';
-    else                         tip = 'Add a clear problem→solution phrase (e.g. "so you can…") to strengthen the description.';
+    else if (!/\b(because|so you|helps you|which means|so that|perfect for|ideal for|great for)\b/i.test(desc))
+                                 tip = 'Add a clear problem→solution phrase (e.g. "so you can…") to strengthen the description.';
+    else                         tip = 'Your description is already strong — echoing one more title keyword is the only thing left to lift it.';
   } else if (weakest.label === 'Hashtags') {
     if (tc !== 12)               tip = 'You have '+tc+' hashtag'+(tc===1?'':'s')+' — use exactly 12 for the widest reach.';
     else if (avgTagLen < 8)      tip = 'Your hashtags are mostly short and broad — add a few longer niche tags like #smallkitchenideas.';
