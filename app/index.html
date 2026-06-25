@@ -381,16 +381,76 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .niche-tip-text{font-size:14px;color:var(--text2);line-height:1.7;white-space:normal;word-wrap:break-word;}
 
 /* ── BULK RESULTS ── */
-.bulk-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;align-items:start;}
-.bulk-item{background:var(--bg2);border:1px solid var(--hairline);border-radius:18px;padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:box-shadow 0.2s var(--ease),transform 0.2s var(--ease);}
-.bulk-item:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
-.bulk-item-num{font-size:10px;font-weight:700;color:#fff;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:12px;padding:4px 13px;background:var(--gradient);border-radius:100px;display:inline-block;box-shadow:0 2px 8px rgba(217,79,56,0.28);}
-.bulk-item-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.32;}
-.bulk-item-desc{font-size:14px;color:var(--text2);line-height:1.75;font-weight:400;margin-bottom:14px;}
-.bulk-item-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
-.bulk-item-tag{font-size:10.5px;padding:3px 9px;border-radius:100px;background:var(--gradient-soft);color:var(--red);border:1px solid rgba(217,79,56,0.14);font-weight:500;}
-.bulk-copy-btn{font-size:11.5px;font-weight:600;padding:6px 14px;border:1px solid var(--border);border-radius:100px;cursor:pointer;background:transparent;color:var(--text3);font-family:'Outfit',sans-serif;transition:border-color 0.13s,color 0.13s;}
-.bulk-copy-btn:hover{border-color:var(--text2);color:var(--text);}
+.bulk-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:1.1rem;align-items:stretch;}
+
+/* results header bar (spans full width) */
+.bulk-head{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:2px 4px 15px;border-bottom:1px solid var(--hairline);margin-bottom:2px;}
+.bulk-head-left{display:flex;flex-direction:column;gap:3px;min-width:0;}
+.bulk-head-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.3px;line-height:1.15;}
+.bulk-head-sub{font-size:12px;color:var(--text4);font-weight:500;}
+.bulk-head-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.bulk-avg{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:var(--text3);background:var(--bg2);border:1px solid var(--hairline);padding:7px 13px;border-radius:100px;letter-spacing:0.3px;text-transform:uppercase;}
+.bulk-avg b{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;letter-spacing:0;}
+.bulk-copyall{font-size:12.5px;font-weight:600;padding:9px 19px;border:none;border-radius:100px;cursor:pointer;background:var(--gradient);color:#fff;font-family:'Outfit',sans-serif;box-shadow:0 2px 8px rgba(217,79,56,0.25);transition:transform 0.16s var(--ease),box-shadow 0.16s,background 0.16s,color 0.16s;}
+.bulk-copyall:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(217,79,56,0.32);}
+.bulk-copyall.ok{background:var(--green-bg);color:var(--green-text);box-shadow:none;}
+
+/* the card */
+.pin-card{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--hairline);border-radius:20px;padding:1.4rem 1.45rem 1.3rem;box-shadow:var(--shadow);transition:box-shadow 0.24s var(--ease),transform 0.24s var(--ease),border-color 0.24s;}
+.pin-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);border-color:var(--border2);}
+.pin-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;}
+.pin-card-num{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;display:inline-flex;align-items:center;gap:7px;}
+.pin-card-num::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gradient);box-shadow:0 0 0 3px rgba(217,79,56,0.12);flex-shrink:0;}
+
+/* compact SEO ring */
+.mini-ring{position:relative;width:52px;height:52px;flex-shrink:0;}
+.mini-ring svg{width:52px;height:52px;transform:rotate(-90deg);display:block;}
+.mini-ring .mr-bg{fill:none;stroke:var(--bg3);stroke-width:5;}
+.mini-ring .mr-fill{fill:none;stroke-width:5;stroke-linecap:round;stroke-dasharray:150.8;stroke-dashoffset:150.8;transition:stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1);}
+.mini-ring .mr-fill.high{stroke:#66BB6A;}.mini-ring .mr-fill.mid{stroke:#FBBF24;}.mini-ring .mr-fill.low{stroke:var(--red);}
+.mini-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.mini-ring-num{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;line-height:1;}
+.mini-ring-lbl{font-size:7px;font-weight:700;letter-spacing:0.9px;color:var(--text4);text-transform:uppercase;margin-top:1px;}
+.mini-ring.locked{cursor:pointer;}
+.mini-ring.locked .mr-fill,.mini-ring.locked .mini-ring-num{filter:blur(3.5px);}
+.mini-ring-lock{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:15px;}
+.mini-ring.locked .mini-ring-lock{display:flex;}
+
+/* A/B title picker */
+.pin-card-titles{display:flex;flex-direction:column;gap:8px;}
+.pin-card-titles-lbl{font-size:9.5px;font-weight:700;color:var(--text4);letter-spacing:1.1px;text-transform:uppercase;margin-bottom:1px;}
+.pin-title-opt{position:relative;border:1px solid var(--border);border-radius:13px;padding:12px 38px 12px 15px;cursor:pointer;background:var(--bg);transition:border-color 0.15s,background 0.15s,box-shadow 0.15s;}
+.pin-title-opt:hover{border-color:var(--border2);}
+.pin-title-opt.selected{border-color:var(--red);background:var(--gradient-soft);box-shadow:0 2px 12px rgba(217,79,56,0.1);}
+.pin-title-opt-badge{position:absolute;top:11px;right:12px;width:19px;height:19px;border-radius:50%;border:1.5px solid var(--border2);font-size:9.5px;font-weight:700;color:var(--text4);display:flex;align-items:center;justify-content:center;background:var(--bg2);transition:background 0.15s,border-color 0.15s,color 0.15s;}
+.pin-title-opt.selected .pin-title-opt-badge{background:var(--gradient);border-color:transparent;color:#fff;}
+.pin-title-opt-text{font-family:'Playfair Display',serif;font-size:16.5px;font-weight:600;line-height:1.34;color:var(--text);letter-spacing:-0.2px;}
+.pin-card-title-solo{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;line-height:1.32;color:var(--text);letter-spacing:-0.3px;}
+.pin-card-alt-loading{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--text4);font-style:italic;margin-top:9px;}
+.pin-card-alt-loading .alt-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:altpulse 1s ease infinite;}
+@keyframes altpulse{0%,100%{opacity:0.3;transform:scale(0.7)}50%{opacity:1;transform:scale(1)}}
+
+/* per-card SEO breakdown */
+.pin-card-seo{margin:13px 0 0;padding:13px 14px;background:var(--bg4);border:1px solid var(--hairline);border-radius:13px;}
+.pin-card-seo .score-breakdown{margin-bottom:0;gap:7px;}
+.pin-card-seo .score-row-label{width:78px;font-size:11.5px;}
+.pin-card-seo-tip{font-size:11.5px;color:var(--text3);line-height:1.55;margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline);}
+.pin-card-seo-tip b{color:var(--red);font-weight:700;}
+
+/* content blocks */
+.pin-card-block{margin-top:14px;}
+.pin-card-block-lbl{font-size:9.5px;font-weight:800;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.pin-card-desc{font-size:13.5px;color:var(--text2);line-height:1.72;font-weight:400;}
+.pin-card-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.pin-card-tag{font-size:10.5px;padding:3px 10px;border-radius:100px;background:var(--gradient-soft);color:var(--red);border:1px solid rgba(217,79,56,0.14);font-weight:500;}
+
+/* card actions — pinned to bottom */
+.pin-card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto;padding-top:17px;}
+.pc-btn{font-size:11.5px;font-weight:600;padding:8px 14px;border:1px solid var(--border);border-radius:100px;cursor:pointer;background:transparent;color:var(--text3);font-family:'Outfit',sans-serif;transition:border-color 0.14s,color 0.14s,background 0.14s,box-shadow 0.14s,transform 0.14s;}
+.pc-btn:hover{border-color:var(--text2);color:var(--text);background:var(--bg4);}
+.pc-btn.primary{background:var(--gradient);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(217,79,56,0.22);}
+.pc-btn.primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(217,79,56,0.3);background:var(--gradient);color:#fff;}
+.pc-btn.ok,.pc-btn.primary.ok{background:var(--green-bg);color:var(--green-text);border-color:var(--green);box-shadow:none;transform:none;}
 
 /* ── HISTORY ── */
 .history-empty{text-align:center;padding:4rem 2rem;background:var(--bg2);border:1px dashed var(--border);border-radius:20px;}
@@ -445,11 +505,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .pw-back{display:inline-block;margin-top:10px;font-size:12px;font-weight:500;color:var(--text4);cursor:pointer;background:none;border:none;font-family:'Outfit',sans-serif;transition:color 0.12s;}
 .pw-back:hover{color:var(--text2);}
 
-/* ── REDUCED MOTION ── */
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
-}
-
 /* ── MOBILE ── */
 @media(max-width:600px){
   .header{padding:0.7rem 1rem;gap:0.5rem;flex-wrap:nowrap;}
@@ -492,9 +547,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   .result-title-text{font-size:20px;line-height:1.32;}
   .result-body-text{font-size:14px;padding:12px 14px;line-height:1.75;}
   .bulk-results{grid-template-columns:1fr;}
-  .bulk-item{padding:1.1rem 1rem;}
-  .bulk-item-title{font-size:16px;}
-  .bulk-item-desc{font-size:13px;}
+  .pin-card{padding:1.2rem 1.15rem;}
+  .pin-title-opt-text{font-size:16px;}
+  .pin-card-title-solo{font-size:17px;}
+  .bulk-head-title{font-size:18px;}
   .score-num{font-size:20px;}
   .score-bar-wrap{padding:0.875rem 1rem;}
   .result-block{margin-bottom:1.1rem;padding-bottom:1.1rem;}
@@ -2380,6 +2436,150 @@ function updateCharBar(barId, badgeId, len, max) {
   badge.textContent=len+' / '+max+' chars';
 }
 
+/* ── SELF-CONTAINED PIN CARD (used for bulk generation) ────────────────────
+   Each card owns its own state via closures over `p` so SEO score and the A/B
+   title picker work per-card — unlike the single-pin view which targets shared
+   DOM ids. */
+
+function scoreColorVar(cls){ return cls==='high'?'#5a9e3a':cls==='mid'?'var(--amber-text)':'var(--red)'; }
+
+// Compact SEO ring markup. Locked (free) shows a blurred ring + lock that opens the paywall.
+function miniRingHTML(total, locked){
+  const cls = total>=80?'high':total>=60?'mid':'low';
+  const off = (150.8*(1-total/100)).toFixed(1);
+  if (locked){
+    return '<div class="mini-ring locked" onclick="showPaywall(\'seo\')" title="Unlock your SEO score">'+
+      '<svg viewBox="0 0 60 60"><circle class="mr-bg" cx="30" cy="30" r="24"/><circle class="mr-fill '+cls+'" cx="30" cy="30" r="24" data-off="'+off+'"/></svg>'+
+      '<div class="mini-ring-center"><span class="mini-ring-num">'+total+'</span></div>'+
+      '<div class="mini-ring-lock">🔒</div></div>';
+  }
+  return '<div class="mini-ring" title="SEO score: '+total+'/100">'+
+    '<svg viewBox="0 0 60 60"><circle class="mr-bg" cx="30" cy="30" r="24"/><circle class="mr-fill '+cls+'" cx="30" cy="30" r="24" data-off="'+off+'"/></svg>'+
+    '<div class="mini-ring-center"><span class="mini-ring-num" style="color:'+scoreColorVar(cls)+'">'+total+'</span><span class="mini-ring-lbl">SEO</span></div></div>';
+}
+
+// (Re)render the ring + breakdown for one card. Re-run whenever the title changes.
+function renderCardScore(card, p){
+  const { total, breakdown, tip } = calculateSEOScore(p);
+  const headSlot = card.querySelector('.pin-card-score');
+  const detailSlot = card.querySelector('.pin-card-seo');
+  if (headSlot){
+    headSlot.innerHTML = miniRingHTML(total, !isPro);
+    requestAnimationFrame(()=>{
+      const f = headSlot.querySelector('.mr-fill');
+      if (f){ f.style.strokeDashoffset='150.8'; requestAnimationFrame(()=>{ f.style.strokeDashoffset=f.dataset.off; }); }
+    });
+  }
+  if (!detailSlot) return;
+  if (!isPro){ detailSlot.style.display='none'; return; }
+  detailSlot.style.display='';
+  const weakest = breakdown.reduce((a,b)=>(a.raw/a.max<b.raw/b.max?a:b));
+  detailSlot.innerHTML =
+    '<div class="score-breakdown">'+ breakdown.map(r=>{
+      const pct = Math.round(r.raw/r.max*100);
+      const rc = pct>=80?'high':pct>=60?'mid':'low';
+      return '<div class="score-row"><span class="score-row-label">'+r.label+'</span>'+
+        '<div class="score-row-track"><div class="score-row-fill '+rc+'" style="width:0%" data-w="'+pct+'%"></div></div>'+
+        '<span class="score-row-num" style="color:'+scoreColorVar(rc)+'">'+pct+'</span></div>';
+    }).join('') +'</div>'+
+    '<div class="pin-card-seo-tip"><b>Boost it:</b> '+esc(tip)+'</div>';
+  requestAnimationFrame(()=>{ detailSlot.querySelectorAll('.score-row-fill').forEach(el=>{ el.style.width=el.dataset.w; }); });
+}
+
+// Render the title area. Before the alternative loads, shows a single headline +
+// loading hint. Once `alt` arrives, swaps to a two-option A/B picker.
+function renderCardTitle(card, p, alt){
+  const wrap = card.querySelector('.pin-card-titles');
+  if (!wrap) return;
+  if (alt && !p._opts){ p._opts=[p.title, alt]; p._sel=0; }
+  if (!p._opts){
+    wrap.innerHTML = '<div class="pin-card-title-solo">'+esc(p.title||'')+'</div>'+
+      '<span class="pin-card-alt-loading"><span class="alt-dot"></span>finding a second angle…</span>';
+    return;
+  }
+  wrap.innerHTML = '<div class="pin-card-titles-lbl">Pick your title</div>'+
+    p._opts.map((t,i)=>'<div class="pin-title-opt'+(i===p._sel?' selected':'')+'" data-i="'+i+'">'+
+      '<span class="pin-title-opt-badge">'+(i===0?'A':'B')+'</span>'+
+      '<div class="pin-title-opt-text">'+esc(t)+'</div></div>').join('');
+  wrap.querySelectorAll('.pin-title-opt').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const i = +el.dataset.i;
+      if (i===p._sel) return;
+      p._sel=i; p.title=p._opts[i];
+      wrap.querySelectorAll('.pin-title-opt').forEach(o=>o.classList.toggle('selected', +o.dataset.i===i));
+      renderCardScore(card, p);
+    });
+  });
+}
+
+// Fetch one alternative title (Haiku, no quota cost) and render the A/B picker.
+async function fetchAltTitleForCard(card, p, product, niche){
+  const clearLoading = ()=>{ const l=card.querySelector('.pin-card-alt-loading'); if(l) l.remove(); };
+  if (!getGateEmail() || !product){ clearLoading(); return; }
+  try{
+    const email = getGateEmail();
+    const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      email, type:'niche-tip', model:'claude-haiku-4-5', max_tokens:80,
+      system:'Pinterest title writer. Write ONE alternative title. Rules: under 100 chars, no product name, no brand names, no hyphens, no colons. Must sound like a real person — not marketing copy. Must be completely different in angle from the provided title. Return ONLY valid JSON: {"title":"..."}',
+      messages:[{role:'user',content:'Current title: "'+p.title+'"\nProduct: "'+product+'" | Niche: '+(niche||'general')+'\nWrite a different title with a completely different hook or angle. Return JSON only.'}]
+    })});
+    if (!res.ok) throw new Error('api');
+    const data = await res.json();
+    const raw = (data.content||[]).map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    let altTitle; try{ altTitle=JSON.parse(raw).title; }catch(e){ const m=raw.match(/"title"\s*:\s*"([^"]+)"/); if(m) altTitle=m[1]; }
+    if (altTitle && card.isConnected){ renderCardTitle(card, p, fixTitlePunctuation(altTitle)); }
+    else clearLoading();
+  }catch(e){ clearLoading(); }
+}
+
+// Small copy-button feedback used across the card actions.
+function copyWithFeedback(btn, text, label){
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='✓ Copied'; btn.classList.add('ok');
+    setTimeout(()=>{ btn.textContent=label; btn.classList.remove('ok'); }, 1700);
+  }).catch(()=>{});
+}
+
+// Build a complete, self-contained bulk pin card.
+function createPinCard(p, index){
+  if (p && p.hashtags) p.hashtags = normalizeHashtags(p.hashtags);
+  const card = document.createElement('div');
+  card.className = 'pin-card';
+  card.style.opacity='0';
+  card.style.transform='translateY(14px)';
+  card.style.transition='opacity 0.4s var(--ease), transform 0.4s var(--ease)';
+  const tags = (p.hashtags||[]).map(t=>'<span class="pin-card-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
+  card.innerHTML =
+    '<div class="pin-card-head">'+
+      '<span class="pin-card-num">Pin '+(index+1)+'</span>'+
+      '<div class="pin-card-score"></div>'+
+    '</div>'+
+    '<div class="pin-card-titles"></div>'+
+    '<div class="pin-card-seo" style="display:none;"></div>'+
+    '<div class="pin-card-block">'+
+      '<div class="pin-card-block-lbl">Description</div>'+
+      '<div class="pin-card-desc">'+esc(p.description||'')+'</div>'+
+    '</div>'+
+    (tags ? ('<div class="pin-card-block">'+
+      '<div class="pin-card-block-lbl">Hashtags</div>'+
+      '<div class="pin-card-tags">'+tags+'</div>'+
+    '</div>') : '')+
+    '<div class="pin-card-actions">'+
+      '<button class="pc-btn primary pc-copy-all">Copy all</button>'+
+      '<button class="pc-btn pc-copy-title">Title</button>'+
+      '<button class="pc-btn pc-copy-desc">Description</button>'+
+    '</div>';
+  renderCardTitle(card, p);
+  renderCardScore(card, p);
+  card.querySelector('.pc-copy-all').addEventListener('click', function(){
+    const text = p.title+'\n\n'+p.description+'\n\n'+(p.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ')+'\n\nThis post contains affiliate links. If you purchase through my link, I may earn a small commission at no extra cost to you.';
+    copyWithFeedback(this, text, 'Copy all');
+  });
+  card.querySelector('.pc-copy-title').addEventListener('click', function(){ copyWithFeedback(this, p.title||'', 'Title'); });
+  card.querySelector('.pc-copy-desc').addEventListener('click', function(){ copyWithFeedback(this, p.description||'', 'Description'); });
+  return card;
+}
+
 function renderPin(p) {
   if (p && p.hashtags) p.hashtags = normalizeHashtags(p.hashtags);
   document.getElementById('empty-state').style.display='none';
@@ -2495,52 +2695,28 @@ async function generatePin() {
       document.getElementById('empty-state').style.display = 'none';
       const bulkContainer = document.getElementById('bulk-results');
       bulkContainer.innerHTML = '';
-
-      // Helper to render a single pin card
+      const bulkPins = [];
       let renderedCount = 0;
+
+      // Results header — spans the grid; finalized once every card has landed.
+      const bulkHead = document.createElement('div');
+      bulkHead.className = 'bulk-head';
+      bulkHead.innerHTML = '<div class="bulk-head-left"><span class="bulk-head-title">Generating '+qty+' pins…</span></div>';
+      bulkContainer.appendChild(bulkHead);
+
       function renderBulkPin(p, globalIndex) {
-        if (p && p.hashtags) p.hashtags = normalizeHashtags(p.hashtags);
-        const item = document.createElement('div');
-        item.className = 'bulk-item';
-        item.style.opacity = '0';
-        item.style.transform = 'translateY(12px)';
-        item.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
-        const tags = (p.hashtags||[]).map(t=>'<span class="bulk-item-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
-        const scoreColor = p.seo_score>=80?'#97c459':p.seo_score>=60?'var(--amber-text)':'var(--red)';
-        const scoreHtml = '';
-        const pinTitle = esc(p.title||''); const pinDesc = esc(p.description||'');
-        item.innerHTML = '<div class="bulk-item-num">Pin '+(globalIndex+1)+' of '+qty+'</div>'+scoreHtml+
-          '<div class="bulk-item-title">'+pinTitle+'</div>'+
-          '<div class="copy-row" style="margin:4px 0 10px;"><button class="copy-btn bulk-copy-title" style="font-size:11px;padding:4px 12px;">Copy title</button></div>'+
-          '<div class="bulk-item-desc">'+pinDesc+'</div>'+
-          '<div class="copy-row" style="margin:4px 0 10px;"><button class="copy-btn bulk-copy-desc" style="font-size:11px;padding:4px 12px;">Copy description</button></div>'+
-          '<div class="bulk-item-tags">'+tags+'</div>'+
-          '<div class="copy-row" style="margin:8px 0 4px;gap:8px;display:flex;"><button class="bulk-copy-btn">Copy all</button></div>';
-        const copyBtn = item.querySelector('.bulk-copy-btn');
-        copyBtn.addEventListener('click',()=>{
-          const text = p.title+'\n\n'+p.description+'\n\n'+(p.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ')+'\n\nThis post contains affiliate links. If you purchase through my link, I may earn a small commission at no extra cost to you.';
-          navigator.clipboard.writeText(text).then(()=>{copyBtn.textContent='✓ Copied!';copyBtn.style.background='var(--green-bg)';copyBtn.style.color='var(--green-text)';copyBtn.style.border='1px solid var(--green)';setTimeout(()=>{copyBtn.textContent='Copy all';copyBtn.style.background='';copyBtn.style.color='';copyBtn.style.border='';},1800);});
-        });
-        const copyTitleBtn = item.querySelector('.bulk-copy-title');
-        if(copyTitleBtn) copyTitleBtn.addEventListener('click',()=>{
-          navigator.clipboard.writeText(p.title||'').then(()=>{copyTitleBtn.textContent='✓ Copied!';copyTitleBtn.style.background='var(--green-bg)';copyTitleBtn.style.color='var(--green-text)';copyTitleBtn.style.borderColor='var(--green)';setTimeout(()=>{copyTitleBtn.textContent='Copy title';copyTitleBtn.style.background='';copyTitleBtn.style.color='';copyTitleBtn.style.borderColor='';},1800);});
-        });
-        const copyDescBtn = item.querySelector('.bulk-copy-desc');
-        if(copyDescBtn) copyDescBtn.addEventListener('click',()=>{
-          navigator.clipboard.writeText(p.description||'').then(()=>{copyDescBtn.textContent='✓ Copied!';copyDescBtn.style.background='var(--green-bg)';copyDescBtn.style.color='var(--green-text)';copyDescBtn.style.borderColor='var(--green)';setTimeout(()=>{copyDescBtn.textContent='Copy description';copyDescBtn.style.background='';copyDescBtn.style.color='';copyDescBtn.style.borderColor='';},1800);});
-        });
-        bulkContainer.appendChild(item);
-        // Animate in
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            item.style.opacity = '1';
-            item.style.transform = 'translateY(0)';
-          });
-        });
+        const card = createPinCard(p, globalIndex);
+        bulkContainer.appendChild(card);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }));
         saveToHistory(p, niche, product);
+        fetchAltTitleForCard(card, p, product, niche);
+        bulkPins.push(p);
         renderedCount++;
         // Scroll to results on first pin
-        if (renderedCount === 1) item.scrollIntoView({behavior:'smooth', block:'start'});
+        if (renderedCount === 1) bulkHead.scrollIntoView({behavior:'smooth', block:'start'});
       }
 
       // Batch generation with progressive rendering
@@ -2584,6 +2760,20 @@ async function generatePin() {
         });
         if (i + BATCH < qty) await new Promise(r => setTimeout(r, 300));
       }
+
+      // Finalize the results header now that every card has rendered.
+      const _avg = bulkPins.length ? Math.round(bulkPins.reduce((s,pp)=>s+calculateSEOScore(pp).total,0)/bulkPins.length) : 0;
+      const _avgCls = _avg>=80?'#5a9e3a':_avg>=60?'var(--amber-text)':'var(--red)';
+      const _avgHtml = (isPro && bulkPins.length) ? '<span class="bulk-avg">Avg SEO <b style="color:'+_avgCls+'">'+_avg+'</b></span>' : '';
+      bulkHead.innerHTML =
+        '<div class="bulk-head-left"><span class="bulk-head-title">'+renderedCount+' pin'+(renderedCount===1?'':'s')+' ready</span>'+
+        '<span class="bulk-head-sub">Tap A or B to choose a title · copy what you need</span></div>'+
+        '<div class="bulk-head-right">'+_avgHtml+'<button class="bulk-copyall">Copy all pins</button></div>';
+      const _copyAllPins = bulkHead.querySelector('.bulk-copyall');
+      if (_copyAllPins) _copyAllPins.addEventListener('click', function(){
+        const all = bulkPins.map((pp,i)=>'Pin '+(i+1)+'\n'+pp.title+'\n\n'+pp.description+'\n\n'+(pp.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ')).join('\n\n———\n\n')+'\n\nThis post contains affiliate links. If you purchase through my link, I may earn a small commission at no extra cost to you.';
+        copyWithFeedback(this, all, 'Copy all pins');
+      });
 
       // Niche tip after all done
       const bulkNiche = activeNiche||document.getElementById('niche-custom-input').value.trim();
