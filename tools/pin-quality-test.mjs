@@ -57,7 +57,7 @@ function extractProductionLogic(html) {
 
 const BANNED = ['game-changer','unlock','elevate','transform','revolutionize','empower','discover','boost your','maximize','optimize your','achieve your goals','perfect for','lifestyle','journey','amazing','incredible','must-have','level up','next level','step up','unleash','supercharge'];
 
-// ── Cases: every one of the 30 niches + edge cases. brand[] = tokens that must
+// ── Cases: every one of the 31 niches + edge cases. brand[] = tokens that must
 // NOT appear in copy. firstAudience = the one the model should write to. ─────
 const CASES = [
   { product:'leather car seat covers', niche:'Automotive & Vehicles', audience:'people who drive with kids and pets', pain:'Seats get dirty and worn fast' },
@@ -86,7 +86,8 @@ const CASES = [
   { product:'pop-up beach sun shelter', niche:'Sports & Recreation', audience:'families spending the day at the beach', pain:'No shade at the beach' },
   { product:'fountain pen starter set', niche:'Stationery & Journaling', audience:'people who love handwriting', pain:'Cheap pens skip and smudge' },
   { product:'electrolyte powder packets', niche:'Supplements & Nutrition', audience:'runners training for a marathon', pain:'Cramping on long runs' },
-  { product:'electric standing desk', niche:'Tech & Gadgets', audience:'people working from home all day', pain:'Back pain from sitting too long' },
+  { product:'electric standing desk', niche:'Furniture & Office', audience:'people working from home all day', pain:'Back pain from sitting too long' },
+  { product:'wireless charging stand', niche:'Tech & Gadgets', audience:'people with a cluttered nightstand', pain:'Cables tangled all over the desk' },
   { product:'carry-on travel backpack', niche:'Travel', audience:'people who fly carry-on only', pain:'Always overpacking and paying bag fees' },
   { product:'vinyl record cleaning kit', niche:'Vintage & Thrift', audience:'people collecting vinyl records', pain:'Old records crackle and skip' },
   { product:'eucalyptus table garland', niche:'Wedding & Events', audience:'people planning a wedding on a budget', pain:'Venue decor is way over budget' },
@@ -103,7 +104,7 @@ const CASES = [
 const ANGLE_PRODUCTS = [
   { product:'Adidas gym duffel bag', niche:'Fitness & Gym', audience:'people commuting to early morning workouts', pain:'Gym bag always a disorganized mess', brand:['adidas'] },
   { product:'vitamin C face serum', niche:'Beauty & Skincare', audience:'people with dull tired-looking skin', pain:'Skin looks dull and uneven' },
-  { product:'electric standing desk', niche:'Tech & Gadgets', audience:'people working from home all day', pain:'Back pain from sitting too long' },
+  { product:'electric standing desk', niche:'Furniture & Office', audience:'people working from home all day', pain:'Back pain from sitting too long' },
 ];
 
 // ── Deterministic checks → [{sev, cat, msg}] ────────────────────────────────
