@@ -1598,8 +1598,13 @@ function onProductInput(val) {
     autoDetectTimer = setTimeout(() => {
       autoDetectNicheAI(trimmed);
     }, 300);
+    // Let niche detection drive the audience fill once it settles (so audience
+    // always has the niche). This timer is only a safety net for a hung niche
+    // request — autoDetectNicheAI clears it the moment detection finishes.
+    audienceTimer = setTimeout(() => autoFillAudience(trimmed), 3500);
+  } else {
+    audienceTimer = setTimeout(() => autoFillAudience(trimmed), 900);
   }
-  audienceTimer = setTimeout(() => autoFillAudience(trimmed), 900);
   if (painAutofillOn) {
     clearTimeout(painTimer);
     painTimer = setTimeout(() => autoGeneratePains(trimmed), 500);
@@ -1648,15 +1653,20 @@ async function autoDetectNicheAI(product) {
           activeNiche=detected;
           document.getElementById('niche-auto-tag').style.display='inline-block'; document.getElementById('niche-auto-tag').textContent='Auto-detected'; document.getElementById('niche-auto-tag').style.opacity='1';
           applyNicheData(detected);
-          // Niche is now known — cancel the fallback audience timer and fire immediately
-          if (audienceDetectEnabled) {
-            clearTimeout(audienceTimer);
-            autoFillAudience(product);
-          }
         }
       });
     }
   } catch(e) { console.log('Niche detect error:',e.message, e); }
+  finally {
+    // Niche detection has settled (matched, no match, or errored). Fire the
+    // audience fill now with whatever niche we ended up with, and cancel the
+    // safety-net timer — but only if this is still the latest request, so a
+    // superseded detection can't double-fire the audience.
+    if (mySeq === nicheDetectSeq && audienceDetectEnabled) {
+      clearTimeout(audienceTimer);
+      autoFillAudience(product);
+    }
+  }
 }
 
 // Semantic aliases the model may emit instead of an exact niche name. Each value
