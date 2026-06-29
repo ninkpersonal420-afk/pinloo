@@ -2334,39 +2334,31 @@ function calculateSEOScore(pin) {
     { label: 'Hook',        raw: hookScore,  max: 20 },
   ];
 
-  const weakest = breakdown.reduce((a, b) => (a.raw / a.max < b.raw / b.max ? a : b));
-
-  // Diagnostic tip: describe what THIS pin actually got wrong (exact lengths,
-  // clichés, missing keywords) instead of reciting a generic rule.
+  // Tip: check user-fixable content issues first (clichés, keyword echo, missing
+  // benefit phrase, hook choice), then fall back to Pinterest strategy tips when
+  // the generated copy is already structurally sound. Never critique length/counts
+  // — those are generation-time concerns, not user-edit concerns.
+  const cliche = cliches.find(c => tl.includes(c));
+  const hasProbSol = /\b(because|so you|helps you|which means|so that|perfect for|ideal for|great for)\b/i.test(desc);
   let tip;
-  if (weakest.label === 'Title') {
-    const cliche = cliches.find(c => tl.includes(c));
-    if (cliche)                  tip = 'Your title leans on "'+cliche+'" — swap it for plain, specific wording about what the product does.';
-    else if (tLen > 90)          tip = 'Your title is '+tLen+' characters — Pinterest cuts off long titles in the feed, so trim it under 75.';
-    else if (tLen > 75)          tip = 'Your title is '+tLen+' characters — shave it under 75 so it doesn\'t get truncated mid-scroll.';
-    else if (tLen < 20)          tip = 'Your title is only '+tLen+' characters — too short to rank; add a searchable keyword to reach 45–75.';
-    else if (tLen < 45)          tip = 'Your title is '+tLen+' characters — add a keyword or specific detail to hit the 45–75 sweet spot.';
-    else if (!startsWithNumber)  tip = 'Good length — opening with a specific number (e.g. "3 reasons…") would push the title score higher.';
-    else                         tip = 'Lead with a searchable keyword in the first few words so it surfaces in Pinterest search.';
-  } else if (weakest.label === 'Description') {
-    if (dLen > 380)              tip = 'Your description is '+dLen+' characters — tighten it under 380 so the key message stays up front.';
-    else if (dLen < 80)          tip = 'Your description is only '+dLen+' characters — expand to 150–380 and echo a keyword from your title.';
-    else if (dLen < 150)         tip = 'Your description is '+dLen+' characters — add one more sentence to reach the 150–380 range.';
-    else if (overlap === 0)      tip = 'None of your title keywords appear in the description — repeat one or two so Pinterest links them.';
-    else if (!/\b(because|so you|helps you|which means|so that|perfect for|ideal for|great for)\b/i.test(desc))
-                                 tip = 'Add a clear problem→solution phrase (e.g. "so you can…") to strengthen the description.';
-    else                         tip = 'Your description is already strong — echoing one more title keyword is the only thing left to lift it.';
-  } else if (weakest.label === 'Hashtags') {
-    if (tc !== 12)               tip = 'You have '+tc+' hashtag'+(tc===1?'':'s')+' — use exactly 12 for the widest reach.';
-    else if (avgTagLen < 8)      tip = 'Your hashtags are mostly short and broad — add a few longer niche tags like #smallkitchenideas.';
-    else if (avgTagLen > 16)     tip = 'Your hashtags run long — mix in a few short broad tags like #home or #fitness.';
-    else                         tip = 'Solid hashtag mix — keep blending broad-reach tags with specific niche ones.';
-  } else { // Hook
-    if (cliches.some(c => tl.includes(c)))       tip = 'This hook leans on a cliché — try the B option, or open with a number or a direct question instead.';
-    else if (isQuestion && !title.endsWith('?')) tip = 'This title reads as a question but is missing its "?" — add one to land the hook.';
-    else if (!isQuestion && !hasNumber && !firstPerson && !curiosityGap && !comparison)
-                                                 tip = 'Decent hook — leading with a number or a question (try the B option) would make it punch harder.';
-    else                                         tip = 'Strong hook already — opening with a specific number is about the only thing that scores higher.';
+  if (cliche) {
+    tip = 'Your title uses "'+cliche+'" — replace it with a specific detail: the product\'s material, result, or who it\'s for.';
+  } else if (overlap === 0 && keyWords.length > 0) {
+    tip = 'Mirror "'+keyWords[0].toLowerCase()+'" from your title in the opening of your description — Pinterest rewards keyword consistency between the two.';
+  } else if (!hasProbSol && dLen >= 80) {
+    tip = 'Slip "so you can [outcome]" into your description — naming the end benefit directly increases click-through from search results.';
+  } else if (isQuestion && !title.endsWith('?')) {
+    tip = 'This title reads like a question — add a "?" at the end to complete the hook.';
+  } else if (!isQuestion && !hasNumber && !firstPerson && !curiosityGap && !comparison) {
+    tip = 'Try the B title — a curiosity hook or question opener typically gets more saves; compare both options with the picker above.';
+  } else {
+    const stratTips = [
+      'Add a specific detail only you know — a price range, material, or size — to attract buyers who are already comparison shopping.',
+      'Save to a niche board with a keyword-rich name (e.g., "Car Interior Hacks") — board names feed directly into Pinterest\'s search index.',
+      'Pin between 8–11 PM EST on Thursday, Friday, or Saturday — those windows see the highest Pinterest engagement across most niches.',
+      'Pair this with a vertical 2:3 image (1000×1500 px) — tall pins take up more feed space and get significantly more saves than square crops.',
+    ];
+    tip = stratTips[Math.floor((tLen + dLen) / 20) % stratTips.length];
   }
 
   return { total, breakdown, tip };
@@ -2510,7 +2502,6 @@ function renderCardScore(card, p){
   if (!detailSlot) return;
   if (!isPro){ detailSlot.style.display='none'; return; }
   detailSlot.style.display='';
-  const weakest = breakdown.reduce((a,b)=>(a.raw/a.max<b.raw/b.max?a:b));
   detailSlot.innerHTML =
     '<div class="score-breakdown">'+ breakdown.map(r=>{
       const pct = Math.round(r.raw/r.max*100);
