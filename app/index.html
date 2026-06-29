@@ -1335,6 +1335,9 @@ async function verifyStripeSession(sessionId) {
 let activeNiche = '', activePlan = 'mo';
 
 let pinQty = 1, lastPinData = null;
+// Bumped on every single-pin render so a late async alt-title fetch can tell
+// whether the pin it was started for is still the one on screen.
+let pinRenderSeq = 0;
 
 // Show/hide bulk controls based on Pro status
 function updateQtyControls() {
@@ -2640,8 +2643,10 @@ function renderPin(p) {
   // Show upgrade banner for free users
   const upsellBanner = document.getElementById('pro-upsell-banner');
   if (upsellBanner) upsellBanner.style.display = isPro ? 'none' : 'block';
-  // Background: fetch alt title for A/B picker
-  fetchAltTitle(p.title, product, niche);
+  // Background: fetch alt title for A/B picker. Tag it with the current render
+  // sequence so a slow response for an earlier pin can't overwrite a newer one.
+  const seq = ++pinRenderSeq;
+  fetchAltTitle(p.title, product, niche, seq);
 }
 
 async function fetchNicheTip(product, niche, el) {
@@ -2851,8 +2856,11 @@ async function regenField(field) {
 }
 
 function copyAll() {
-  const title=document.getElementById('result-title').textContent.replace('|','').trim();
-  const desc=document.getElementById('result-desc').textContent;
+  // Prefer the canonical pin data — the title element may still be mid
+  // typewriter animation, which would copy a truncated string from the DOM.
+  const p = lastPinData && lastPinData.p;
+  const title=(p&&p.title)||document.getElementById('result-title').textContent.replace(/\|/g,'').trim();
+  const desc=(p&&p.description)||document.getElementById('result-desc').textContent;
   const tags=Array.from(document.querySelectorAll('#result-tags .tag')).map(t=>{const v=(t.dataset.tag||t.textContent.replace('×','').trim());return v.startsWith('#')?v:'#'+v;}).join(' ');
   const disclaimer=document.getElementById('result-disclaimer').textContent;
   navigator.clipboard.writeText(title+'\n\n'+desc+'\n\n'+tags+'\n\n'+disclaimer).then(()=>{const btn=document.getElementById('copy-all-btn');btn.textContent='✓ Copied!';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy all';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);});
@@ -3074,7 +3082,7 @@ function renderSavedProducts() {
   container.innerHTML = html;
 }
 
-async function fetchAltTitle(currentTitle, product, niche) {
+async function fetchAltTitle(currentTitle, product, niche, seq) {
   if (!getGateEmail() || !product) return;
   const block = document.getElementById('ab-block');
   if (!block) return;
@@ -3090,6 +3098,8 @@ async function fetchAltTitle(currentTitle, product, niche) {
     const raw = (data.content||[]).map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
     let altTitle;
     try { altTitle = JSON.parse(raw).title; } catch(e) { const m = raw.match(/"title"\s*:\s*"([^"]+)"/); if (m) altTitle = m[1]; }
+    // Drop the result if a newer pin has rendered since this fetch started.
+    if (seq !== undefined && seq !== pinRenderSeq) return;
     if (altTitle && document.getElementById('result-panel') && document.getElementById('result-panel').classList.contains('show')) {
       renderAB(currentTitle, fixTitlePunctuation(altTitle));
     }
@@ -3179,14 +3189,36 @@ function filterHistory(query) {
   if (!filtered.length) { container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text4);font-size:14px;">No pins match "' + esc(query) + '"</div>'; return; }
   const list = document.createElement('div');
   list.className = 'history-list';
-  filtered.forEach((pin, i) => {
+  filtered.forEach((pin) => {
+    // Key actions to the pin's real position in pinHistory, not the filtered
+    // index, so Copy/Delete act on the right pin while a search is active.
+    const realIdx = pinHistory.indexOf(pin);
+    const tags = (pin.hashtags||[]).slice(0,8).map(t=>'<span class="history-item-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + esc(pin.title) + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div>' + (pin.niche ? '<span class="history-item-niche">' + esc(pin.niche) + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + esc(pin.product) + '</span>' : '') + '</div><div class="history-item-desc">' + esc(pin.description) + '</div>';
+    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + esc(pin.title) + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div style="margin-bottom:6px;">' + (pin.niche ? '<span class="history-item-niche">' + esc(pin.niche) + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + esc(pin.product) + '</span>' : '') + '</div><div class="history-item-desc">' + esc(pin.description) + '</div>' + (tags?'<div class="history-item-tags">'+tags+'</div>':'') + '<div class="history-actions"><button class="history-copy-btn" data-idx="'+realIdx+'">Copy all</button><button class="history-delete-btn" data-idx="'+realIdx+'">Delete</button></div>';
     list.appendChild(item);
   });
   container.innerHTML = '';
   container.appendChild(list);
+  container.querySelectorAll('.history-copy-btn').forEach(btn=>btn.addEventListener('click',()=>{const pin=pinHistory[parseInt(btn.dataset.idx)];const text=pin.title+'\n\n'+pin.description+'\n\n'+(pin.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ')+'\n\nThis post contains affiliate links. If you purchase through my link, I may earn a small commission at no extra cost to you.';navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy all';},1800);});}));
+  container.querySelectorAll('.history-delete-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    const idx=parseInt(btn.dataset.idx);
+    const deleted=pinHistory.splice(idx,1)[0];
+    localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+    updateHistoryBadge();
+    setTimeout(updateTabLabels,200);
+    setTimeout(renderPricingTab,200);
+    filterHistory(query);
+    showToast('Pin deleted.','info',()=>{
+      pinHistory.splice(idx,0,deleted);
+      localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+      updateHistoryBadge();
+      setTimeout(updateTabLabels,200);
+      setTimeout(renderPricingTab,200);
+      filterHistory(query);
+    });
+  }));
 }
 
 function clearHistory() {
