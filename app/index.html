@@ -2325,14 +2325,50 @@ function calculateSEOScore(pin) {
   ];
 
   const weakest = breakdown.reduce((a, b) => (a.raw / a.max < b.raw / b.max ? a : b));
-  const tips = {
-    'Title':       'Best titles are 45–75 characters and open with a searchable keyword or a specific number.',
-    'Description': 'Aim for 150–380 characters. Echo a keyword from your title and include a problem→solution phrase.',
-    'Hashtags':    'Use exactly 12 hashtags — a mix of short broad tags and longer niche-specific ones.',
-    'Hook':        'The strongest hooks open with a number, a genuine question, or a direct "you/stop/never" phrase.',
-  };
+  const weakRatio = weakest.raw / weakest.max;
+  const foundCliche = cliches.find(c => tl.includes(c));
 
-  return { total, breakdown, tip: tips[weakest.label] };
+  // Build a tip that targets THIS pin's specific weak spot and reads as a concrete
+  // edit to make on a pin that already exists — not a generic "best practice" rule.
+  // The real numbers (char/tag counts, the actual cliché) also keep the tip distinct
+  // from card to card instead of repeating one line across the whole batch.
+  // Stable per-pin seed so the few one-of-several phrasings stay fixed for a given
+  // pin (no flicker on re-render) but differ from pin to pin across a batch.
+  const tipSeed = (title + desc).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  let tip, tipLabel = 'Boost it';
+  if (total >= 88 || weakRatio >= 0.85) {
+    tipLabel = 'Looking strong';
+    tip = [
+      "every section scored well — this one's ready to pin as-is.",
+      'nicely balanced across title, copy, and tags — publish with confidence.',
+      'no weak spots worth fixing here — good to go.',
+    ][tipSeed % 3];
+  } else if (weakest.label === 'Title') {
+    if      (foundCliche) tip = 'Drop "' + foundCliche + '" from the title — Pinterest skims past hype words. Name what the product actually does instead.';
+    else if (tLen < 45)   tip = 'Your title is just ' + tLen + ' characters. Add a concrete detail or keyword to reach the 45–75 range search favors.';
+    else if (tLen > 75)   tip = 'At ' + tLen + ' characters the title risks getting clipped in feeds — trim it under 75 but keep the keyword.';
+    else                  tip = 'Move the word a buyer would actually type to the front of the title so it surfaces in more searches.';
+  } else if (weakest.label === 'Description') {
+    if      (dLen < 150)  tip = 'The description is light at ' + dLen + " characters. Add a line on who it's for or the problem it solves to clear ~150.";
+    else if (dLen > 380)  tip = 'At ' + dLen + ' characters the description runs long — tighten it under 380 so the pitch lands before the "more" cutoff.';
+    else if (overlap === 0) tip = "Repeat a keyword from your title in the description — they don't share one yet, so search can't connect them.";
+    else                  tip = 'Add a "so you can…" or "perfect for…" line so the description gives a reason to click, not just facts.';
+  } else if (weakest.label === 'Hashtags') {
+    if      (tc < 12)     tip = 'You have ' + tc + ' hashtag' + (tc === 1 ? '' : 's') + ' — add ' + (12 - tc) + ' more (12 is the sweet spot), mixing broad tags with longer niche ones.';
+    else if (tc > 12)     tip = 'Cut down to 12 hashtags — past that, the extras mostly dilute your reach.';
+    else                  tip = 'Swap a couple of the broad hashtags for longer, more specific phrases real buyers search.';
+  } else { // Hook
+    if      (foundCliche)                       tip = 'The opening leans on "' + foundCliche + '." Swap that hype for a concrete number or outcome to earn the first tap.';
+    else if (isQuestion && !title.endsWith('?')) tip = 'This reads like a question but never lands the "?" — add it so it hooks like one.';
+    else if (!hasNumber && !isQuestion && !strongVerb) tip = [
+      'The title opens a bit flat. Lead with a number, a real question, or a "you/stop/never" — or try the B title for a sharper angle.',
+      'Strong title, soft entrance — a number or a pointed question up front would make it stop the scroll. The B option is worth a look.',
+      'The hook is the weak link here. Try the B title, or rebuild the opening around a specific number or a "why does…" question.',
+    ][tipSeed % 3];
+    else                                        tip = "Sharpen the first three or four words — that's about all anyone reads before they decide to tap.";
+  }
+
+  return { total, breakdown, tip, tipLabel };
 }
 
 function renderScore(pin) {
@@ -2460,7 +2496,7 @@ function miniRingHTML(total, locked){
 
 // (Re)render the ring + breakdown for one card. Re-run whenever the title changes.
 function renderCardScore(card, p){
-  const { total, breakdown, tip } = calculateSEOScore(p);
+  const { total, breakdown, tip, tipLabel } = calculateSEOScore(p);
   const headSlot = card.querySelector('.pin-card-score');
   const detailSlot = card.querySelector('.pin-card-seo');
   if (headSlot){
@@ -2482,7 +2518,7 @@ function renderCardScore(card, p){
         '<div class="score-row-track"><div class="score-row-fill '+rc+'" style="width:0%" data-w="'+pct+'%"></div></div>'+
         '<span class="score-row-num" style="color:'+scoreColorVar(rc)+'">'+pct+'</span></div>';
     }).join('') +'</div>'+
-    '<div class="pin-card-seo-tip"><b>Boost it:</b> '+esc(tip)+'</div>';
+    '<div class="pin-card-seo-tip"><b>'+esc(tipLabel)+':</b> '+esc(tip)+'</div>';
   requestAnimationFrame(()=>{ detailSlot.querySelectorAll('.score-row-fill').forEach(el=>{ el.style.width=el.dataset.w; }); });
 }
 
