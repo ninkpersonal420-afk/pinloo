@@ -1338,6 +1338,10 @@ let pinQty = 1, lastPinData = null;
 // Bumped on every single-pin render so a late async alt-title fetch can tell
 // whether the pin it was started for is still the one on screen.
 let pinRenderSeq = 0;
+// Rotates the hook angle for single-pin generation so pressing Generate again
+// (same product/niche) doesn't keep returning the same title. Seeded randomly
+// so the first pin isn't always angle 0.
+let singleAngleSeq = Math.floor(Math.random() * 10);
 
 // Show/hide bulk controls based on Pro status
 function updateQtyControls() {
@@ -2752,9 +2756,17 @@ async function generatePin() {
       const _loadEl=document.getElementById('loading-text');
       _loadEl.textContent=_loadMsgs[0];
       _loadingCycle=setInterval(()=>{ _loadMi=(_loadMi+1)%_loadMsgs.length; _loadEl.textContent=_loadMsgs[_loadMi]; },1600);
-      let p=await callClaude(buildSys(0),buildMsg(product,niche,audience,benefit,''));
+      // Rotate the hook angle each press so repeat generations vary. If this is
+      // a repeat with the same product, tell the model to steer clear of the
+      // pin it just produced so the title/description actually change.
+      const angleIdx = (singleAngleSeq++) % PIN_ANGLES.length;
+      let avoidExtra = '';
+      if (lastPinData && lastPinData.product === product && lastPinData.p) {
+        avoidExtra = 'Write a fresh pin with a DIFFERENT angle and wording than this previous one — do NOT reuse its phrasing. Previous title: "'+(lastPinData.p.title||'')+'". Previous description: "'+(lastPinData.p.description||'')+'".';
+      }
+      let p=await callClaude(buildSys(angleIdx),buildMsg(product,niche,audience,benefit,avoidExtra));
       if (!validatePin(p)) {
-        p = await callClaude(buildSys(3), buildMsg(product,niche,audience,benefit,'Make the title feel like something a real person would genuinely say.'));
+        p = await callClaude(buildSys((angleIdx+3)%PIN_ANGLES.length), buildMsg(product,niche,audience,benefit,'Make the title feel like something a real person would genuinely say.'+(avoidExtra?(' '+avoidExtra):'')));
       }
       lastPinData={p,product,niche,audience,benefit};
       renderPin(p);
