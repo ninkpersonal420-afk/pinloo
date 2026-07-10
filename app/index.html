@@ -2671,14 +2671,25 @@ function renderPin(p) {
 async function fetchNicheTip(product, niche, el) {
   try {
     const email = getGateEmail()||'anonymous';
-    const sys = `Pinterest affiliate tip writer. Write ONE specific, actionable tip for the exact product given.
-Rules:
+    const sys = `Pinterest affiliate STRATEGY tip writer. Write ONE specific, actionable tip for the exact product given.
+
+The app has ALREADY written this pin's title and description for the user. Your tip is about OFF-PIN strategy ONLY — never about the wording of the pin itself.
+
+Pick whichever ONE is most useful for this product:
+- Board naming/organization (how to group and name boards the buyer actually searches)
+- Best posting day/time or seasonal timing for this product
+- Photo/image style that converts for this product (e.g. close-up vs flat-lay, before/after, in-use shots)
+- Pinning cadence or fresh-pin strategy
+- Where to send the affiliate link (specific product page vs homepage) and destination/CTA tactics
+- Board keyword or audience targeting
+
+HARD RULES:
+- NEVER tell the user to change, rewrite, reword, or "title" the pin's title, headline, or description, and never suggest example titles or descriptions. The copy is already done — advising a title/description change is wrong and off-limits.
 - Must reference the specific product type — no generic niche advice
-- Pick whichever is most useful for this product: best posting time, board naming, title angle, or conversion tactic
 - Max 2 sentences. Direct and specific. No bullet points.
 - No opener phrases ("Great tip:", "For this product:", "Here's a tip:")
 - Do not open with the product name
-- NEVER give generic Pinterest advice like "use vertical images", "post consistently", "engage with your audience", or "use trending hashtags" — those apply to everything and help no one
+- NEVER give filler advice that applies to everything ("post consistently", "engage with your audience", "use trending hashtags", "use vertical images")
 - NEVER base the tip on the brand's country of origin or cultural background — focus on the product's function and buyer need`;
     const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'niche-tip',model:'claude-haiku-4-5',max_tokens:120,system:sys,messages:[{role:'user',content:'Product: "'+product+'" | Niche: "'+niche+'"'}]})});
     if (!res.ok) throw new Error('api error');
