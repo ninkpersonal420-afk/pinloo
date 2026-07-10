@@ -2098,10 +2098,20 @@ function updateHistoryBadge() {
   document.getElementById('history-count-text').textContent=c+' saved pin'+(c!==1?'s':'');
 }
 
+const HISTORY_CAP = 250; // keep plenty of history so the count keeps climbing
 function saveToHistory(pin, niche, product) {
   pinHistory.unshift({...pin,niche,product,date:new Date().toISOString(),id:Date.now()});
-  if (pinHistory.length>50) pinHistory=pinHistory.slice(0,50);
-  localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+  if (pinHistory.length>HISTORY_CAP) pinHistory=pinHistory.slice(0,HISTORY_CAP);
+  // Persist; if localStorage is full, drop the oldest pins until it fits rather
+  // than throwing (which would surface as a false "something went wrong").
+  try {
+    localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+  } catch(e) {
+    while (pinHistory.length > 10) {
+      pinHistory = pinHistory.slice(0, Math.floor(pinHistory.length * 0.75));
+      try { localStorage.setItem('pinai_history',JSON.stringify(pinHistory)); break; } catch(_) {}
+    }
+  }
   updateHistoryBadge();
 setTimeout(updateTabLabels, 200);
 setTimeout(renderPricingTab, 200);
