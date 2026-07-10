@@ -36,11 +36,12 @@ export async function onRequestPost(context) {
     const emailKey = email.toLowerCase().trim();
 
     // Admin allowlist — bypasses the free quota for owner/testing accounts.
-    // Set ADMIN_EMAILS in Cloudflare (comma-separated). admin@pinlo.internal
-    // is always honored to match the documented convention.
+    // Set ADMIN_EMAILS in Cloudflare (comma-separated). There is deliberately
+    // NO hardcoded default: a fixed backdoor address would let anyone who reads
+    // the source grant themselves unlimited generation on the owner's API bill.
     const ADMIN_EMAILS = (context.env.ADMIN_EMAILS || '')
       .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
-    const isAdmin = emailKey === 'admin@pinlo.internal' || ADMIN_EMAILS.includes(emailKey);
+    const isAdmin = ADMIN_EMAILS.includes(emailKey);
 
     // Autofill and niche-tip: verify email is known, no quota deduction, soft daily cap
     if (type === 'autofill' || type === 'niche-tip') {
@@ -117,6 +118,26 @@ export async function onRequestPost(context) {
         // D1 unavailable — degrade to KV cache rather than blocking the request
         isPro = user.isPro || false;
       }
+    }
+
+    // Abuse guard: the endpoint trusts a self-asserted email, so a script could
+    // rotate throwaway addresses to get 10 free Sonnet pins each and drain the
+    // API budget. Cap non-Pro generations per originating IP per day. Pro and
+    // admin traffic is exempt (a power user legitimately runs many bulk jobs).
+    if (!isPro && !isAdmin) {
+      try {
+        const ip = context.request.headers.get('CF-Connecting-IP') || 'unknown';
+        const today = new Date().toISOString().slice(0, 10);
+        const ipKey = `genip:${ip}:${today}`;
+        const ipCount = parseInt(await KV.get(ipKey) || '0');
+        if (ipCount >= 40) {
+          return new Response(JSON.stringify({
+            error: 'ip_rate_limited',
+            message: 'Daily free generation limit reached for this network. Please try again tomorrow or upgrade to Pro.'
+          }), { status: 429, headers: corsHeaders });
+        }
+        await KV.put(ipKey, String(ipCount + 1), { expirationTtl: 86400 });
+      } catch (_) { /* non-critical: never block a real request on the guard */ }
     }
 
     if (!isPro && user.usage >= FREE_LIMIT) {

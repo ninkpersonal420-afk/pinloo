@@ -90,7 +90,8 @@ updated_at INTEGER
 - Request types `autofill` and `niche-tip` do **not** count toward the monthly quota
 - Free users: 10 generations/month, reset at calendar month boundary (`YYYY-MM`)
 - Pro users: unlimited (status checked via D1 through `check-pro`)
-- `admin@pinlo.internal` and any address in `ADMIN_EMAILS` bypass the free pin limit and quota tracking in `claude.js`
+- Any address listed in `ADMIN_EMAILS` bypasses the free pin limit and quota tracking in `claude.js`. There is no hardcoded admin address — the env var is the only way to grant this.
+- Non-Pro generations are additionally capped per originating IP per day (`genip:` KV keys) to prevent throwaway-email abuse from draining the API budget
 
 ### Stripe Integration
 

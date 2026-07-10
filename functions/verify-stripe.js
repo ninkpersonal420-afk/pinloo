@@ -94,7 +94,8 @@ export async function onRequestPost(context) {
     }), { status: 200, headers: corsHeaders });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message, valid: false }), { status: 500, headers: corsHeaders });
+    console.error('verify-stripe error:', err);
+    return new Response(JSON.stringify({ error: 'Something went wrong. Please try again.', valid: false }), { status: 500, headers: corsHeaders });
   }
 }
 
