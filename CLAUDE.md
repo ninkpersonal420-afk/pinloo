@@ -114,6 +114,10 @@ ANTHROPIC_API_KEY
 RESEND_API_KEY
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
+SESSION_SECRET        # REQUIRED for real auth: a long random string used to HMAC-sign session tokens.
+                      #   verify-otp mints a token after OTP; claude.js requires it on the paid generation path.
+                      #   If unset, claude.js falls back to legacy email-trust (IP-capped) so the app still runs —
+                      #   but the paid endpoint is NOT authenticated until this is set. Set it before launch.
 ADMIN_EMAILS          # optional, comma-separated; these emails bypass the free pin limit server-side (for owner/testing)
 ```
 
@@ -123,6 +127,8 @@ Plus Cloudflare bindings (configured in Cloudflare dashboard, not `.env`):
 
 ## Key Conventions
 
+- Paid generation (`claude.js` with no `type`) requires a valid HMAC session token when `SESSION_SECRET` is set; the token's email — not the client-claimed one — is authoritative. Helper requests (`type: 'autofill' | 'niche-tip'`) are not token-gated so pre-sign-in autofill works, but are capped per-email and per-IP.
+- Session tokens are minted in `verify-otp.js`, signed/verified via `functions/_session.js` (files prefixed `_` are not routed by Pages). Client stores the token in `localStorage.pinlo_session`; a `401 invalid_session` from `/claude` re-triggers the email gate.
 - All emails are normalized with `.toLowerCase().trim()` before use as KV keys or D1 lookups
 - All Worker functions respond with `Content-Type: application/json` and explicitly handle `OPTIONS` preflight for CORS
 - KV operations in non-critical paths (e.g., incrementing global counter) fail silently to avoid blocking responses

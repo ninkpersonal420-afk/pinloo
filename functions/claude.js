@@ -1,3 +1,5 @@
+import { verifySession } from './_session.js';
+
 export async function onRequestPost(context) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -11,6 +13,7 @@ export async function onRequestPost(context) {
     const ANTHROPIC_API_KEY = context.env.ANTHROPIC_API_KEY;
     const KV = context.env.PINLO_USERS;
     const DB = context.env.DB;
+    const SESSION_SECRET = context.env.SESSION_SECRET;
 
     if (!ANTHROPIC_API_KEY) {
       return new Response(JSON.stringify({ error: 'API key not configured' }), { status: 500, headers: corsHeaders });
@@ -19,7 +22,7 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
     }
 
-    const { email, type, system, messages } = body;
+    const { email, type, system, messages, token } = body;
 
     // Model and token limits are set server-side — never read from client.
     // Cheap, simple helpers (autofill, niche-tip) stay on Haiku; the actual pin
@@ -33,7 +36,26 @@ export async function onRequestPost(context) {
     if (!email || typeof email !== 'string' || !email.includes('@')) {
       return new Response(JSON.stringify({ error: 'Valid email required' }), { status: 400, headers: corsHeaders });
     }
-    const emailKey = email.toLowerCase().trim();
+    let emailKey = email.toLowerCase().trim();
+
+    // Session auth for the PAID generation path. When SESSION_SECRET is set, a
+    // valid token from verify-otp is required and its email — not the client's
+    // claimed one — is the authoritative identity, so nobody can spend on
+    // someone else's quota or forge admin/Pro by typing an address. Helper
+    // requests (autofill/niche-tip) keep their own lighter controls below so
+    // pre-sign-in autofill still works. If SESSION_SECRET is unset, fall back to
+    // the legacy email-trust behaviour (still IP-capped) so the app never hard
+    // breaks before the secret is configured.
+    if (!isHelper && SESSION_SECRET) {
+      const session = token ? await verifySession(token, SESSION_SECRET) : null;
+      if (!session) {
+        return new Response(JSON.stringify({
+          error: 'invalid_session',
+          message: 'Your session has expired. Please sign in again.'
+        }), { status: 401, headers: corsHeaders });
+      }
+      emailKey = session.email;
+    }
 
     // Admin allowlist — bypasses the free quota for owner/testing accounts.
     // Set ADMIN_EMAILS in Cloudflare (comma-separated). There is deliberately
@@ -53,9 +75,24 @@ export async function onRequestPost(context) {
         }
       }
 
+      const today = new Date().toISOString().slice(0, 10);
+
+      // Per-IP daily cap on helpers. The email cap alone doesn't bound the
+      // anonymous 'autofill@pinlo.internal' path or stop someone forcing cheap
+      // Haiku calls by tagging generation content as type:'autofill', so also
+      // limit per originating network.
+      try {
+        const ip = context.request.headers.get('CF-Connecting-IP') || 'unknown';
+        const ipKey = `hlpip:${ip}:${today}`;
+        const ipCur = parseInt(await KV.get(ipKey) || '0');
+        if (ipCur >= 300) {
+          return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), { status: 429, headers: corsHeaders });
+        }
+        await KV.put(ipKey, String(ipCur + 1), { expirationTtl: 86400 });
+      } catch (_) { /* non-critical */ }
+
       // Soft cap: 200 autofill/niche-tip requests per email per day
       try {
-        const today = new Date().toISOString().slice(0, 10);
         const ratKey = `ar:${emailKey}:${today}`;
         const cur = parseInt(await KV.get(ratKey) || '0');
         if (cur >= 200) {

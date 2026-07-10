@@ -1,3 +1,5 @@
+import { signSession } from './_session.js';
+
 export async function onRequestPost(context) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -9,6 +11,7 @@ export async function onRequestPost(context) {
   try {
     const { email, code } = await context.request.json();
     const KV = context.env.PINLO_USERS;
+    const SESSION_SECRET = context.env.SESSION_SECRET;
 
     if (!email || !code) {
       return new Response(JSON.stringify({ error: 'Email and code required' }), { status: 400, headers: corsHeaders });
@@ -78,12 +81,22 @@ export async function onRequestPost(context) {
       await KV.put(emailKey, JSON.stringify(user));
     }
 
+    // Mint a signed session token proving this email verified an OTP. claude.js
+    // requires it on the paid path so identity can't be spoofed. If the owner
+    // hasn't set SESSION_SECRET yet, no token is issued and claude.js falls back
+    // to its legacy behaviour (still IP-capped) — so the app keeps working.
+    let token = null;
+    if (SESSION_SECRET) {
+      try { token = await signSession(emailKey, SESSION_SECRET); } catch (_) { token = null; }
+    }
+
     return new Response(JSON.stringify({
       success: true,
       email: user.email,
       isPro: user.isPro || false,
       usage: user.usage || 0,
-      plan: user.plan || null
+      plan: user.plan || null,
+      token
     }), { headers: corsHeaders });
 
   } catch (err) {

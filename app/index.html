@@ -2139,7 +2139,7 @@ function validatePin(p) {
   const title = p.title || '';
   const desc  = p.description || '';
   const tags  = p.hashtags || [];
-  if (title.length < 15 || title.length > 105) return false;
+  if (title.length < 15 || title.length > 100) return false;
   if (desc.length < 50) return false;
   if (tags.length < 8) return false;
   // Catch unnatural passive-discovery phrasings
@@ -2209,6 +2209,8 @@ async function callClaude(sys, msg, type) {
   const email = getGateEmail() || '';
   const payload = {email,system:sys,messages:[{role:'user',content:msg}]};
   if (type) payload.type = type;
+  const token = localStorage.getItem('pinlo_session');
+  if (token) payload.token = token;
   const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   if (res.status === 402) {
     const errData = await res.json();
@@ -2218,6 +2220,13 @@ async function callClaude(sys, msg, type) {
       showPaywall('limit');
       throw new Error('free_limit_reached');
     }
+  }
+  if (res.status === 401) {
+    // Session missing/expired — force a re-verify, then bubble up so callers stop.
+    localStorage.removeItem('pinlo_session');
+    localStorage.removeItem('pinlo_verified');
+    showEmailGate();
+    throw new Error('invalid_session');
   }
   if (!res.ok) {
     const errData = await res.json();
@@ -2686,7 +2695,18 @@ async function generatePin() {
   const audience=getAudienceValue();
   const benefit=getPainValue();
   if (!product) { document.getElementById('product-input').focus(); return; }
-  const qty=pinQty;
+  // Free users have a hard monthly quota. If they request more pins than they
+  // have left, clamp to what remains and tell them — otherwise the server
+  // silently rejects the overflow pins mid-batch and they just vanish.
+  let qty=pinQty;
+  if (!isPro) {
+    const remaining = Math.max(0, FREE_LIMIT - pinsUsed);
+    if (remaining === 0) { showPaywall('limit'); return; }
+    if (qty > remaining) {
+      qty = remaining;
+      showToast('You have '+remaining+' free pin'+(remaining===1?'':'s')+' left this month — generating '+remaining+'. Upgrade for unlimited.', 'info');
+    }
+  }
   const genBtn=document.getElementById('gen-btn');
   genBtn.disabled=true;
   document.getElementById('gen-btn-label').textContent='Generating...';
@@ -2827,10 +2847,16 @@ async function generatePin() {
       }
       pinsUsed += renderedCount;
       localStorage.setItem('pinlo_pins_used', pinsUsed);
+      // If some pins failed to come back (network/API hiccups), say so instead
+      // of quietly showing fewer cards than the user asked for.
+      if (renderedCount < qty) {
+        const missed = qty - renderedCount;
+        showToast(missed+' pin'+(missed===1?'':'s')+" couldn't be generated — you can generate again to top up.", 'info');
+      }
     }
     updateUsage();
     if (pinsUsed>=FREE_LIMIT&&!isPro) setTimeout(()=>showPaywall('limit'),2000);
-  } catch(e) { if (e.message !== 'free_limit_reached') { alert('Something went wrong. Please try again.'); } console.error(e); }
+  } catch(e) { if (e.message !== 'free_limit_reached' && e.message !== 'invalid_session') { showToast('Something went wrong. Please try again.', 'error'); } console.error(e); }
   finally { if (_loadingCycle) clearInterval(_loadingCycle); const gb=document.getElementById('gen-btn'); if(gb) gb.disabled=false; const qd=document.getElementById('qty-down'); if(qd) qd.disabled=pinQty<=1; const qu=document.getElementById('qty-up'); if(qu) qu.disabled=pinQty>=(isPro?10:3); document.getElementById('loading').classList.remove('show'); document.getElementById('loading-text').textContent='Crafting your pin'; document.title = 'Pinlo — Pinterest Pin Generator';
     const lbl=document.getElementById('gen-btn-label');
     if(lbl) lbl.textContent='Generate '+(pinQty===1?'1 Pin':pinQty+' Pins');
@@ -3363,6 +3389,7 @@ function switchAccount() {
   localStorage.removeItem('pinlo_gate_hash');
   localStorage.removeItem('pinlo_pins_used');
   localStorage.removeItem('pinlo_verified');
+  localStorage.removeItem('pinlo_session');
   localStorage.removeItem('pinlo_pro_token'); // legacy cleanup
   location.reload();
 }
@@ -3483,6 +3510,8 @@ async function submitOTP() {
     btn.textContent = 'Verify code →';
     setGateEmail(email);
     localStorage.setItem('pinlo_verified', 'true');
+    // Store the signed session token — claude.js requires it on the paid path.
+    if (data.token) localStorage.setItem('pinlo_session', data.token);
     // Sync usage from server (so they can't bypass by clearing localStorage)
     if (typeof data.usage === 'number') {
       pinsUsed = data.usage;
