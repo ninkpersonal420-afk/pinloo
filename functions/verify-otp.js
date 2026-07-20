@@ -1,4 +1,5 @@
 import { signSession } from './_session.js';
+import { sendWelcomeEmail } from './_email.js';
 
 export async function onRequestPost(context) {
   const corsHeaders = {
@@ -79,6 +80,10 @@ export async function onRequestPost(context) {
         lastUsedAt: new Date().toISOString()
       };
       await KV.put(emailKey, JSON.stringify(user));
+      // Brand-new account: fire the one-time welcome email. Non-blocking via
+      // waitUntil so a slow/failed Resend call never delays or breaks sign-in.
+      // Only reached in this else branch, so it sends exactly once per email.
+      context.waitUntil(sendWelcomeEmail(context.env, emailKey));
     }
 
     // Mint a signed session token proving this email verified an OTP. claude.js
