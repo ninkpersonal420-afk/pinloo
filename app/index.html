@@ -2138,15 +2138,15 @@ setTimeout(renderPricingTab, 200);
 
 const PIN_ANGLES = [
   'genuine question a real person would search — e.g. "Why does everyone who owns this swear by it?" or "Are you making this mistake before you buy?" — must end with ?. For "Why does/do" questions, the predicate must be vivid or specific ("quiet your brain at night" / "keep everything sorted when you are rushing out the door") — NEVER a plain functional verb like "fix the problem", "let you do X", or "hold up against Y", which read like FAQ headers, not hooks',
-  'specific price or number lead — e.g. "The $30 find that replaced my $120 version" or "3 weeks using this every day and here\'s what changed" — number must be the very first character',
+  'specific count or timeframe lead — e.g. "3 weeks using this every day and here\'s what changed" or "2 sizes smaller since I switched to this" — lead with a real count, duration, or quantity (NEVER a made-up price, dollar amount, or discount), and the number must be the very first character',
   'first-person honest discovery — e.g. "I bought this on a whim and now I reorder it every month" or "I switched to this after years of trying everything else" — start with "I"',
-  'comparison to a pricier or more common alternative — e.g. "Better than the expensive version and half the price" or "I stopped buying the brand name after finding this"',
+  'comparison to a more common or pricier alternative — e.g. "Better than the bulky version everyone else buys" or "I stopped buying the brand name after finding this" — compare quality, durability, or results, NEVER a specific price or discount',
   'what most people get wrong — e.g. "The mistake most people make when buying this type of product" or "Why the popular option isn\'t actually the best choice here"',
   'specific outcome with timeframe — e.g. "Two weeks of using this and I finally understood the hype" or "The one change that actually made a difference after 30 days"',
   'what people with the desired result actually use — e.g. "What people who actually get results always have" or "The thing everyone with [desired outcome] quietly uses" — must feel specific, not generic',
   'curiosity without clickbait — tease a specific detail — e.g. "The thing everyone always asks me about" or "What I reach for when I want the best result without the price tag"',
   'speed or ease with a specific relatable example — e.g. "10 minutes and it looks like I spent an hour on it" or "Takes 5 minutes and people think I put in way more effort"',
-  'honest contrarian take — e.g. "You don\'t need to spend $100 on this" or "I thought this was overhyped until I actually tried it for a week"'
+  'honest contrarian take — e.g. "You don\'t need the expensive version everyone recommends" or "I thought this was overhyped until I actually tried it for a week"'
 ];
 
 // Distinct SELLING ANGLES for bulk pins. PIN_ANGLES only varies the hook's
@@ -2179,13 +2179,18 @@ function validatePin(p) {
     /\bthis .{0,15} (was found|got found|were found)/i,
   ];
   if (badPatterns.some(r => r.test(title))) return false;
+  // Reject fabricated prices / discounts — the app never knows the real price,
+  // so any currency amount or "% off" in the copy is a hallucination.
+  const both = title + ' ' + desc;
+  if (/[$£€¥]\s?\d/.test(both)) return false;
+  if (/\b\d{1,3}\s?%\s*(off|discount)\b/i.test(both)) return false;
   return true;
 }
 
 function buildSys(pinIndex) {
   const angle = pinIndex !== undefined ? PIN_ANGLES[pinIndex % PIN_ANGLES.length] : '';
   const angleInstruction = angle ? ' REQUIRED HOOK STYLE FOR THIS PIN: '+angle+'. Use this hook style, but still obey every title rule above — name the product type and keep the title a grammatically complete sentence.' : '';
-  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words and phrases (never use any of these): game-changer, unlock, elevate, transform, revolutionize, empower, discover, boost your, maximize, optimize your, achieve your goals, perfect for, lifestyle, journey, amazing, incredible, must-have, level up, next level, step up, unleash, supercharge.\n\nRULES:\n- Every line must be grounded in what THIS specific product physically does and the exact problem it solves. Never write a title or description that could equally describe any other product in the same niche.\n- NO product name, NO brand names anywhere in title or description. Never reference the brand\'s country of origin or cultural background in the copy — focus purely on what the product does and the problem it solves. If the product name contains model-tier words (Standard, Basic, Plus, Pro, Premium, Ultra, Elite, Max, Lite, Deluxe, Original, Classic) treat them as brand model designations — NEVER echo them back as standalone adjectives in the copy (e.g. if the product is "Brita Standard Filter", do not write "a standard filter" — use specific language about what it does instead).\n- Title: aim for 45–75 characters (long enough to name the product type and a searchable keyword, short enough not to get clipped in the feed) and never exceed 100, no colons, no trailing punctuation EXCEPT questions must end with ?. Hyphens inside ordinary words (high-waisted, carry-on) are fine; do not use a dash to splice two phrases. A title is a question ONLY if it starts with Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did, and it must be a grammatically complete question (keep the helping verb: "Why DOES your bag..." never "Why your bag...").\n- The title MUST make the product clear: name the product type or category (e.g. duffel bag, vitamin C serum, standing desk) or the concrete fix it delivers. A title that only states the problem and never signals the product is WRONG — a scroller has to know what is being recommended. Pair the problem WITH the product, e.g. not "Why does your back hurt all day?" but "Why does a standing desk stop the back pain from sitting all day?" or "The standing desk that finally fixed my all-day back pain". Still never use the brand name. EXTRA RULE for "Why does/do" question titles: the predicate must be vivid, specific, or deliver an unexpected result — e.g. "quiet your brain at night" or "keep everything sorted when you are rushing out at 5am" — NEVER just "fix [problem]", "let you do X", "hold up against Y", or "give it a real home", which are FAQ-header phrases, not scroll-stopping hooks.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, 150–380 characters total (long enough to be specific, short enough not to get cut off before the "more" link). Sentence 1 is ONE clean, grammatically complete sentence — no comma-splices, no run-ons, no fragments. Convey the SAME frustration as the given \"Pain point\" but in your OWN fresh wording; do NOT copy the pain phrase verbatim and tack more onto it (input \"Gym bag always a disorganized mess\" becomes \"You can never find anything in your gym bag when you are rushing out the door\", NOT \"Your gym bag is always a disorganized mess and...\"). If no pain point is given, open with the most relevant frustration this product solves. Sentence 2 names the product type, reuses a meaningful keyword from the title so the two reinforce each other, and links the problem to the outcome with a natural connective phrase such as "so you can…", "so that…", "which means…", or "helps you…" (never "perfect for"). Keyword-rich, human voice, no brand names.\n- Audience: if a \"Target audience\" is provided, write to the FIRST one listed so their situation is recognizable somewhere in the copy — but never at the cost of grammar or of naming the product. One audience is enough; do not stuff several.\n- Hashtags: exactly 12 DISTINCT tags. Each tag: lowercase, letters/numbers only after the #, no spaces, no punctuation, spelled correctly. Use ONLY real, commonly-searched Pinterest terms — never invent compound tags, never misspell, never repeat a tag. Mix: 4 broad niche tags (e.g. #homedecor, #fitness, #skincare), 5 mid tags for the problem or use case (e.g. #smallkitchenideas, #homegymsetup), 3 product-type tags (e.g. #standingdeskmat, #foamroller), all relevant to the actual product.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
+  return 'You are a Pinterest affiliate copywriter. Write copy that sounds like a real person — never a marketing bot. Banned words and phrases (never use any of these): game-changer, unlock, elevate, transform, revolutionize, empower, discover, boost your, maximize, optimize your, achieve your goals, perfect for, lifestyle, journey, amazing, incredible, must-have, level up, next level, step up, unleash, supercharge.\n\nRULES:\n- Every line must be grounded in what THIS specific product physically does and the exact problem it solves. Never write a title or description that could equally describe any other product in the same niche.\n- NEVER state a specific price, dollar amount, discount, or percentage anywhere in the title or description (e.g. "$89", "under $30", "50% off", "half the price"). You do NOT know this product\'s real price, so any such figure is a fabrication. The same goes for invented performance stats ("3x stronger", "lasts 10 years"). Numbers are allowed ONLY for things you can reasonably claim from the product type itself — a general timeframe or count like "2 weeks", "10 minutes", or "3 ways" — never money and never made-up specs.\n- NO product name, NO brand names anywhere in title or description. Never reference the brand\'s country of origin or cultural background in the copy — focus purely on what the product does and the problem it solves. If the product name contains model-tier words (Standard, Basic, Plus, Pro, Premium, Ultra, Elite, Max, Lite, Deluxe, Original, Classic) treat them as brand model designations — NEVER echo them back as standalone adjectives in the copy (e.g. if the product is "Brita Standard Filter", do not write "a standard filter" — use specific language about what it does instead).\n- Title: aim for 45–75 characters (long enough to name the product type and a searchable keyword, short enough not to get clipped in the feed) and never exceed 100, no colons, no trailing punctuation EXCEPT questions must end with ?. Hyphens inside ordinary words (high-waisted, carry-on) are fine; do not use a dash to splice two phrases. A title is a question ONLY if it starts with Who/What/When/Where/Why/How (not "How to")/Can/Could/Should/Would/Are/Is/Do/Does/Did, and it must be a grammatically complete question (keep the helping verb: "Why DOES your bag..." never "Why your bag...").\n- The title MUST make the product clear: name the product type or category (e.g. duffel bag, vitamin C serum, standing desk) or the concrete fix it delivers. A title that only states the problem and never signals the product is WRONG — a scroller has to know what is being recommended. Pair the problem WITH the product, e.g. not "Why does your back hurt all day?" but "Why does a standing desk stop the back pain from sitting all day?" or "The standing desk that finally fixed my all-day back pain". Still never use the brand name. EXTRA RULE for "Why does/do" question titles: the predicate must be vivid, specific, or deliver an unexpected result — e.g. "quiet your brain at night" or "keep everything sorted when you are rushing out at 5am" — NEVER just "fix [problem]", "let you do X", "hold up against Y", or "give it a real home", which are FAQ-header phrases, not scroll-stopping hooks.'+angleInstruction+'\n- Voice check: before finalizing the title, read it aloud. If it sounds like something no real person would say naturally in a text message to a friend — rewrite it.\n- Description: exactly 2 sentences, 150–380 characters total (long enough to be specific, short enough not to get cut off before the "more" link). Sentence 1 is ONE clean, grammatically complete sentence — no comma-splices, no run-ons, no fragments. Convey the SAME frustration as the given \"Pain point\" but in your OWN fresh wording; do NOT copy the pain phrase verbatim and tack more onto it (input \"Gym bag always a disorganized mess\" becomes \"You can never find anything in your gym bag when you are rushing out the door\", NOT \"Your gym bag is always a disorganized mess and...\"). If no pain point is given, open with the most relevant frustration this product solves. Sentence 2 names the product type, reuses a meaningful keyword from the title so the two reinforce each other, and links the problem to the outcome with a natural connective phrase such as "so you can…", "so that…", "which means…", or "helps you…" (never "perfect for"). Keyword-rich, human voice, no brand names.\n- Audience: if a \"Target audience\" is provided, write to the FIRST one listed so their situation is recognizable somewhere in the copy — but never at the cost of grammar or of naming the product. One audience is enough; do not stuff several.\n- Hashtags: exactly 12 DISTINCT tags. Each tag: lowercase, letters/numbers only after the #, no spaces, no punctuation, spelled correctly. Use ONLY real, commonly-searched Pinterest terms — never invent compound tags, never misspell, never repeat a tag. Mix: 4 broad niche tags (e.g. #homedecor, #fitness, #skincare), 5 mid tags for the problem or use case (e.g. #smallkitchenideas, #homegymsetup), 3 product-type tags (e.g. #standingdeskmat, #foamroller), all relevant to the actual product.\n\nReturn ONLY this JSON (no markdown, no extra text):\n{"title":"...","description":"...","hashtags":["","","","","","","","","","","",""]}';
 
 
 }
@@ -2309,9 +2314,10 @@ function calculateSEOScore(pin) {
   else if (tLen >  75 && tLen <= 90) titleScore = 20;
   else if (tLen >= 20)               titleScore = 13;
   else                               titleScore = 6;
-  // Bonus: starts with a number (listicle performs well). Allow a leading
-  // currency symbol or "#" so "$40 ..." and "#1 ..." still count as number-led.
-  const startsWithNumber = /^\W{0,2}\d/.test(title);
+  // Bonus: starts with a number (listicle performs well). Allow a leading "#"
+  // ("#1 ...") but NOT a leading currency symbol — the app never knows the real
+  // price, so a "$40 ..." title is a fabricated number we must not reward.
+  const startsWithNumber = /^#?\s?\d/.test(title);
   if (startsWithNumber) titleScore = Math.min(titleScore + 4, 30);
   // Cliché penalty
   if (cliches.some(c => tl.includes(c))) titleScore = Math.max(titleScore - 14, 4);
@@ -2375,29 +2381,23 @@ function calculateSEOScore(pin) {
     { label: 'Hook',        raw: hookScore,  max: 20 },
   ];
 
-  // Tip: check user-fixable content issues first (clichés, keyword echo, missing
-  // benefit phrase, hook choice), then fall back to Pinterest strategy tips when
-  // the generated copy is already structurally sound. Never critique length/counts
-  // — those are generation-time concerns, not user-edit concerns.
-  const cliche = cliches.find(c => tl.includes(c));
-  const hasProbSol = /\b(because|so you|helps you|which means|so that|perfect for|ideal for|great for)\b/i.test(desc);
+  // Tip: the app already generates the strongest title/description/hashtags it
+  // can, so the tip never asks the user to rewrite that copy. It offers an
+  // off-pin move only the user can make — choosing the alternate generated title,
+  // or a board/timing/image/distribution action — seeded per-pin so it's stable
+  // on re-render but varies across a batch.
   let tip;
-  if (cliche) {
-    tip = 'Your title uses "'+cliche+'" — replace it with a specific detail: the product\'s material, result, or who it\'s for.';
-  } else if (overlap === 0 && keyWords.length > 0) {
-    tip = 'Mirror "'+keyWords[0].toLowerCase()+'" from your title in the opening of your description — Pinterest rewards keyword consistency between the two.';
-  } else if (!hasProbSol && dLen >= 80) {
-    tip = 'Slip "so you can [outcome]" into your description — naming the end benefit directly increases click-through from search results.';
-  } else if (isQuestion && !title.endsWith('?')) {
-    tip = 'This title reads like a question — add a "?" at the end to complete the hook.';
-  } else if (!isQuestion && !hasNumber && !firstPerson && !curiosityGap && !comparison) {
-    tip = 'Try the B title — a curiosity hook or question opener typically gets more saves; compare both options with the picker above.';
+  if (hookScore <= 14) {
+    tip = 'Try the B title — a curiosity or question hook usually earns more saves. Swap it in with the A/B picker and the score updates live.';
   } else {
     const stratTips = [
-      'Add a specific detail only you know — a price range, material, or size — to attract buyers who are already comparison shopping.',
-      'Save to a niche board with a keyword-rich name (e.g., "Car Interior Hacks") — board names feed directly into Pinterest\'s search index.',
+      'Save this to a niche board with a keyword-rich name (e.g., "Car Interior Hacks") — board names feed straight into Pinterest\'s search index.',
       'Pin between 8–11 PM EST on Thursday, Friday, or Saturday — those windows see the highest Pinterest engagement across most niches.',
-      'Pair this with a vertical 2:3 image (1000×1500 px) — tall pins take up more feed space and get significantly more saves than square crops.',
+      'Pair this with a vertical 2:3 image (1000×1500 px) — tall pins take more feed space and pull far more saves than square crops.',
+      'Add a price range or size to the image text — buyers already comparison shopping click pins that answer that up front.',
+      'Repin this to 2–3 related boards over the coming week, spaced out — steady distribution beats posting everything at once.',
+      'Put your main keyword on the image itself, not just in the copy — Pinterest reads on-image text and it doubles your keyword signal.',
+      'Turn on Rich Pins for your site so this pin auto-shows live price and stock — verified metadata gives ranking a lift.',
     ];
     tip = stratTips[Math.floor((tLen + dLen) / 20) % stratTips.length];
   }
