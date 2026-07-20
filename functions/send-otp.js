@@ -20,6 +20,17 @@ export async function onRequestPost(context) {
 
     const emailKey = email.toLowerCase().trim();
 
+    // Per-IP cap: the per-email limit below can't stop one attacker from
+    // scripting many different victim addresses to burn the Resend quota, so
+    // also bound how many codes a single network can trigger per hour.
+    const ip = context.request.headers.get('CF-Connecting-IP') || 'unknown';
+    const ipRateKey = `otp_ip:${ip}`;
+    const ipCount = parseInt(await KV.get(ipRateKey).catch(() => '0') || '0');
+    if (ipCount >= 20) {
+      return new Response(JSON.stringify({ error: 'Too many code requests from this network. Please try again later.' }), { status: 429, headers: corsHeaders });
+    }
+    await KV.put(ipRateKey, String(ipCount + 1), { expirationTtl: 3600 }).catch(() => {});
+
     // Rate limit: max 1 send per 60 seconds, max 5 per hour per email
     const rateKey = `otp_rate:${emailKey}`;
     const rateRaw = await KV.get(rateKey).catch(() => null);
@@ -178,7 +189,8 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
+    console.error('send-otp error:', err);
+    return new Response(JSON.stringify({ error: 'Something went wrong. Please try again.' }), { status: 500, headers: corsHeaders });
   }
 }
 

@@ -1336,6 +1336,13 @@ async function verifyStripeSession(sessionId) {
 let activeNiche = '', activePlan = 'mo';
 
 let pinQty = 1, lastPinData = null;
+// Bumped on every single-pin render so a late async alt-title fetch can tell
+// whether the pin it was started for is still the one on screen.
+let pinRenderSeq = 0;
+// Rotates the hook angle for single-pin generation so pressing Generate again
+// (same product/niche) doesn't keep returning the same title. Seeded randomly
+// so the first pin isn't always angle 0.
+let singleAngleSeq = Math.floor(Math.random() * 10);
 
 // Show/hide bulk controls based on Pro status
 function updateQtyControls() {
@@ -2110,10 +2117,20 @@ function updateHistoryBadge() {
   document.getElementById('history-count-text').textContent=c+' saved pin'+(c!==1?'s':'');
 }
 
+const HISTORY_CAP = 250; // keep plenty of history so the count keeps climbing
 function saveToHistory(pin, niche, product) {
   pinHistory.unshift({...pin,niche,product,date:new Date().toISOString(),id:Date.now()});
-  if (pinHistory.length>50) pinHistory=pinHistory.slice(0,50);
-  localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+  if (pinHistory.length>HISTORY_CAP) pinHistory=pinHistory.slice(0,HISTORY_CAP);
+  // Persist; if localStorage is full, drop the oldest pins until it fits rather
+  // than throwing (which would surface as a false "something went wrong").
+  try {
+    localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+  } catch(e) {
+    while (pinHistory.length > 10) {
+      pinHistory = pinHistory.slice(0, Math.floor(pinHistory.length * 0.75));
+      try { localStorage.setItem('pinai_history',JSON.stringify(pinHistory)); break; } catch(_) {}
+    }
+  }
   updateHistoryBadge();
 setTimeout(updateTabLabels, 200);
 setTimeout(renderPricingTab, 200);
@@ -2151,7 +2168,7 @@ function validatePin(p) {
   const title = p.title || '';
   const desc  = p.description || '';
   const tags  = p.hashtags || [];
-  if (title.length < 15 || title.length > 105) return false;
+  if (title.length < 15 || title.length > 100) return false;
   if (desc.length < 50) return false;
   if (tags.length < 8) return false;
   // Catch unnatural passive-discovery phrasings
@@ -2221,6 +2238,8 @@ async function callClaude(sys, msg, type) {
   const email = getGateEmail() || '';
   const payload = {email,system:sys,messages:[{role:'user',content:msg}]};
   if (type) payload.type = type;
+  const token = localStorage.getItem('pinlo_session');
+  if (token) payload.token = token;
   const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   if (res.status === 402) {
     const errData = await res.json();
@@ -2230,6 +2249,13 @@ async function callClaude(sys, msg, type) {
       showPaywall('limit');
       throw new Error('free_limit_reached');
     }
+  }
+  if (res.status === 401) {
+    // Session missing/expired — force a re-verify, then bubble up so callers stop.
+    localStorage.removeItem('pinlo_session');
+    localStorage.removeItem('pinlo_verified');
+    showEmailGate();
+    throw new Error('invalid_session');
   }
   if (!res.ok) {
     const errData = await res.json();
@@ -2283,8 +2309,10 @@ function calculateSEOScore(pin) {
   else if (tLen >  75 && tLen <= 90) titleScore = 20;
   else if (tLen >= 20)               titleScore = 13;
   else                               titleScore = 6;
-  // Bonus: starts with a number (listicle performs well)
-  if (/^\d/.test(title)) titleScore = Math.min(titleScore + 4, 30);
+  // Bonus: starts with a number (listicle performs well). Allow a leading
+  // currency symbol or "#" so "$40 ..." and "#1 ..." still count as number-led.
+  const startsWithNumber = /^\W{0,2}\d/.test(title);
+  if (startsWithNumber) titleScore = Math.min(titleScore + 4, 30);
   // Cliché penalty
   if (cliches.some(c => tl.includes(c))) titleScore = Math.max(titleScore - 14, 4);
   titleScore = Math.min(titleScore, 30);
@@ -2319,14 +2347,22 @@ function calculateSEOScore(pin) {
   if (avgTagLen >= 8 && avgTagLen <= 16) tagScore = Math.min(tagScore + 2, 20);
 
   // ── Hook strength (0–20 pts) ──────────────────────────────
-  let hookScore = 11; // baseline
-  const isQuestion = /^(who|what|when|where|why|how(?!\s+to\b)|can|could|should|would|are|is|do|does|did)\b/i.test(title);
-  const hasNumber  = /^\d/.test(title);
-  const strongVerb = /^(stop |never |always |you |i |this |the |here|want|need|get )/i.test(title);
-  if (isQuestion && title.endsWith('?')) hookScore = 20;
-  else if (hasNumber)                    hookScore = 18;
-  else if (isQuestion)                   hookScore = 16;
-  else if (strongVerb)                   hookScore = 15;
+  // Reward the hook styles Pinlo actually writes — questions, numbers,
+  // first-person discovery, curiosity gaps, comparisons — so the scorer
+  // doesn't flag its own well-formed hooks as "weak". A clear declarative
+  // still hooks, so the floor is generous; only clichés are penalised.
+  const isQuestion   = /^(who|what|when|where|why|how(?!\s+to\b)|can|could|should|would|are|is|do|does|did)\b/i.test(title);
+  const hasNumber    = startsWithNumber;
+  const firstPerson  = /^(i|i'?ve|i'?m|my|we|we'?ve|you|your)\b/i.test(title);
+  const curiosityGap = /\b(the (secret|thing|trick|reason|truth|one|move|hack)|here'?s|what happens|what nobody|why everyone|actually|finally|turns out|nobody tells you)\b/i.test(title);
+  const comparison   = /\b(better than|instead of|vs\.?|versus|swapped|replaced|stopped (buying|using)|cheaper than|over the)\b/i.test(title);
+  const strongOpener = /^(stop |never |always |this |the |here|want|need|get )/i.test(title);
+  let hookScore;
+  if (isQuestion && title.endsWith('?'))                            hookScore = 20;
+  else if (hasNumber)                                              hookScore = 18;
+  else if (isQuestion || firstPerson || curiosityGap || comparison) hookScore = 16;
+  else if (strongOpener)                                           hookScore = 14;
+  else                                                             hookScore = 13;
   if (cliches.some(c => tl.includes(c))) hookScore = Math.max(hookScore - 10, 3);
   hookScore = Math.min(hookScore, 20);
 
@@ -2339,51 +2375,34 @@ function calculateSEOScore(pin) {
     { label: 'Hook',        raw: hookScore,  max: 20 },
   ];
 
-  const weakest = breakdown.reduce((a, b) => (a.raw / a.max < b.raw / b.max ? a : b));
-  const weakRatio = weakest.raw / weakest.max;
-  const foundCliche = cliches.find(c => tl.includes(c));
-
-  // Build a tip that targets THIS pin's specific weak spot and reads as a concrete
-  // edit to make on a pin that already exists — not a generic "best practice" rule.
-  // The real numbers (char/tag counts, the actual cliché) also keep the tip distinct
-  // from card to card instead of repeating one line across the whole batch.
-  // Stable per-pin seed so the few one-of-several phrasings stay fixed for a given
-  // pin (no flicker on re-render) but differ from pin to pin across a batch.
-  const tipSeed = (title + desc).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  let tip, tipLabel = 'Boost it';
-  if (total >= 88 || weakRatio >= 0.85) {
-    tipLabel = 'Looking strong';
-    tip = [
-      "every section scored well — this one's ready to pin as-is.",
-      'nicely balanced across title, copy, and tags — publish with confidence.',
-      'no weak spots worth fixing here — good to go.',
-    ][tipSeed % 3];
-  } else if (weakest.label === 'Title') {
-    if      (foundCliche) tip = 'Drop "' + foundCliche + '" from the title — Pinterest skims past hype words. Name what the product actually does instead.';
-    else if (tLen < 45)   tip = 'Your title is just ' + tLen + ' characters. Add a concrete detail or keyword to reach the 45–75 range search favors.';
-    else if (tLen > 75)   tip = 'At ' + tLen + ' characters the title risks getting clipped in feeds — trim it under 75 but keep the keyword.';
-    else                  tip = 'Move the word a buyer would actually type to the front of the title so it surfaces in more searches.';
-  } else if (weakest.label === 'Description') {
-    if      (dLen < 150)  tip = 'The description is light at ' + dLen + " characters. Add a line on who it's for or the problem it solves to clear ~150.";
-    else if (dLen > 380)  tip = 'At ' + dLen + ' characters the description runs long — tighten it under 380 so the pitch lands before the "more" cutoff.';
-    else if (overlap === 0) tip = "Repeat a keyword from your title in the description — they don't share one yet, so search can't connect them.";
-    else                  tip = 'Add a "so you can…" or "perfect for…" line so the description gives a reason to click, not just facts.';
-  } else if (weakest.label === 'Hashtags') {
-    if      (tc < 12)     tip = 'You have ' + tc + ' hashtag' + (tc === 1 ? '' : 's') + ' — add ' + (12 - tc) + ' more (12 is the sweet spot), mixing broad tags with longer niche ones.';
-    else if (tc > 12)     tip = 'Cut down to 12 hashtags — past that, the extras mostly dilute your reach.';
-    else                  tip = 'Swap a couple of the broad hashtags for longer, more specific phrases real buyers search.';
-  } else { // Hook
-    if      (foundCliche)                       tip = 'The opening leans on "' + foundCliche + '." Swap that hype for a concrete number or outcome to earn the first tap.';
-    else if (isQuestion && !title.endsWith('?')) tip = 'This reads like a question but never lands the "?" — add it so it hooks like one.';
-    else if (!hasNumber && !isQuestion && !strongVerb) tip = [
-      'The title opens a bit flat. Lead with a number, a real question, or a "you/stop/never" — or try the B title for a sharper angle.',
-      'Strong title, soft entrance — a number or a pointed question up front would make it stop the scroll. The B option is worth a look.',
-      'The hook is the weak link here. Try the B title, or rebuild the opening around a specific number or a "why does…" question.',
-    ][tipSeed % 3];
-    else                                        tip = "Sharpen the first three or four words — that's about all anyone reads before they decide to tap.";
+  // Tip: check user-fixable content issues first (clichés, keyword echo, missing
+  // benefit phrase, hook choice), then fall back to Pinterest strategy tips when
+  // the generated copy is already structurally sound. Never critique length/counts
+  // — those are generation-time concerns, not user-edit concerns.
+  const cliche = cliches.find(c => tl.includes(c));
+  const hasProbSol = /\b(because|so you|helps you|which means|so that|perfect for|ideal for|great for)\b/i.test(desc);
+  let tip;
+  if (cliche) {
+    tip = 'Your title uses "'+cliche+'" — replace it with a specific detail: the product\'s material, result, or who it\'s for.';
+  } else if (overlap === 0 && keyWords.length > 0) {
+    tip = 'Mirror "'+keyWords[0].toLowerCase()+'" from your title in the opening of your description — Pinterest rewards keyword consistency between the two.';
+  } else if (!hasProbSol && dLen >= 80) {
+    tip = 'Slip "so you can [outcome]" into your description — naming the end benefit directly increases click-through from search results.';
+  } else if (isQuestion && !title.endsWith('?')) {
+    tip = 'This title reads like a question — add a "?" at the end to complete the hook.';
+  } else if (!isQuestion && !hasNumber && !firstPerson && !curiosityGap && !comparison) {
+    tip = 'Try the B title — a curiosity hook or question opener typically gets more saves; compare both options with the picker above.';
+  } else {
+    const stratTips = [
+      'Add a specific detail only you know — a price range, material, or size — to attract buyers who are already comparison shopping.',
+      'Save to a niche board with a keyword-rich name (e.g., "Car Interior Hacks") — board names feed directly into Pinterest\'s search index.',
+      'Pin between 8–11 PM EST on Thursday, Friday, or Saturday — those windows see the highest Pinterest engagement across most niches.',
+      'Pair this with a vertical 2:3 image (1000×1500 px) — tall pins take up more feed space and get significantly more saves than square crops.',
+    ];
+    tip = stratTips[Math.floor((tLen + dLen) / 20) % stratTips.length];
   }
 
-  return { total, breakdown, tip, tipLabel };
+  return { total, breakdown, tip };
 }
 
 function renderScore(pin) {
@@ -2511,7 +2530,7 @@ function miniRingHTML(total, locked){
 
 // (Re)render the ring + breakdown for one card. Re-run whenever the title changes.
 function renderCardScore(card, p){
-  const { total, breakdown, tip, tipLabel } = calculateSEOScore(p);
+  const { total, breakdown, tip } = calculateSEOScore(p);
   const headSlot = card.querySelector('.pin-card-score');
   const detailSlot = card.querySelector('.pin-card-seo');
   if (headSlot){
@@ -2524,7 +2543,6 @@ function renderCardScore(card, p){
   if (!detailSlot) return;
   if (!isPro){ detailSlot.style.display='none'; return; }
   detailSlot.style.display='';
-  const weakest = breakdown.reduce((a,b)=>(a.raw/a.max<b.raw/b.max?a:b));
   detailSlot.innerHTML =
     '<div class="score-breakdown">'+ breakdown.map(r=>{
       const pct = Math.round(r.raw/r.max*100);
@@ -2533,7 +2551,7 @@ function renderCardScore(card, p){
         '<div class="score-row-track"><div class="score-row-fill '+rc+'" style="width:0%" data-w="'+pct+'%"></div></div>'+
         '<span class="score-row-num" style="color:'+scoreColorVar(rc)+'">'+pct+'</span></div>';
     }).join('') +'</div>'+
-    '<div class="pin-card-seo-tip"><b>'+esc(tipLabel)+':</b> '+esc(tip)+'</div>';
+    '<div class="pin-card-seo-tip"><b>Boost it:</b> '+esc(tip)+'</div>';
   requestAnimationFrame(()=>{ detailSlot.querySelectorAll('.score-row-fill').forEach(el=>{ el.style.width=el.dataset.w; }); });
 }
 
@@ -2663,21 +2681,34 @@ function renderPin(p) {
   // Show upgrade banner for free users
   const upsellBanner = document.getElementById('pro-upsell-banner');
   if (upsellBanner) upsellBanner.style.display = isPro ? 'none' : 'block';
-  // Background: fetch alt title for A/B picker
-  fetchAltTitle(p.title, product, niche);
+  // Background: fetch alt title for A/B picker. Tag it with the current render
+  // sequence so a slow response for an earlier pin can't overwrite a newer one.
+  const seq = ++pinRenderSeq;
+  fetchAltTitle(p.title, product, niche, seq);
 }
 
 async function fetchNicheTip(product, niche, el) {
   try {
     const email = getGateEmail()||'anonymous';
-    const sys = `Pinterest affiliate tip writer. Write ONE specific, actionable tip for the exact product given.
-Rules:
+    const sys = `Pinterest affiliate STRATEGY tip writer. Write ONE specific, actionable tip for the exact product given.
+
+The app has ALREADY written this pin's title and description for the user. Your tip is about OFF-PIN strategy ONLY — never about the wording of the pin itself.
+
+Pick whichever ONE is most useful for this product:
+- Board naming/organization (how to group and name boards the buyer actually searches)
+- Best posting day/time or seasonal timing for this product
+- Photo/image style that converts for this product (e.g. close-up vs flat-lay, before/after, in-use shots)
+- Pinning cadence or fresh-pin strategy
+- Where to send the affiliate link (specific product page vs homepage) and destination/CTA tactics
+- Board keyword or audience targeting
+
+HARD RULES:
+- NEVER tell the user to change, rewrite, reword, or "title" the pin's title, headline, or description, and never suggest example titles or descriptions. The copy is already done — advising a title/description change is wrong and off-limits.
 - Must reference the specific product type — no generic niche advice
-- Pick whichever is most useful for this product: best posting time, board naming, title angle, or conversion tactic
 - Max 2 sentences. Direct and specific. No bullet points.
 - No opener phrases ("Great tip:", "For this product:", "Here's a tip:")
 - Do not open with the product name
-- NEVER give generic Pinterest advice like "use vertical images", "post consistently", "engage with your audience", or "use trending hashtags" — those apply to everything and help no one
+- NEVER give filler advice that applies to everything ("post consistently", "engage with your audience", "use trending hashtags", "use vertical images")
 - NEVER base the tip on the brand's country of origin or cultural background — focus on the product's function and buyer need`;
     const res = await fetch('/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,type:'niche-tip',model:'claude-haiku-4-5',max_tokens:120,system:sys,messages:[{role:'user',content:'Product: "'+product+'" | Niche: "'+niche+'"'}]})});
     if (!res.ok) throw new Error('api error');
@@ -2704,7 +2735,18 @@ async function generatePin() {
   const audience=getAudienceValue();
   const benefit=getPainValue();
   if (!product) { document.getElementById('product-input').focus(); return; }
-  const qty=pinQty;
+  // Free users have a hard monthly quota. If they request more pins than they
+  // have left, clamp to what remains and tell them — otherwise the server
+  // silently rejects the overflow pins mid-batch and they just vanish.
+  let qty=pinQty;
+  if (!isPro) {
+    const remaining = Math.max(0, FREE_LIMIT - pinsUsed);
+    if (remaining === 0) { showPaywall('limit'); return; }
+    if (qty > remaining) {
+      qty = remaining;
+      showToast('You have '+remaining+' free pin'+(remaining===1?'':'s')+' left this month — generating '+remaining+'. Upgrade for unlimited.', 'info');
+    }
+  }
   const genBtn=document.getElementById('gen-btn');
   genBtn.disabled=true;
   document.getElementById('gen-btn-label').textContent='Generating...';
@@ -2729,9 +2771,17 @@ async function generatePin() {
       const _loadEl=document.getElementById('loading-text');
       _loadEl.textContent=_loadMsgs[0];
       _loadingCycle=setInterval(()=>{ _loadMi=(_loadMi+1)%_loadMsgs.length; _loadEl.textContent=_loadMsgs[_loadMi]; },1600);
-      let p=await callClaude(buildSys(0),buildMsg(product,niche,audience,benefit,''));
+      // Rotate the hook angle each press so repeat generations vary. If this is
+      // a repeat with the same product, tell the model to steer clear of the
+      // pin it just produced so the title/description actually change.
+      const angleIdx = (singleAngleSeq++) % PIN_ANGLES.length;
+      let avoidExtra = '';
+      if (lastPinData && lastPinData.product === product && lastPinData.p) {
+        avoidExtra = 'Write a fresh pin with a DIFFERENT angle and wording than this previous one — do NOT reuse its phrasing. Previous title: "'+(lastPinData.p.title||'')+'". Previous description: "'+(lastPinData.p.description||'')+'".';
+      }
+      let p=await callClaude(buildSys(angleIdx),buildMsg(product,niche,audience,benefit,avoidExtra));
       if (!validatePin(p)) {
-        p = await callClaude(buildSys(3), buildMsg(product,niche,audience,benefit,'Make the title feel like something a real person would genuinely say.'));
+        p = await callClaude(buildSys((angleIdx+3)%PIN_ANGLES.length), buildMsg(product,niche,audience,benefit,'Make the title feel like something a real person would genuinely say.'+(avoidExtra?(' '+avoidExtra):'')));
       }
       lastPinData={p,product,niche,audience,benefit};
       renderPin(p);
@@ -2845,10 +2895,16 @@ async function generatePin() {
       }
       pinsUsed += renderedCount;
       localStorage.setItem('pinlo_pins_used', pinsUsed);
+      // If some pins failed to come back (network/API hiccups), say so instead
+      // of quietly showing fewer cards than the user asked for.
+      if (renderedCount < qty) {
+        const missed = qty - renderedCount;
+        showToast(missed+' pin'+(missed===1?'':'s')+" couldn't be generated — you can generate again to top up.", 'info');
+      }
     }
     updateUsage();
     if (pinsUsed>=FREE_LIMIT&&!isPro) setTimeout(()=>showPaywall('limit'),2000);
-  } catch(e) { if (e.message !== 'free_limit_reached') { alert('Something went wrong. Please try again.'); } console.error(e); }
+  } catch(e) { if (e.message !== 'free_limit_reached' && e.message !== 'invalid_session') { showToast('Something went wrong. Please try again.', 'error'); } console.error(e); }
   finally { if (_loadingCycle) clearInterval(_loadingCycle); const gb=document.getElementById('gen-btn'); if(gb) gb.disabled=false; const qd=document.getElementById('qty-down'); if(qd) qd.disabled=pinQty<=1; const qu=document.getElementById('qty-up'); if(qu) qu.disabled=pinQty>=(isPro?10:3); document.getElementById('loading').classList.remove('show'); document.getElementById('loading-text').textContent='Crafting your pin'; document.title = 'Pinlo — Pinterest Pin Generator';
     const lbl=document.getElementById('gen-btn-label');
     if(lbl) lbl.textContent='Generate '+(pinQty===1?'1 Pin':pinQty+' Pins');
@@ -2874,8 +2930,11 @@ async function regenField(field) {
 }
 
 function copyAll() {
-  const title=document.getElementById('result-title').textContent.replace('|','').trim();
-  const desc=document.getElementById('result-desc').textContent;
+  // Prefer the canonical pin data — the title element may still be mid
+  // typewriter animation, which would copy a truncated string from the DOM.
+  const p = lastPinData && lastPinData.p;
+  const title=(p&&p.title)||document.getElementById('result-title').textContent.replace(/\|/g,'').trim();
+  const desc=(p&&p.description)||document.getElementById('result-desc').textContent;
   const tags=Array.from(document.querySelectorAll('#result-tags .tag')).map(t=>{const v=(t.dataset.tag||t.textContent.replace('×','').trim());return v.startsWith('#')?v:'#'+v;}).join(' ');
   const disclaimer=document.getElementById('result-disclaimer').textContent;
   navigator.clipboard.writeText(title+'\n\n'+desc+'\n\n'+tags+'\n\n'+disclaimer).then(()=>{const btn=document.getElementById('copy-all-btn');btn.textContent='✓ Copied!';btn.style.background='var(--green-bg)';btn.style.color='var(--green-text)';btn.style.borderColor='var(--green)';setTimeout(()=>{btn.textContent='Copy all';btn.style.background='';btn.style.color='';btn.style.borderColor='';},1800);});
@@ -3097,7 +3156,7 @@ function renderSavedProducts() {
   container.innerHTML = html;
 }
 
-async function fetchAltTitle(currentTitle, product, niche) {
+async function fetchAltTitle(currentTitle, product, niche, seq) {
   if (!getGateEmail() || !product) return;
   const block = document.getElementById('ab-block');
   if (!block) return;
@@ -3113,6 +3172,8 @@ async function fetchAltTitle(currentTitle, product, niche) {
     const raw = (data.content||[]).map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
     let altTitle;
     try { altTitle = JSON.parse(raw).title; } catch(e) { const m = raw.match(/"title"\s*:\s*"([^"]+)"/); if (m) altTitle = m[1]; }
+    // Drop the result if a newer pin has rendered since this fetch started.
+    if (seq !== undefined && seq !== pinRenderSeq) return;
     if (altTitle && document.getElementById('result-panel') && document.getElementById('result-panel').classList.contains('show')) {
       renderAB(currentTitle, fixTitlePunctuation(altTitle));
     }
@@ -3202,14 +3263,36 @@ function filterHistory(query) {
   if (!filtered.length) { container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text4);font-size:14px;">No pins match "' + esc(query) + '"</div>'; return; }
   const list = document.createElement('div');
   list.className = 'history-list';
-  filtered.forEach((pin, i) => {
+  filtered.forEach((pin) => {
+    // Key actions to the pin's real position in pinHistory, not the filtered
+    // index, so Copy/Delete act on the right pin while a search is active.
+    const realIdx = pinHistory.indexOf(pin);
+    const tags = (pin.hashtags||[]).slice(0,8).map(t=>'<span class="history-item-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + esc(pin.title) + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div>' + (pin.niche ? '<span class="history-item-niche">' + esc(pin.niche) + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + esc(pin.product) + '</span>' : '') + '</div><div class="history-item-desc">' + esc(pin.description) + '</div>';
+    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + esc(pin.title) + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div style="margin-bottom:6px;">' + (pin.niche ? '<span class="history-item-niche">' + esc(pin.niche) + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + esc(pin.product) + '</span>' : '') + '</div><div class="history-item-desc">' + esc(pin.description) + '</div>' + (tags?'<div class="history-item-tags">'+tags+'</div>':'') + '<div class="history-actions"><button class="history-copy-btn" data-idx="'+realIdx+'">Copy all</button><button class="history-delete-btn" data-idx="'+realIdx+'">Delete</button></div>';
     list.appendChild(item);
   });
   container.innerHTML = '';
   container.appendChild(list);
+  container.querySelectorAll('.history-copy-btn').forEach(btn=>btn.addEventListener('click',()=>{const pin=pinHistory[parseInt(btn.dataset.idx)];const text=pin.title+'\n\n'+pin.description+'\n\n'+(pin.hashtags||[]).map(t=>t.startsWith('#')?t:'#'+t).join(' ')+'\n\nThis post contains affiliate links. If you purchase through my link, I may earn a small commission at no extra cost to you.';navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy all';},1800);});}));
+  container.querySelectorAll('.history-delete-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    const idx=parseInt(btn.dataset.idx);
+    const deleted=pinHistory.splice(idx,1)[0];
+    localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+    updateHistoryBadge();
+    setTimeout(updateTabLabels,200);
+    setTimeout(renderPricingTab,200);
+    filterHistory(query);
+    showToast('Pin deleted.','info',()=>{
+      pinHistory.splice(idx,0,deleted);
+      localStorage.setItem('pinai_history',JSON.stringify(pinHistory));
+      updateHistoryBadge();
+      setTimeout(updateTabLabels,200);
+      setTimeout(renderPricingTab,200);
+      filterHistory(query);
+    });
+  }));
 }
 
 function clearHistory() {
@@ -3354,6 +3437,7 @@ function switchAccount() {
   localStorage.removeItem('pinlo_gate_hash');
   localStorage.removeItem('pinlo_pins_used');
   localStorage.removeItem('pinlo_verified');
+  localStorage.removeItem('pinlo_session');
   localStorage.removeItem('pinlo_pro_token'); // legacy cleanup
   location.reload();
 }
@@ -3474,6 +3558,8 @@ async function submitOTP() {
     btn.textContent = 'Verify code →';
     setGateEmail(email);
     localStorage.setItem('pinlo_verified', 'true');
+    // Store the signed session token — claude.js requires it on the paid path.
+    if (data.token) localStorage.setItem('pinlo_session', data.token);
     // Sync usage from server (so they can't bypass by clearing localStorage)
     if (typeof data.usage === 'number') {
       pinsUsed = data.usage;
