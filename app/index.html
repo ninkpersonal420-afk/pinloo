@@ -1489,6 +1489,9 @@ function switchTab(tab) {
 
 // Allow deep-linking straight to a tab, e.g. /app?tab=support from the footer
 document.addEventListener('DOMContentLoaded', () => {
+  // Stamp the currently signed-in account as owner of the existing history so a
+  // later account switch on this browser resets cleanly (and doesn't inherit it).
+  if (localStorage.getItem('pinlo_verified') === 'true') reconcileHistoryOwner(getGateEmail());
   const t = new URLSearchParams(window.location.search).get('tab');
   if (t && document.getElementById('view-' + t)) switchTab(t);
   // Plain-text paste for editable result fields (prevents rich-text formatting)
@@ -2115,6 +2118,26 @@ function updateHistoryBadge() {
   const c=pinHistory.length;
   document.getElementById('history-count-badge').textContent=c>0?c:'';
   document.getElementById('history-count-text').textContent=c+' saved pin'+(c!==1?'s':'');
+}
+
+// Pin history lives in this browser's localStorage under a single key, so a
+// second account signing in on the same device would otherwise inherit the
+// previous account's pins (a "new account looks used" bug and a privacy leak).
+// Tie the stored history to the email that owns it: when a different email is
+// active, wipe history to a clean slate for them. Existing history with no
+// recorded owner is adopted by the first email seen after this ships, so we
+// never nuke a real user's pins on the upgrade.
+function reconcileHistoryOwner(email) {
+  if (!email) return;
+  const owner = localStorage.getItem('pinai_history_owner');
+  if (owner === email) return;
+  if (!owner) { localStorage.setItem('pinai_history_owner', email); return; }
+  // Different account on this device — the current history isn't theirs.
+  pinHistory = [];
+  try { localStorage.setItem('pinai_history', '[]'); } catch(_) {}
+  localStorage.setItem('pinai_history_owner', email);
+  try { updateHistoryBadge(); } catch(_) {}
+  try { renderHistory(); } catch(_) {}
 }
 
 const HISTORY_CAP = 250; // keep plenty of history so the count keeps climbing
@@ -3439,6 +3462,10 @@ function switchAccount() {
   localStorage.removeItem('pinlo_verified');
   localStorage.removeItem('pinlo_session');
   localStorage.removeItem('pinlo_pro_token'); // legacy cleanup
+  // Clear this account's pin history so the next person to sign in on this
+  // browser doesn't inherit it.
+  localStorage.removeItem('pinai_history');
+  localStorage.removeItem('pinai_history_owner');
   location.reload();
 }
 
@@ -3557,6 +3584,9 @@ async function submitOTP() {
     btn.disabled = false;
     btn.textContent = 'Verify code →';
     setGateEmail(email);
+    // If a different account previously used this browser, clear their pins so
+    // this account starts with its own clean history.
+    reconcileHistoryOwner(email);
     localStorage.setItem('pinlo_verified', 'true');
     // Store the signed session token — claude.js requires it on the paid path.
     if (data.token) localStorage.setItem('pinlo_session', data.token);
