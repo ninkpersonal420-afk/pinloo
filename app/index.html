@@ -2330,13 +2330,18 @@ function calculateSEOScore(pin) {
   const cliches = ['game-changer','game changer','transform your','elevate your','unlock your','level up','revolutionize','life-changing','incredible','amazing','must-have','must have','skyrocket','supercharge'];
 
   // ── Title (0–30 pts) ──────────────────────────────────────
+  // Pinterest indexes the full title up to 100 chars, so anything in the healthy
+  // 40–90 range is a strong title. The old scoring treated a narrow 45–75 window
+  // as the only "good" length and dinged perfectly fine 76–90 char titles down to
+  // 67% (red), which misread Pinlo's own well-formed hooks as weak. Reserve low
+  // scores for titles that are genuinely too short or up against the 100-char clip.
   let titleScore = 0;
   const tLen = title.length;
-  if      (tLen >= 45 && tLen <= 75) titleScore = 28; // sweet spot
-  else if (tLen >= 35 && tLen < 45)  titleScore = 22;
-  else if (tLen >  75 && tLen <= 90) titleScore = 20;
-  else if (tLen >= 20)               titleScore = 13;
-  else                               titleScore = 6;
+  if      (tLen >= 40 && tLen <= 90)  titleScore = 28; // ideal
+  else if (tLen >  90 && tLen <= 100) titleScore = 25; // long but fully indexed
+  else if (tLen >= 30 && tLen < 40)   titleScore = 24; // a little short, still fine
+  else if (tLen >= 20 && tLen < 30)   titleScore = 18; // short
+  else                                titleScore = 10; // too short to rank well
   // Bonus: starts with a number (listicle performs well). Allow a leading "#"
   // ("#1 ...") but NOT a leading currency symbol — the app never knows the real
   // price, so a "$40 ..." title is a fabricated number we must not reward.
