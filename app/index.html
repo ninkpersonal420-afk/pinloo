@@ -1072,8 +1072,8 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     <!-- Step 1: Email -->
     <div id="gate-step-email">
       <div class="email-gate-icon">📌</div>
-      <div class="email-gate-title">Sign in to Pinlo</div>
-      <div class="email-gate-sub">Enter your email and we'll send you a quick login code. No password needed.</div>
+      <div class="email-gate-title" id="gate-email-title">Sign in to Pinlo</div>
+      <div class="email-gate-sub" id="gate-email-sub">Enter your email and we'll send you a quick login code. No password needed.</div>
       <input type="email" class="email-gate-input" id="email-gate-input" placeholder="your@email.com" onkeydown="if(event.key==='Enter')submitEmailGate()"/>
       <div class="email-gate-error" id="email-gate-error">Please enter a valid email address.</div>
       <button class="email-gate-btn" id="email-gate-btn" onclick="submitEmailGate()">Send login code →</button>
@@ -2282,7 +2282,7 @@ async function callClaude(sys, msg, type) {
     // Session missing/expired — force a re-verify, then bubble up so callers stop.
     localStorage.removeItem('pinlo_session');
     localStorage.removeItem('pinlo_verified');
-    showEmailGate();
+    showEmailGate('expired');
     throw new Error('invalid_session');
   }
   if (!res.ok) {
@@ -3480,7 +3480,7 @@ function isEmailGated() {
   return btoa(email).slice(0, 12) === hash;
 }
 
-function showEmailGate() {
+function showEmailGate(reason) {
   // If already verified, skip the gate and go straight to generation
   const email = getGateEmail();
   const verified = localStorage.getItem('pinlo_verified') === 'true';
@@ -3493,8 +3493,21 @@ function showEmailGate() {
   // Reset to email step
   document.getElementById('gate-step-email').style.display = '';
   document.getElementById('gate-step-otp').style.display = 'none';
+  // A known email that lost its session (e.g. signed in before session tokens
+  // existed → a 401 from /claude) is a RE-sign-in, not a cold sign-up. Say so
+  // and pre-fill the address so it's a one-tap re-verify instead of looking like
+  // the user was never signed in.
+  const titleEl = document.getElementById('gate-email-title');
+  const subEl   = document.getElementById('gate-email-sub');
+  const input   = document.getElementById('email-gate-input');
+  const returning = reason === 'expired' || !!email;
+  if (email && input) input.value = email;
+  if (titleEl) titleEl.textContent = returning ? 'Welcome back' : 'Sign in to Pinlo';
+  if (subEl) subEl.textContent = returning
+    ? 'Your session expired — confirm your email to keep generating. No password needed.'
+    : "Enter your email and we'll send you a quick login code. No password needed.";
   overlay.classList.add('show');
-  setTimeout(() => { const inp = document.getElementById('email-gate-input'); if(inp) inp.focus(); }, 300);
+  setTimeout(() => { const inp = document.getElementById('email-gate-input'); if(inp){ inp.focus(); if(inp.value) inp.select(); } }, 300);
 }
 
 function hideEmailGate() {
