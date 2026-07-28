@@ -57,10 +57,11 @@ function extractProductionLogic(html) {
 
 const BANNED = ['game-changer','unlock','elevate','transform','revolutionize','empower','discover','boost your','maximize','optimize your','achieve your goals','perfect for','lifestyle','journey','amazing','incredible','must-have','level up','next level','step up','unleash','supercharge'];
 
-// ── Cases: every one of the 31 niches + edge cases. brand[] = tokens that must
+// ── Cases: every one of the 32 niches + edge cases. brand[] = tokens that must
 // NOT appear in copy. firstAudience = the one the model should write to. ─────
 const CASES = [
   { product:'leather car seat covers', niche:'Automotive & Vehicles', audience:'people who drive with kids and pets', pain:'Seats get dirty and worn fast' },
+  { product:'filtered high-pressure shower head', niche:'Bath & Shower', audience:'renters with weak water pressure and hard water', pain:'Weak water pressure in the shower' },
   { product:'vitamin C face serum', niche:'Beauty & Skincare', audience:'people with dull tired-looking skin', pain:'Skin looks dull and uneven' },
   { product:'clip-on book reading light', niche:'Books & Education', audience:'people who read in bed beside a partner', pain:'Reading in bed keeps your partner awake' },
   { product:'under-sink storage organizer', niche:'Cleaning & Organization', audience:'people with cluttered bathroom cabinets', pain:'Nowhere to store cleaning supplies' },
