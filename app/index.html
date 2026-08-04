@@ -1885,11 +1885,15 @@ async function autoGeneratePains(product) {
   }
 }
 
-function renderAudienceOptions(list, markAutoDetected) {
+function renderAudienceOptions(list, markAutoDetected, preserveSelection = true) {
   const container = document.getElementById('audience-options');
   if (!container) return;
-  // Preserve what the user already chose: selected values and custom-typed options
-  const activeValues = new Set(Array.from(container.querySelectorAll('.audience-opt.active')).map(o => o.dataset.value));
+  // Preserve what the user already chose: selected values and custom-typed options.
+  // preserveSelection is turned off when the detection is for a genuinely different
+  // product, so a chip picked for a previous product never looks pre-selected here.
+  const activeValues = preserveSelection
+    ? new Set(Array.from(container.querySelectorAll('.audience-opt.active')).map(o => o.dataset.value))
+    : new Set();
   const customOpts = Array.from(container.querySelectorAll('.audience-opt:not(.auto-suggested)'));
   container.innerHTML = '';
   const makeOpt = (text, isAuto) => {
@@ -1917,9 +1921,9 @@ function renderAudienceOptions(list, markAutoDetected) {
 }
 
 // AI/niche results arrive as a comma-separated string — split and render as options
-function renderAudienceChips(audienceStr) {
+function renderAudienceChips(audienceStr, preserveSelection = true) {
   const list = audienceStr.split(',').map(a => a.trim()).filter(a => a.length > 0).slice(0, 6);
-  renderAudienceOptions(list, true);
+  renderAudienceOptions(list, true, preserveSelection);
 }
 
 function audienceCustomKeydown(e) {
@@ -1981,9 +1985,15 @@ function updatePainCounter() {
 }
 
 let audienceFillSeq = 0;
+let lastAudienceProduct = '';
 async function autoFillAudience(product) {
   if (!audienceDetectEnabled) return;
   const mySeq = ++audienceFillSeq;
+  // Drop any chip selected under a different product so it can't carry over and
+  // look pre-picked. Same product (incremental typing) keeps the user's choice.
+  const normProduct = (product || '').toLowerCase().trim();
+  const preserveSelection = normProduct === lastAudienceProduct;
+  lastAudienceProduct = normProduct;
   const container = document.getElementById('audience-options');
   const tag = document.getElementById('audience-auto-tag');
   if (!container) return;
@@ -2007,7 +2017,7 @@ async function autoFillAudience(product) {
     if (result === 'INVALID' || result.toLowerCase().includes('not a real') || result.toLowerCase().includes('invalid') || result.toLowerCase().includes('not enough context') || result.toLowerCase().includes('cannot provide') || result.toLowerCase().includes("don't have enough")) {
       det.textContent = 'Could not detect an audience — try a more specific product name';
     } else if (result) {
-      renderAudienceChips(result);
+      renderAudienceChips(result, preserveSelection);
       if (tag) tag.style.display = 'inline-block';
     }
   } catch(e) { console.log('Audience autofill skipped:',e); }
