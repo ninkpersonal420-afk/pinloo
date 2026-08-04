@@ -463,6 +463,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .history-item-title{font-family:'Playfair Display',serif;font-size:16.5px;font-weight:600;color:var(--text);line-height:1.35;flex:1;}
 .history-item-meta{font-size:10.5px;color:var(--text4);white-space:nowrap;font-variant-numeric:tabular-nums;}
 .history-item-niche{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:var(--gradient-soft);color:var(--red);border:1px solid rgba(217,79,56,0.18);margin-right:4px;}
+.history-item-product{display:inline-block;max-width:min(100%,300px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:var(--bg3,var(--bg2));color:var(--text3);border:1px solid var(--hairline);margin-right:4px;}
 .history-item-desc{font-size:13px;color:var(--text3);line-height:1.65;font-weight:400;margin-top:6px;}
 .history-item-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
 .history-item-tag{font-size:11px;padding:3px 9px;border-radius:100px;background:var(--gradient-soft);color:var(--red);border:1px solid rgba(217,79,56,0.14);font-weight:500;}
@@ -3267,7 +3268,7 @@ function renderHistory() {
   pinHistory.forEach((pin,i)=>{
     const item=document.createElement('div'); item.className='history-item';
     const tags=(pin.hashtags||[]).slice(0,8).map(t=>'<span class="history-item-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
-    item.innerHTML='<div class="history-item-top"><div class="history-item-title">'+esc(pin.title)+'</div><div class="history-item-meta">'+formatPinDate(pin.date)+'</div></div><div style="margin-bottom:6px;">'+(pin.niche?'<span class="history-item-niche">'+esc(pin.niche)+'</span>':'')+(pin.product?'<span class="history-item-niche">'+esc(pin.product)+'</span>':'')+'</div><div class="history-item-desc">'+esc(pin.description)+'</div>'+(tags?'<div class="history-item-tags">'+tags+'</div>':'')+'<div class="history-actions"><button class="history-copy-btn" data-idx="'+i+'">Copy all</button><button class="history-delete-btn" data-idx="'+i+'">Delete</button></div>';
+    item.innerHTML='<div class="history-item-top"><div class="history-item-title">'+esc(pin.title)+'</div><div class="history-item-meta">'+formatPinDate(pin.date)+'</div></div><div style="margin-bottom:6px;">'+(pin.niche?'<span class="history-item-niche">'+esc(pin.niche)+'</span>':'')+(pin.product?'<span class="history-item-product" title="'+esc(pin.product)+'">'+esc(pin.product)+'</span>':'')+'</div><div class="history-item-desc">'+esc(pin.description)+'</div>'+(tags?'<div class="history-item-tags">'+tags+'</div>':'')+'<div class="history-actions"><button class="history-copy-btn" data-idx="'+i+'">Copy all</button><button class="history-delete-btn" data-idx="'+i+'">Delete</button></div>';
     list.appendChild(item);
   });
   container.innerHTML='';
@@ -3313,7 +3314,7 @@ function filterHistory(query) {
     const tags = (pin.hashtags||[]).slice(0,8).map(t=>'<span class="history-item-tag">'+esc(t.startsWith('#')?t:'#'+t)+'</span>').join('');
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + esc(pin.title) + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div style="margin-bottom:6px;">' + (pin.niche ? '<span class="history-item-niche">' + esc(pin.niche) + '</span>' : '') + (pin.product ? '<span class="history-item-niche">' + esc(pin.product) + '</span>' : '') + '</div><div class="history-item-desc">' + esc(pin.description) + '</div>' + (tags?'<div class="history-item-tags">'+tags+'</div>':'') + '<div class="history-actions"><button class="history-copy-btn" data-idx="'+realIdx+'">Copy all</button><button class="history-delete-btn" data-idx="'+realIdx+'">Delete</button></div>';
+    item.innerHTML = '<div class="history-item-top"><div class="history-item-title">' + esc(pin.title) + '</div><div class="history-item-meta">' + formatPinDate(pin.date) + '</div></div><div style="margin-bottom:6px;">' + (pin.niche ? '<span class="history-item-niche">' + esc(pin.niche) + '</span>' : '') + (pin.product ? '<span class="history-item-product" title="' + esc(pin.product) + '">' + esc(pin.product) + '</span>' : '') + '</div><div class="history-item-desc">' + esc(pin.description) + '</div>' + (tags?'<div class="history-item-tags">'+tags+'</div>':'') + '<div class="history-actions"><button class="history-copy-btn" data-idx="'+realIdx+'">Copy all</button><button class="history-delete-btn" data-idx="'+realIdx+'">Delete</button></div>';
     list.appendChild(item);
   });
   container.innerHTML = '';
