@@ -60,10 +60,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.8rem 3rem;display:
 .nav-links a{position:relative;text-decoration:none;color:var(--text2);font-size:14px;font-weight:500;padding:8px 16px;border-radius:100px;transition:color 0.15s,background 0.15s;}
 .nav-links a:hover{color:var(--ink);background:rgba(217,79,56,0.06);}
 .nav-right{display:flex;align-items:center;gap:20px;}
-.nav-signin{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s;}
-.nav-signin:hover{color:var(--ink);}
-.nav-open-app{font-size:14px;font-weight:500;color:var(--text2);text-decoration:none;padding:9px 18px;border-radius:100px;border:1px solid var(--border2);transition:border-color 0.15s,color 0.15s;}
-.nav-open-app:hover{color:var(--ink);border-color:var(--text3);}
+/* Sign in is the only route back in for returning users now that Open app is
+   gone, so it gets the bordered-pill treatment (previously only Open app
+   had) instead of reading as a faint text link next to the CTA. */
+.nav-signin{font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;padding:9px 18px;border-radius:100px;border:1px solid var(--border2);transition:border-color 0.15s,background 0.15s,color 0.15s;}
+.nav-signin:hover{color:var(--accent-deep);border-color:var(--accent);background:rgba(217,79,56,0.06);}
 .nav-cta{background:var(--gradient);background-size:160% 160%;color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:10px 24px;border-radius:100px;transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;box-shadow:0 4px 16px rgba(217,79,56,0.3);animation:gradientShift 6s ease infinite;}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(217,79,56,0.4);}
 /* Mobile nav: below 600px the links, Sign in and Open app all used to be
@@ -345,7 +346,6 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
 @media(max-width:600px){
   nav{padding:0.7rem 1rem;gap:8px;}
   .nav-links{display:none;}
-  .nav-open-app{display:none;}
   .nav-logo-tagline{display:none;}
   .nav-logo{font-size:18px;}
   .nav-logo-svg{width:34px;height:34px;border-radius:9px;}
@@ -463,7 +463,6 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   </ul>
   <div class="nav-right">
     <a href="/app?signin" class="nav-signin">Sign in</a>
-    <a href="/app" class="nav-open-app">Open app</a>
     <a href="/app" class="nav-cta">Try free</a>
     <button class="nav-toggle" id="nav-toggle" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -1362,9 +1361,9 @@ async function suResend() {
   }
 }
 
-// Intercept all /app links — except "Open app" (returning users) and the Pro CTA (goes to Stripe)
+// Intercept all /app links except the Pro CTA (goes to Stripe, handled below).
+// Sign in uses /app?signin, a different href, so it's untouched by this selector.
 document.querySelectorAll('a[href="/app"]').forEach(a => {
-  if (a.classList.contains('nav-open-app')) return;
   a.addEventListener('click', e => { e.preventDefault(); suOpen(); });
 });
 
