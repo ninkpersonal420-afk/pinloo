@@ -80,9 +80,19 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .header-tagline{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:2.2px;text-transform:uppercase;margin-top:4px;}
 .header-right{display:flex;align-items:center;gap:10px;}
 .free-badge{font-size:12.5px;font-weight:500;padding:7px 14px;border-radius:100px;border:1px solid var(--border);color:var(--text3);letter-spacing:0.2px;background:var(--bg2);box-shadow:0 1px 2px rgba(26,13,8,0.03);}
-.theme-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:border-color 0.18s,transform 0.18s,box-shadow 0.18s;box-shadow:0 1px 2px rgba(26,13,8,0.04);}
-.theme-btn:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:0 3px 8px rgba(26,13,8,0.07);}
-.theme-btn:active{transform:translateY(0);}
+/* Theme switch: a real sliding track (not a plain icon button) so it reads as a
+   two-state control at a glance instead of a decorative dot next to the CTA. */
+.theme-btn{position:relative;width:62px;height:32px;flex-shrink:0;padding:0;border-radius:999px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:border-color 0.18s,box-shadow 0.18s,background 0.25s var(--ease);box-shadow:inset 0 1px 3px rgba(26,13,8,0.10);}
+.theme-btn:hover{border-color:var(--border2);box-shadow:inset 0 1px 3px rgba(26,13,8,0.10),0 0 0 3px rgba(217,79,56,0.12);}
+.theme-btn:active .theme-knob{width:28px;}
+.theme-btn:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
+/* Knob sits under the icons so the active one reads on top of the gradient. */
+.theme-knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:999px;background:var(--gradient);box-shadow:0 2px 6px rgba(26,13,8,0.30);transition:transform 0.3s var(--ease),width 0.15s var(--ease);z-index:1;}
+[data-theme="dark"] .theme-knob{transform:translateX(30px);}
+.theme-icons{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 7px;font-size:12px;line-height:1;z-index:2;pointer-events:none;}
+.theme-icons span{opacity:0.40;transition:opacity 0.25s var(--ease);filter:grayscale(0.6);}
+[data-theme="light"] .theme-icons .ti-sun{opacity:1;filter:none;}
+[data-theme="dark"] .theme-icons .ti-moon{opacity:1;filter:none;}
 .signin-btn{font-size:14px;font-weight:600;padding:9px 20px;background:var(--bg2);color:var(--text2);border:1px solid var(--border);border-radius:100px;cursor:pointer;font-family:'Outfit',sans-serif;transition:border-color 0.18s,color 0.18s,transform 0.18s,box-shadow 0.18s;box-shadow:0 1px 2px rgba(26,13,8,0.04);}
 .signin-btn:hover{border-color:var(--red);color:var(--red);transform:translateY(-1px);box-shadow:0 3px 10px rgba(217,79,56,0.12);}
 .pro-btn{font-size:13.5px;font-weight:700;padding:10px 22px;background:var(--gradient);color:#fff;border:none;border-radius:100px;cursor:pointer;letter-spacing:0.2px;font-family:'Outfit',sans-serif;transition:transform 0.2s var(--ease),box-shadow 0.2s var(--ease);box-shadow:0 2px 8px rgba(217,79,56,0.28),0 6px 20px rgba(217,79,56,0.2);}
@@ -506,6 +516,68 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .pw-back{display:inline-block;margin-top:10px;font-size:12px;font-weight:500;color:var(--text4);cursor:pointer;background:none;border:none;font-family:'Outfit',sans-serif;transition:color 0.12s;}
 .pw-back:hover{color:var(--text2);}
 
+/* ── GLOSSARY ──
+   Terms were previously hairline-separated rows of uniform muted text, which
+   read as one grey wall. Each term is now a card with its own accent colour,
+   so the eye can find and hold a single definition. */
+.gl-wrap{max-width:720px;margin:0 auto;padding:0 0.25rem 2rem;}
+.gl-head{padding:2rem 0 1.5rem;}
+.gl-eyebrow{display:inline-block;font-size:10px;font-weight:800;color:var(--red);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:1rem;padding:5px 13px;background:var(--gradient-soft);border-radius:20px;border:1px solid rgba(217,79,56,0.22);}
+.gl-title{font-family:'Playfair Display',serif;font-size:40px;font-weight:600;color:var(--text);line-height:1.1;margin-bottom:10px;letter-spacing:-0.5px;}
+.gl-sub{font-size:16px;color:var(--text3);line-height:1.6;max-width:52ch;}
+.gl-list{display:flex;flex-direction:column;gap:14px;}
+.gl-card{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px 24px 22px 26px;box-shadow:var(--shadow);overflow:hidden;transition:transform 0.22s var(--ease),box-shadow 0.22s var(--ease),border-color 0.22s;}
+/* Accent stripe — the per-term colour cue, set by --gl-accent on each card. */
+.gl-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gl-accent,var(--red));}
+.gl-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--border2);}
+.gl-card-head{display:flex;align-items:center;gap:13px;margin-bottom:12px;}
+.gl-icon{width:42px;height:42px;border-radius:12px;background:var(--gl-tint,var(--bg3));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);}
+.gl-term{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--text);line-height:1.25;letter-spacing:-0.2px;}
+.gl-body{font-size:15.5px;color:var(--text2);line-height:1.7;}
+/* Pulls the one phrase that answers "why do I care" out of the paragraph. */
+.gl-body b{font-weight:700;color:var(--text);}
+.gl-note{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--red);background:var(--gradient-soft);border:1px solid rgba(217,79,56,0.22);border-radius:20px;padding:3px 10px;}
+/* Pin Goal sub-grid */
+.gl-goals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.gl-goal{background:var(--bg3);border:1px solid var(--hairline);border-radius:12px;padding:13px 14px;transition:border-color 0.18s,transform 0.18s var(--ease);}
+.gl-goal:hover{border-color:var(--red);transform:translateY(-1px);}
+.gl-goal-name{font-size:13.5px;font-weight:700;color:var(--red);margin-bottom:5px;letter-spacing:0.1px;}
+.gl-goal-desc{font-size:13.5px;color:var(--text2);line-height:1.55;}
+/* Score legend */
+.gl-scale{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.gl-scale-row{display:flex;align-items:center;gap:11px;font-size:14.5px;color:var(--text2);line-height:1.4;}
+.gl-chip{flex-shrink:0;min-width:64px;text-align:center;font-size:12.5px;font-weight:800;padding:5px 10px;border-radius:20px;letter-spacing:0.2px;}
+
+/* ── ABOUT ── */
+.abt-wrap{max-width:680px;margin:0 auto;padding:0 0.25rem 2rem;}
+.abt-hero{position:relative;overflow:hidden;background:var(--gradient);border-radius:22px;padding:2.75rem 2.25rem;margin:2rem 0 1.15rem;box-shadow:0 8px 32px rgba(217,79,56,0.26);}
+.abt-blob{position:absolute;border-radius:50%;pointer-events:none;}
+.abt-eyebrow{font-size:10px;font-weight:800;color:rgba(255,255,255,0.62);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;}
+.abt-hero-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#fff;line-height:1.15;margin-bottom:16px;letter-spacing:-0.5px;}
+.abt-hero-sub{font-size:16.5px;color:rgba(255,255,255,0.92);line-height:1.65;max-width:30rem;}
+.abt-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:2rem 2.1rem;margin-bottom:1.15rem;box-shadow:var(--shadow);}
+.abt-p{font-size:16px;color:var(--text2);line-height:1.85;margin-bottom:1.15rem;}
+.abt-p:last-child{margin-bottom:0;}
+.abt-p b{color:var(--text);font-weight:700;}
+/* Pull-quote breaks up the wall of prose and gives the page a human voice. */
+.abt-quote{margin:1.5rem 0;padding:16px 22px;border-left:4px solid var(--red);background:var(--gradient-soft);border-radius:0 12px 12px 0;font-family:'Playfair Display',serif;font-size:19px;line-height:1.55;color:var(--text);font-style:italic;}
+.abt-h2{font-family:'Playfair Display',serif;font-size:25px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.2px;}
+.abt-h2-sub{font-size:14.5px;color:var(--text3);line-height:1.6;margin-bottom:1.3rem;}
+.abt-lessons{display:flex;flex-direction:column;gap:11px;}
+.abt-lesson{display:flex;gap:14px;align-items:flex-start;background:var(--bg3);border:1px solid var(--hairline);border-radius:14px;padding:15px 17px;transition:border-color 0.18s,transform 0.18s var(--ease);}
+.abt-lesson:hover{border-color:var(--red);transform:translateY(-1px);}
+.abt-lesson-ico{width:36px;height:36px;border-radius:10px;background:var(--bg2);border:1px solid var(--hairline);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.abt-lesson-t{font-size:15.5px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.abt-lesson-d{font-size:14.5px;color:var(--text2);line-height:1.6;}
+.abt-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.15rem;}
+.abt-stat{position:relative;overflow:hidden;background:var(--gradient);border-radius:16px;padding:1.5rem 1rem;text-align:center;box-shadow:0 4px 20px rgba(217,79,56,0.25);}
+.abt-stat-n{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#fff;line-height:1;}
+.abt-stat-l{font-size:11.5px;color:rgba(255,255,255,0.85);margin-top:6px;line-height:1.4;font-weight:500;}
+.abt-founder{display:flex;align-items:center;gap:18px;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:1.75rem;box-shadow:var(--shadow);}
+.abt-avatar{width:60px;height:60px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Playfair Display',serif;box-shadow:0 4px 16px rgba(217,79,56,0.35);}
+.abt-founder-n{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.abt-founder-d{font-size:14px;color:var(--text3);line-height:1.6;}
+
 /* ── MOBILE ── */
 @media(max-width:600px){
   .header{padding:0.7rem 1rem;gap:0.5rem;flex-wrap:nowrap;}
@@ -514,8 +586,31 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   .header-tagline{font-size:8px;letter-spacing:1.6px;}
   .header-right{gap:6px;flex-shrink:0;}
   .pro-btn{font-size:12px !important;padding:8px 14px !important;}
-  .theme-btn{width:30px;height:30px;font-size:13px;}
+  .theme-btn{width:54px;height:28px;}
+  .theme-knob{width:21px;height:21px;top:2.5px;left:2.5px;}
+  [data-theme="dark"] .theme-knob{transform:translateX(26px);}
+  .theme-icons{padding:0 6px;font-size:11px;}
   .free-badge{display:none;}
+  .gl-title{font-size:29px;}
+  .gl-sub{font-size:14.5px;}
+  .gl-card{padding:18px 16px 18px 20px;border-radius:14px;}
+  .gl-term{font-size:19px;}
+  .gl-body{font-size:14.5px;}
+  .gl-icon{width:36px;height:36px;font-size:17px;border-radius:10px;}
+  .gl-goals{grid-template-columns:1fr;}
+  .abt-hero{padding:2rem 1.4rem;border-radius:18px;}
+  .abt-hero-title{font-size:28px;}
+  .abt-hero-sub{font-size:15px;}
+  .abt-card{padding:1.5rem 1.35rem;border-radius:16px;}
+  .abt-p{font-size:15px;line-height:1.8;}
+  .abt-quote{font-size:17px;padding:14px 16px;}
+  .abt-h2{font-size:21px;}
+  .abt-stats{gap:8px;}
+  .abt-stat{padding:1.15rem 0.5rem;}
+  .abt-stat-n{font-size:27px;}
+  .abt-stat-l{font-size:10.5px;}
+  .abt-founder{padding:1.35rem;gap:14px;}
+  .abt-avatar{width:50px;height:50px;font-size:21px;}
   .avatar-btn{width:30px;height:30px;font-size:12px;}
   .avatar-dropdown{min-width:190px;}
   .tabs{padding:10px 0.875rem 8px;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
@@ -592,7 +687,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
     </div>
   </a>
   <div class="header-right">
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" role="switch" aria-checked="false" aria-label="Dark mode" title="Switch to dark mode"><span class="theme-knob"></span><span class="theme-icons"><span class="ti-sun">☀️</span><span class="ti-moon">🌙</span></span></button>
     <button class="signin-btn" id="header-signin-btn" onclick="showEmailGate()" style="display:none;">Sign in</button>
     <button class="pro-btn" id="header-pro-btn" onclick="showPaywall()" style="display:none;">Upgrade to Pro</button>
     <div class="avatar-wrap" id="avatar-wrap" style="display:none;">
@@ -889,59 +984,66 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 </div>
 
 <div class="view" id="view-glossary">
-  <div style="max-width:640px;margin:0 auto;padding:0 0.25rem;">
-    <div style="padding:2rem 0 1rem;">
-      <div style="display:inline-block;font-size:10px;font-weight:800;color:var(--red);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:1rem;padding:4px 12px;background:rgba(217,79,56,0.08);border-radius:20px;border:1px solid rgba(217,79,56,0.2);">Reference</div>
-      <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:var(--text);line-height:1.2;margin-bottom:6px;">Key terms <em style="color:var(--red);">explained</em></div>
-      <div style="font-size:14px;color:var(--text3);line-height:1.6;">Everything you need to know to get the most out of Pinlo.</div>
+  <div class="gl-wrap">
+    <div class="gl-head">
+      <div class="gl-eyebrow">Reference</div>
+      <div class="gl-title">Key terms <em style="color:var(--red);">explained</em></div>
+      <div class="gl-sub">Six ideas that decide whether your pins get found. Skim them once — they explain every number Pinlo shows you.</div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:0;">
+    <div class="gl-list">
 
-      <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">📈</div>
-          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">SEO — Search Engine Optimization</div>
+      <div class="gl-card" style="--gl-accent:var(--blue);--gl-tint:var(--blue-bg);">
+        <div class="gl-card-head">
+          <div class="gl-icon">📈</div>
+          <div class="gl-term">SEO — Search Engine Optimization</div>
         </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">How your content gets found. On Pinterest, it means using the right keywords in your title and description so when someone searches "yoga mat for beginners," your pin shows up — not someone else's. Better SEO = more organic reach, more clicks, more commissions.</div>
+        <div class="gl-body">How your content gets found. On Pinterest, it means using the right keywords in your title and description so when someone searches <b>"yoga mat for beginners,"</b> your pin shows up — not someone else's. <b>Better SEO = more organic reach, more clicks, more commissions.</b></div>
       </div>
 
-      <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,79,56,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">🎯</div>
-          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Pin Goal</div>
+      <div class="gl-card" style="--gl-accent:var(--red);--gl-tint:var(--gradient-soft);">
+        <div class="gl-card-head">
+          <div class="gl-icon">🎯</div>
+          <div class="gl-term">Pin Goal</div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-left:42px;">
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Drive clicks</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Curiosity + urgency — gets people to tap your link</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Get saves</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Bookmark-worthy content — saves drive long-term traffic</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Sell product</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Benefit-led copy that pushes toward buying</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Educate</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">How-to content — high saves, builds authority</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Inspire</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Emotional hooks — great for lifestyle niches</div></div>
-          <div style="background:var(--bg3);border-radius:10px;padding:12px;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">Build followers</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Drives people to your profile, not just a product</div></div>
+        <div class="gl-body" style="margin-bottom:14px;">What you want the pin to <b>do</b>. Pinlo writes a different style of copy for each one — pick the goal before you generate.</div>
+        <div class="gl-goals">
+          <div class="gl-goal"><div class="gl-goal-name">Drive clicks</div><div class="gl-goal-desc">Curiosity + urgency — gets people to tap your link</div></div>
+          <div class="gl-goal"><div class="gl-goal-name">Get saves</div><div class="gl-goal-desc">Bookmark-worthy content — saves drive long-term traffic</div></div>
+          <div class="gl-goal"><div class="gl-goal-name">Sell product</div><div class="gl-goal-desc">Benefit-led copy that pushes toward buying</div></div>
+          <div class="gl-goal"><div class="gl-goal-name">Educate</div><div class="gl-goal-desc">How-to content — high saves, builds authority</div></div>
+          <div class="gl-goal"><div class="gl-goal-name">Inspire</div><div class="gl-goal-desc">Emotional hooks — great for lifestyle niches</div></div>
+          <div class="gl-goal"><div class="gl-goal-name">Build followers</div><div class="gl-goal-desc">Drives people to your profile, not just a product</div></div>
         </div>
       </div>
 
-      <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">💰</div>
-          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Affiliate Marketing</div>
+      <div class="gl-card" style="--gl-accent:var(--green);--gl-tint:var(--green-bg);">
+        <div class="gl-card-head">
+          <div class="gl-icon">💰</div>
+          <div class="gl-term">Affiliate Marketing</div>
         </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">You get a unique link for each product you promote. When someone clicks your pin and buys through your link, you earn a percentage of the sale — typically 1–10%. No inventory, no customers, no fulfilment. You create the pin, they buy, you get paid.</div>
+        <div class="gl-body">You get a unique link for each product you promote. When someone clicks your pin and buys through your link, you earn <b>a percentage of the sale — typically 1–10%</b>. No inventory, no customers, no fulfilment. <b>You create the pin, they buy, you get paid.</b></div>
       </div>
 
-      <div style="border-top:1px solid var(--border);padding:1.5rem 0;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">🏷️</div>
-          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">Niche</div>
+      <div class="gl-card" style="--gl-accent:var(--amber);--gl-tint:var(--amber-bg);">
+        <div class="gl-card-head">
+          <div class="gl-icon">🏷️</div>
+          <div class="gl-term">Niche</div>
         </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">Your content category. Niche accounts perform better because Pinterest recommends your content to people already interested in that topic. Pinlo uses your niche to write copy that matches what your audience is actually searching for.</div>
+        <div class="gl-body">Your content category. <b>Niche accounts perform better</b> because Pinterest recommends your content to people already interested in that topic. Pinlo uses your niche to write copy that matches what your audience is actually searching for.</div>
       </div>
 
-      <div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.5rem 0;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,79,56,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">⚡</div>
-          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);">SEO Score</div>
+      <div class="gl-card" style="--gl-accent:var(--orange);--gl-tint:var(--gradient-soft);">
+        <div class="gl-card-head">
+          <div class="gl-icon">⚡</div>
+          <div class="gl-term">SEO Score</div>
         </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.75;padding-left:42px;">Pinlo scores each pin from 0–100 based on keyword placement, title length, and description quality. <strong style="color:var(--green-text);">80+</strong> is well-optimized. <strong style="color:var(--amber-text);">60–79</strong> is solid. <strong style="color:var(--red);">Below 60</strong> means it could rank better — regenerate and compare. <em style="color:var(--text3);">Pro feature.</em></div>
+        <div class="gl-body">Every pin is scored <b>0–100</b> on keyword placement, title length, and description quality.</div>
+        <div class="gl-scale">
+          <div class="gl-scale-row"><span class="gl-chip" style="background:var(--green-bg);color:var(--green-text);">80+</span><span>Well-optimized — publish it as is.</span></div>
+          <div class="gl-scale-row"><span class="gl-chip" style="background:var(--amber-bg);color:var(--amber-text);">60–79</span><span>Solid. Worth a second look, but it will rank.</span></div>
+          <div class="gl-scale-row"><span class="gl-chip" style="background:var(--gradient-soft);color:var(--red);">Below 60</span><span>Could rank better — regenerate and compare.</span></div>
+        </div>
+        <div class="gl-note">Pro feature</div>
       </div>
 
     </div>
@@ -949,54 +1051,94 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
 </div>
 
 <div class="view" id="view-about">
-  <div style="max-width:640px;margin:0 auto;padding:0 0.25rem;">
-    <div style="padding:2rem 0 0;">
+  <div class="abt-wrap">
 
-      <!-- Hero card -->
-      <div style="background:var(--gradient);border-radius:22px;padding:2.75rem 2.25rem;margin-bottom:1.25rem;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.07);pointer-events:none;"></div>
-        <div style="position:absolute;bottom:-50px;left:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
-        <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.55);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;">The story</div>
-        <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#fff;line-height:1.25;margin-bottom:14px;">I built this because<br><em>I needed it</em></div>
-        <div style="font-size:15px;color:rgba(255,255,255,0.82);line-height:1.75;max-width:480px;">Running a Pinterest affiliate business. The traffic side clicked. The copy side never got easier.</div>
-      </div>
-
-      <!-- Story -->
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:2rem;margin-bottom:1rem;box-shadow:var(--shadow);border-top:3px solid var(--orange);">
-        <div style="font-size:15px;color:var(--text2);line-height:1.95;margin-bottom:1.25rem;">A title and description for every single pin, every single day. It sounds small. It isn't. If you're posting consistently across a few niches, you're making dozens of these decisions a week — getting the keywords right, making the hook strong enough to stop a scroll, keeping the description from sounding like a product listing.</div>
-        <div style="font-size:15px;color:var(--text2);line-height:1.95;margin-bottom:1.25rem;">I tried ChatGPT. Generic. Didn't understand how Pinterest search works. Templates. Too rigid. Nothing out there was actually built for Pinterest affiliate marketing specifically.</div>
-        <div style="font-size:15px;color:var(--text2);line-height:1.95;">So I built Pinlo. It knows what a Pinterest title needs to do. It knows the description has to lead with a problem, not a product name. You put in what you're promoting and it takes care of the rest.</div>
-      </div>
-
-      <!-- Stats row -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem;">
-        <div style="background:var(--gradient);border-radius:16px;padding:1.5rem 1rem;text-align:center;box-shadow:0 4px 20px rgba(217,79,56,0.25);position:relative;overflow:hidden;">
-          <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none;"></div>
-          <div style="font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#fff;line-height:1;">30</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:5px;line-height:1.4;font-weight:500;">Supported niches</div>
-        </div>
-        <div style="background:var(--gradient);border-radius:16px;padding:1.5rem 1rem;text-align:center;box-shadow:0 4px 20px rgba(217,79,56,0.25);position:relative;overflow:hidden;">
-          <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none;"></div>
-          <div style="font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#fff;line-height:1;">10</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:5px;line-height:1.4;font-weight:500;">Pins per batch (Pro)</div>
-        </div>
-        <div style="background:var(--gradient);border-radius:16px;padding:1.5rem 1rem;text-align:center;box-shadow:0 4px 20px rgba(217,79,56,0.25);position:relative;overflow:hidden;">
-          <div style="position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none;"></div>
-          <div style="font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#fff;line-height:1;">~3s</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:5px;line-height:1.4;font-weight:500;">Per pin generated</div>
-        </div>
-      </div>
-
-      <!-- Founder -->
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:1.75rem;display:flex;align-items:center;gap:18px;box-shadow:var(--shadow);margin-bottom:2rem;">
-        <div style="width:56px;height:56px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;font-family:'Playfair Display',serif;box-shadow:0 4px 16px rgba(217,79,56,0.35);">N</div>
-        <div>
-          <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:3px;">Nicholas</div>
-          <div style="font-size:13px;color:var(--text3);line-height:1.5;">Founder · Pinterest affiliate marketer<br>Built Pinlo for myself, then for you</div>
-        </div>
-      </div>
-
+    <!-- Hero -->
+    <div class="abt-hero">
+      <div class="abt-blob" style="top:-40px;right:-40px;width:200px;height:200px;background:rgba(255,255,255,0.07);"></div>
+      <div class="abt-blob" style="bottom:-50px;left:-30px;width:160px;height:160px;background:rgba(255,255,255,0.04);"></div>
+      <div class="abt-eyebrow">The story</div>
+      <div class="abt-hero-title">I built this because<br><em>I needed it</em></div>
+      <div class="abt-hero-sub">I promote other people's products on Pinterest and earn a cut when someone buys. Finding products was never the hard part. Writing the pins was.</div>
     </div>
+
+    <!-- Story -->
+    <div class="abt-card">
+      <div class="abt-p">Here's the actual job, if you've never done it. You pick a product worth promoting. Then you write a title for it, a description, and a set of hashtags. Then you do it again for the next pin. And the next one. Post a few a day across a couple of topics and <b>you're writing dozens of these a week</b> — each one a small decision that doesn't feel like much until you're staring at a blank box at 11pm avoiding it.</div>
+
+      <div class="abt-p">The thing that took me longest to work out is this: <b>Pinterest isn't really a social network. It's a search engine.</b> People type things into it the way they type into Google — "small bathroom storage ideas," "gifts for someone who has everything." That one fact changes how every pin should be written. A caption that would do fine on Instagram just sits there on Pinterest and gets nothing, because nobody was looking for it.</div>
+
+      <div class="abt-quote">I'm not a copywriter. I just got tired of being mediocre at this five times a day.</div>
+
+      <div class="abt-p">So I tried the shortcuts everyone tries. <b>ChatGPT</b> gave me copy that read nicely and ranked for nothing — it writes for people who are already reading, not for people who are searching. <b>Template packs</b> had the opposite problem: too rigid, and everyone who buys them ends up sounding the same. Neither understood the actual job, which is that a Pinterest title has to survive a search result <em>and</em> earn the click once it's there.</div>
+
+      <div class="abt-p">So I built Pinlo — the tool I kept wishing existed. You tell it what you're promoting and who it's for. It writes the title, the description and the hashtags the way Pinterest actually rewards: <b>a real hook up front, the keywords where the search index looks for them, and a description that opens with the problem the product solves</b> rather than the product's name. The part that used to eat twenty minutes now takes about three seconds.</div>
+    </div>
+
+    <!-- What I learned -->
+    <div class="abt-card">
+      <div class="abt-h2">What I learned the hard way</div>
+      <div class="abt-h2-sub">Four things I wish someone had told me on day one. All four are baked into how Pinlo writes.</div>
+      <div class="abt-lessons">
+        <div class="abt-lesson">
+          <div class="abt-lesson-ico">🔍</div>
+          <div>
+            <div class="abt-lesson-t">Write for the search box, not the feed</div>
+            <div class="abt-lesson-d">Someone has to be typing the words in your title. Clever beats boring, but searchable beats clever.</div>
+          </div>
+        </div>
+        <div class="abt-lesson">
+          <div class="abt-lesson-ico">⏳</div>
+          <div>
+            <div class="abt-lesson-t">Pins don't expire like posts do</div>
+            <div class="abt-lesson-d">A tweet is dead in a day. A good pin can still be sending you clicks a year later — which is exactly why it's worth getting the words right once.</div>
+          </div>
+        </div>
+        <div class="abt-lesson">
+          <div class="abt-lesson-ico">🎯</div>
+          <div>
+            <div class="abt-lesson-t">Lead with the problem, not the product</div>
+            <div class="abt-lesson-d">Nobody searches for a brand they've never heard of. They search for the thing that's annoying them. Name that first and the product sells itself.</div>
+          </div>
+        </div>
+        <div class="abt-lesson">
+          <div class="abt-lesson-ico">🔁</div>
+          <div>
+            <div class="abt-lesson-t">Consistency beats perfection</div>
+            <div class="abt-lesson-d">Ten decent pins will out-earn one perfect one, every time. That's the whole reason speed matters — and the whole reason I built this.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="abt-stats">
+      <div class="abt-stat">
+        <div class="abt-blob" style="top:-20px;right:-20px;width:70px;height:70px;background:rgba(255,255,255,0.08);"></div>
+        <div class="abt-stat-n">30</div>
+        <div class="abt-stat-l">Niches it knows</div>
+      </div>
+      <div class="abt-stat">
+        <div class="abt-blob" style="top:-20px;right:-20px;width:70px;height:70px;background:rgba(255,255,255,0.08);"></div>
+        <div class="abt-stat-n">10</div>
+        <div class="abt-stat-l">Pins in one go (Pro)</div>
+      </div>
+      <div class="abt-stat">
+        <div class="abt-blob" style="top:-20px;right:-20px;width:70px;height:70px;background:rgba(255,255,255,0.08);"></div>
+        <div class="abt-stat-n">~3s</div>
+        <div class="abt-stat-l">To write one pin</div>
+      </div>
+    </div>
+
+    <!-- Founder -->
+    <div class="abt-founder">
+      <div class="abt-avatar">N</div>
+      <div>
+        <div class="abt-founder-n">Nicholas</div>
+        <div class="abt-founder-d">Founder · Pinterest affiliate marketer<br>I still use Pinlo every day for my own pins. When something about it annoys me, I fix it that week.</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1024,7 +1166,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background:#18110E !impo
       </div>
       <div class="support-faq-item" onclick="this.classList.toggle('open')" style="border-bottom:none;">
         <div class="support-faq-q">My generated pins don't match my niche. <span class="support-faq-icon">+</span></div>
-        <div class="support-faq-a">Make sure you've selected a niche before generating. If auto-detect picked the wrong one, click a different niche pill to override it. You can also add a target audience to guide the output.</div>
+        <div class="support-faq-a">The more you tell Pinlo, the closer the copy lands. Pick your niche before you generate — auto-detect makes a fast first guess from your product name, and tapping the niche you want locks it in. Adding a target audience sharpens the result further, since "yoga mat" written for beginners reads very differently to one written for studio owners.</div>
       </div>
     </div>
 
@@ -1369,11 +1511,17 @@ let isDark = localStorage.getItem('pinlo_theme') === 'dark';
 let savedProducts = JSON.parse(localStorage.getItem('pinlo_saved_products')||'[]');
 if (isDark) {
   document.documentElement.setAttribute('data-theme', 'dark');
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('theme-btn');
-    if (btn) btn.textContent = '🌙';
-  });
 }
+// Sync the switch's accessible state + tooltip with the active theme. The knob
+// position and icon highlight are driven purely by [data-theme] in CSS, so this
+// must never write textContent — that would blow away the knob/icon elements.
+function syncThemeBtn() {
+  const btn = document.getElementById('theme-btn');
+  if (!btn) return;
+  btn.setAttribute('aria-checked', isDark ? 'true' : 'false');
+  btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+}
+document.addEventListener('DOMContentLoaded', syncThemeBtn);
 
 const NICHE_DATA = {
   'Automotive & Vehicles':{audience:'motorcycle riders with sore backs on long rides, people upgrading their car interior, weekend mechanics doing their own work, commuters wanting a more comfortable ride',products:['motorcycle saddle','seat cover','dash cam','car organizer','steering wheel cover','motorcycle gloves','floor mats','bike phone mount'],pains:['Uncomfortable stock seat','Cluttered car interior','Back pain on long rides','Boring factory look','Road vibration fatigue']},
@@ -1451,7 +1599,7 @@ function toggleTheme() {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
   localStorage.setItem('pinlo_theme', isDark ? 'dark' : 'light');
-  document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
+  syncThemeBtn();
 }
 
 function updateTabLabels() {
