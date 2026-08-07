@@ -29,7 +29,7 @@ const ROOT = path.resolve(__dirname, '..');
 const APP = path.join(ROOT, 'app', 'index.html');
 
 // ── Ported production logic (kept verbatim; drift-checked below) ─────────────
-const NICHE_PILL_LABELS = {'Automotive & Vehicles':'Automotive','Beauty & Skincare':'Beauty','Books & Education':'Books','Cleaning & Organization':'Cleaning','DIY & Crafts':'DIY','Fashion & Style':'Fashion','Fitness & Gym':'Fitness','Food & Recipes':'Food','Gaming':'Gaming','Hair Care':'Hair','Health & Wellness':'Health','Home Decor':'Home Decor','Hunting & Fishing':'Hunt & Fish','Jewelry & Accessories':'Jewelry','Kitchen & Cooking':'Kitchen','Music & Instruments':'Music','Outdoor & Garden':'Outdoor','Parenting & Family':'Parenting','Personal Finance':'Finance','Pets':'Pets','Photography':'Photography','Self Improvement':'Self Improvement','Spirituality & Crystals':'Spirituality','Sports & Recreation':'Sports','Stationery & Journaling':'Stationery','Supplements & Nutrition':'Supplements','Tech & Gadgets':'Tech','Travel':'Travel','Vintage & Thrift':'Vintage','Wedding & Events':'Wedding'};
+const NICHE_PILL_LABELS = {'Automotive & Vehicles':'Automotive','Bath & Shower':'Bath & Shower','Beauty & Skincare':'Beauty','Books & Education':'Books','Cleaning & Organization':'Cleaning','DIY & Crafts':'DIY','Fashion & Style':'Fashion','Fitness & Gym':'Fitness','Food & Recipes':'Food','Furniture & Office':'Furniture','Gaming':'Gaming','Hair Care':'Hair','Health & Wellness':'Health','Home Decor':'Home Decor','Hunting & Fishing':'Hunt & Fish','Jewelry & Accessories':'Jewelry','Kitchen & Cooking':'Kitchen','Music & Instruments':'Music','Outdoor & Garden':'Outdoor','Parenting & Family':'Parenting','Personal Finance':'Finance','Pets':'Pets','Photography':'Photography','Self Improvement':'Self Improvement','Spirituality & Crystals':'Spirituality','Sports & Recreation':'Sports','Stationery & Journaling':'Stationery','Supplements & Nutrition':'Supplements','Tech & Gadgets':'Tech','Travel':'Travel','Vintage & Thrift':'Vintage','Wedding & Events':'Wedding'};
 
 const NICHE_ALIASES = {
   'automotive':'Automotive & Vehicles','vehicles':'Automotive & Vehicles','cars':'Automotive & Vehicles','car':'Automotive & Vehicles','car accessories':'Automotive & Vehicles','motorcycle':'Automotive & Vehicles','motorcycles':'Automotive & Vehicles','motorbike':'Automotive & Vehicles','auto':'Automotive & Vehicles',
@@ -88,10 +88,14 @@ function pill(rawModelNiche) {
 // ── Drift guard: ported list must match the live pill list in app/index.html ──
 function driftCheck() {
   const html = fs.readFileSync(APP, 'utf8');
-  const pillCount = (html.match(/pickNiche\(this,/g) || []).length;
+  const pills = [...html.matchAll(/pickNiche\(this,'([^']*)'\)/g)].map(m => m[1]);
+  const pillCount = pills.length;
   const ported = Object.keys(NICHE_PILL_LABELS).length;
-  const missing = Object.keys(NICHE_PILL_LABELS).filter(k => !html.includes(`pickNiche(this,'${k}')`));
-  return { pillCount, ported, missing };
+  const missing = Object.keys(NICHE_PILL_LABELS).filter(k => !pills.includes(k));
+  // Checked in both directions: this guard used to look only for ported niches
+  // absent from the app, so niches ADDED to the app were silently never tested.
+  const untested = pills.filter(p => !(p in NICHE_PILL_LABELS));
+  return { pillCount, ported, missing, untested };
 }
 
 // ── Products (cat, product, raw=simulated model niche, expected, accept[], brand, note) ──
@@ -273,7 +277,7 @@ function runSim() {
   lines.push('# Pinlo niche stress-test results');
   lines.push('');
   lines.push(`Mode: **${process.env.ANTHROPIC_API_KEY ? 'LIVE (real API)' : 'SIMULATED (no API key — `raw` field used)'}**`);
-  lines.push(`Drift check: ported ${drift.ported} niches, ${drift.pillCount} pills in app/index.html, missing pills: ${drift.missing.length ? drift.missing.join(', ') : 'none'}`);
+  lines.push(`Drift check: ported ${drift.ported} niches, ${drift.pillCount} pills in app/index.html, missing pills: ${drift.missing.length ? drift.missing.join(', ') : 'none'}, untested app niches: ${drift.untested.length ? drift.untested.join(', ') : 'none'}`);
   lines.push('');
   lines.push('| # | cat | product | model→ | final pill | expected | verdict | note |');
   lines.push('|--|--|--|--|--|--|--|--|');
@@ -361,7 +365,8 @@ async function runLive(key) {
   const lines = [];
   lines.push('# Pinlo niche stress-test results — LIVE (real API)');
   lines.push('');
-  lines.push(`Model: claude-haiku-4-5 · runs/product: ${RUNS} · drift: ${drift.missing.length ? ('MISSING ' + drift.missing.join(',')) : 'clean (' + drift.ported + ' niches)'}`);
+  const driftProblems = [...drift.missing.map(n => 'MISSING ' + n), ...drift.untested.map(n => 'UNTESTED ' + n)];
+  lines.push(`Model: claude-haiku-4-5 · runs/product: ${RUNS} · drift: ${driftProblems.length ? driftProblems.join(', ') : 'clean (' + drift.ported + ' niches)'}`);
   lines.push('');
   lines.push('| # | cat | product | model→ (run1) | final pill | expected | verdict | what (run1) |');
   lines.push('|--|--|--|--|--|--|--|--|');
