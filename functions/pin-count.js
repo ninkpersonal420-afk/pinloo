@@ -8,7 +8,7 @@ export async function onRequestGet(context) {
   try {
     const KV = context.env.PINLO_USERS;
     if (!KV) return new Response(JSON.stringify({ count: 0 }), { status: 200, headers });
-    const BASE_COUNT = 76; // pins generated before counter was added
+    const BASE_COUNT = 236; // pins generated before counter was added
     const val = await KV.get('__global_pins__');
     return new Response(JSON.stringify({ count: BASE_COUNT + parseInt(val || '0') }), { status: 200, headers });
   } catch (_) {
