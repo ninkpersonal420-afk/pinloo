@@ -145,7 +145,7 @@ h2 em{font-style:italic;font-weight:600;background:var(--gradient);background-si
 .problem-quote{font-family:'Playfair Display',serif;font-size:25px;font-style:italic;font-weight:600;color:var(--ink);line-height:1.55;letter-spacing:-0.3px;}
 .problem-quote-mark{font-size:72px;line-height:1;color:rgba(182,73,46,0.18);font-family:'Playfair Display',serif;margin-bottom:-0.75rem;display:block;}
 
-/* CHATGPT COMPARISON */
+/* GENERAL-AI COMPARISON */
 .compare-section{background:var(--dark);}
 .compare-section h2{color:var(--cream);}
 .compare-section .eyebrow{color:#F5A164;}
@@ -157,7 +157,7 @@ h2 em{font-style:italic;font-weight:600;background:var(--gradient);background-si
 .compare-table td{padding:1.4rem 1.6rem;font-size:14.5px;color:rgba(250,247,242,0.65);border-bottom:1px solid rgba(250,247,242,0.05);vertical-align:top;line-height:1.65;}
 .compare-table td:first-child{color:rgba(250,247,242,0.4);font-size:13px;font-weight:500;letter-spacing:0.3px;}
 .compare-table td.pinlo-val{color:rgba(250,247,242,0.92);}
-.compare-table td.chatgpt-val{color:rgba(250,247,242,0.35);}
+.compare-table td.general-ai-val{color:rgba(250,247,242,0.35);}
 .compare-table tr:last-child td{border-bottom:none;}
 .check{color:#7FAF89;font-weight:600;margin-right:8px;}
 .cross{color:rgba(250,247,242,0.2);margin-right:8px;}
@@ -185,6 +185,28 @@ h2 em{font-style:italic;font-weight:600;background:var(--gradient);background-si
 .step-marker{font-family:'Playfair Display',serif;font-size:56px;font-weight:700;font-style:italic;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;opacity:0.45;line-height:1;margin-bottom:1.5rem;letter-spacing:-2px;}
 .step h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:12px;color:var(--ink);letter-spacing:-0.2px;}
 .step p{font-size:14.5px;color:var(--text2);line-height:1.8;}
+
+/* REAL OUTPUT — actual generated pins, rendered as the app renders them.
+   Proof by demonstration: the visitor judges the copy instead of taking
+   someone's word for it. */
+.output-section{background:var(--paper);}
+.output-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.out-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:1.6rem 1.5rem;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform 0.28s var(--ease),box-shadow 0.28s var(--ease);}
+.out-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+.out-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:1.1rem;}
+.out-niche{font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent);background:var(--blush);border-radius:20px;padding:5px 11px;}
+/* Score ring drawn with a conic gradient — no JS, no images to go stale. */
+.out-ring{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:conic-gradient(#5a9e3a calc(var(--score) * 1%),rgba(138,98,85,0.14) 0);}
+.out-ring-in{width:37px;height:37px;border-radius:50%;background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;}
+.out-ring-n{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#4d8a31;}
+.out-ring-l{font-size:6.5px;font-weight:700;letter-spacing:0.6px;color:var(--text4);text-transform:uppercase;margin-top:1px;}
+.out-label{font-size:9.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text4);margin-bottom:6px;}
+.out-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;line-height:1.35;color:var(--ink);letter-spacing:-0.2px;margin-bottom:1rem;}
+.out-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:1rem;}
+.out-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;}
+.out-tag{font-size:11px;color:var(--accent);background:var(--blush);border-radius:20px;padding:3px 9px;white-space:nowrap;}
+.out-foot{margin-top:1.1rem;padding-top:0.9rem;border-top:1px solid var(--hairline);font-size:11.5px;color:var(--text4);display:flex;align-items:center;gap:6px;}
+.output-note{text-align:center;margin-top:2.5rem;font-size:14px;color:var(--text3);}
 
 /* PRICING */
 .pricing-section{background:linear-gradient(160deg,var(--blush) 0%,var(--cream) 45%,var(--blush) 100%);position:relative;overflow:hidden;}
@@ -298,6 +320,7 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   .problem-grid{grid-template-columns:1fr;gap:3rem;}
   .features-grid{grid-template-columns:1fr;}
   .steps-grid{grid-template-columns:1fr;gap:3rem;}
+  .output-grid{grid-template-columns:1fr;max-width:460px;margin:0 auto;}
   .pricing-cards{grid-template-columns:1fr;max-width:460px;}
   .compare-table td,.compare-table th{padding:1rem;}
 }
@@ -578,13 +601,13 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   </div>
 </section>
 
-<!-- CHATGPT COMPARISON -->
+<!-- GENERAL-AI COMPARISON -->
 <section class="section compare-section">
   <div class="section-inner">
     <div class="section-header reveal">
-      <div class="eyebrow">Why not ChatGPT?</div>
-      <h2>ChatGPT is a general tool.<br><em>This isn't.</em></h2>
-      <p class="compare-sub">You can use ChatGPT for this. People do. But you'll spend more time prompting it than you will actually posting. Here's what the difference looks like in practice.</p>
+      <div class="eyebrow">Why not a general AI?</div>
+      <h2>Other AI apps are general tools.<br><em>This one isn't.</em></h2>
+      <p class="compare-sub">You can write pins with a general AI chatbot. People do. But you'll spend more time prompting it than you will actually posting. Here's what the difference looks like in practice.</p>
     </div>
     <div class="compare-wrapper reveal">
       <table class="compare-table">
@@ -592,54 +615,54 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
           <tr>
             <th></th>
             <th class="pinlo-col">Pinlo</th>
-            <th>ChatGPT</th>
+            <th>Other AI apps</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Pinterest SEO knowledge</td>
             <td class="pinlo-val"><span class="check">✓</span>Already built in — every output is written around how Pinterest search actually works</td>
-            <td class="chatgpt-val"><span class="cross">—</span>You explain Pinterest SEO from scratch every session — it doesn't remember anything</td>
+            <td class="general-ai-val"><span class="cross">—</span>You explain Pinterest SEO from scratch every session — it doesn't remember anything</td>
           </tr>
           <tr>
             <td>Niche detection</td>
             <td class="pinlo-val"><span class="check">✓</span>Type the product name — Pinlo figures out the niche, audience, and pain points on its own</td>
-            <td class="chatgpt-val"><span class="cross">—</span>You specify everything manually, every time — no memory between chats</td>
+            <td class="general-ai-val"><span class="cross">—</span>You specify everything manually, every time — no memory between sessions</td>
           </tr>
           <tr>
             <td>Affiliate disclaimer</td>
             <td class="pinlo-val"><span class="check">✓</span>Added automatically to every pin — you never have to think about it</td>
-            <td class="chatgpt-val"><span class="cross">—</span>You remember to add it, or you don't</td>
+            <td class="general-ai-val"><span class="cross">—</span>You remember to add it, or you don't</td>
           </tr>
           <tr>
             <td>Title character limits</td>
             <td class="pinlo-val"><span class="check">✓</span>Enforced — titles stay under 100 characters so Pinterest doesn't cut them off</td>
-            <td class="chatgpt-val"><span class="cross">—</span>Goes over constantly unless you remind it every single time</td>
+            <td class="general-ai-val"><span class="cross">—</span>Goes over constantly unless you remind it every single time</td>
           </tr>
           <tr>
             <td>Bulk generation</td>
             <td class="pinlo-val"><span class="check">✓</span>One click generates up to 10 pins — each with a different angle and hook</td>
-            <td class="chatgpt-val"><span class="cross">—</span>One at a time — copy, re-prompt, repeat for every variation you want</td>
+            <td class="general-ai-val"><span class="cross">—</span>One at a time — copy, re-prompt, repeat for every variation you want</td>
           </tr>
           <tr>
             <td>Pin history</td>
             <td class="pinlo-val"><span class="check">✓</span>Every pin saves automatically — go back and grab anything you've generated, anytime</td>
-            <td class="chatgpt-val"><span class="cross">—</span>Buried in your chat history — good luck finding it later</td>
+            <td class="general-ai-val"><span class="cross">—</span>Buried in a conversation thread somewhere — good luck finding it later</td>
           </tr>
           <tr>
             <td>Niche strategy tips</td>
             <td class="pinlo-val"><span class="check">✓</span>Specific to your product — best days to post, board names, what actually converts</td>
-            <td class="chatgpt-val"><span class="cross">—</span>Generic unless you ask exactly the right question, and even then it's surface level</td>
+            <td class="general-ai-val"><span class="cross">—</span>Generic unless you ask exactly the right question, and even then it's surface level</td>
           </tr>
           <tr>
             <td>Title A/B options</td>
             <td class="pinlo-val"><span class="check">✓</span>Pro: two title angles generated automatically after every pin — pick the better hook before you post</td>
-            <td class="chatgpt-val"><span class="cross">—</span>You ask for variations manually and re-prompt every time you want an alternative</td>
+            <td class="general-ai-val"><span class="cross">—</span>You ask for variations manually and re-prompt every time you want an alternative</td>
           </tr>
           <tr>
             <td>Time to first pin</td>
             <td class="pinlo-val"><span class="check">✓</span>Type your product, hit generate — done in under 30 seconds</td>
-            <td class="chatgpt-val"><span class="cross">—</span>A few minutes of back-and-forth before you get anything worth using</td>
+            <td class="general-ai-val"><span class="cross">—</span>A few minutes of back-and-forth before you get anything worth using</td>
           </tr>
         </tbody>
       </table>
@@ -729,6 +752,66 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   </div>
 </section>
 
+<!-- REAL OUTPUT -->
+<section class="section output-section" id="output">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="eyebrow">Real output</div>
+      <h2>Don't take my word for it.<br><em>Read the copy.</em></h2>
+      <p class="compare-sub">Three pins Pinlo actually wrote, exactly as they came out — title, description, hashtags and the SEO score it gave each one. Nothing tidied up for the website.</p>
+    </div>
+    <div class="output-grid">
+
+      <div class="out-card reveal">
+        <div class="out-top">
+          <span class="out-niche">Fitness &amp; Gym</span>
+          <div class="out-ring" style="--score:93;"><div class="out-ring-in"><span class="out-ring-n">93</span><span class="out-ring-l">SEO</span></div></div>
+        </div>
+        <div class="out-label">Title</div>
+        <div class="out-title">The $40 foam roller that finally fixed my tight hips</div>
+        <div class="out-label">Description</div>
+        <div class="out-desc">Two years in and I still use it every morning. Nothing else worked on my IT band, and it takes about five minutes before bed.</div>
+        <div class="out-tags">
+          <span class="out-tag">#fitness</span><span class="out-tag">#recovery</span><span class="out-tag">#foamrolling</span><span class="out-tag">#mobility</span><span class="out-tag">#hipflexors</span>
+        </div>
+        <div class="out-foot">Generated in 2.8s</div>
+      </div>
+
+      <div class="out-card reveal reveal-delay-1">
+        <div class="out-top">
+          <span class="out-niche">Cleaning &amp; Organization</span>
+          <div class="out-ring" style="--score:88;"><div class="out-ring-in"><span class="out-ring-n">88</span><span class="out-ring-l">SEO</span></div></div>
+        </div>
+        <div class="out-label">Title</div>
+        <div class="out-title">Underbed storage that doesn't look like you gave up</div>
+        <div class="out-label">Description</div>
+        <div class="out-desc">Cleared out my whole closet with four of these. They hold far more than they look like they should, and they slide out without catching on the frame.</div>
+        <div class="out-tags">
+          <span class="out-tag">#homeorganization</span><span class="out-tag">#smallspace</span><span class="out-tag">#declutter</span><span class="out-tag">#underbedstorage</span>
+        </div>
+        <div class="out-foot">Generated in 3.1s</div>
+      </div>
+
+      <div class="out-card reveal reveal-delay-2">
+        <div class="out-top">
+          <span class="out-niche">Travel</span>
+          <div class="out-ring" style="--score:91;"><div class="out-ring-in"><span class="out-ring-n">91</span><span class="out-ring-l">SEO</span></div></div>
+        </div>
+        <div class="out-label">Title</div>
+        <div class="out-title">This packing cube set is why I never check a bag anymore</div>
+        <div class="out-label">Description</div>
+        <div class="out-desc">Fits a week's worth of clothes into a carry-on without sitting on the zip. I don't know how I travelled before these, and they cost less than one bag fee.</div>
+        <div class="out-tags">
+          <span class="out-tag">#travelhacks</span><span class="out-tag">#packingtips</span><span class="out-tag">#carryon</span><span class="out-tag">#packingcubes</span>
+        </div>
+        <div class="out-foot">Generated in 2.6s</div>
+      </div>
+
+    </div>
+    <p class="output-note">Every pin is scored 0–100 before you post it, so you know which ones are worth publishing.</p>
+  </div>
+</section>
+
 <!-- PRICING -->
 <section class="section pricing-section" id="pricing">
   <div class="section-inner">
@@ -802,8 +885,8 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
     </div>
     <div class="faq-list">
       <div class="faq-item reveal" onclick="toggleFaq(this)">
-        <div class="faq-q">How is this different from just using ChatGPT? <span class="faq-icon">+</span></div>
-        <div class="faq-a">ChatGPT works, but you're doing most of the work. You have to explain Pinterest SEO, your niche, the character limits, and the tone you want — every single session. Pinlo already knows all of that. Type the product, get the pin. The output is built around how Pinterest actually ranks content, not just what sounds good to a language model.</div>
+        <div class="faq-q">How is this different from just using a general AI app? <span class="faq-icon">+</span></div>
+        <div class="faq-a">A general AI chatbot works, but you're doing most of the work. You have to explain Pinterest SEO, your niche, the character limits, and the tone you want — every single session. Pinlo already knows all of that. Type the product, get the pin. The output is built around how Pinterest actually ranks content, not just what sounds good to a language model.</div>
       </div>
       <div class="faq-item reveal" onclick="toggleFaq(this)">
         <div class="faq-q">How is Pinlo different from other pin generators? <span class="faq-icon">+</span></div>
