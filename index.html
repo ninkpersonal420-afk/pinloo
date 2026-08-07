@@ -66,6 +66,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.8rem 3rem;display:
 .nav-open-app:hover{color:var(--ink);border-color:var(--text3);}
 .nav-cta{background:var(--gradient);background-size:160% 160%;color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:10px 24px;border-radius:100px;transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;box-shadow:0 4px 16px rgba(217,79,56,0.3);animation:gradientShift 6s ease infinite;}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(217,79,56,0.4);}
+/* Mobile nav: below 600px the links, Sign in and Open app all used to be
+   display:none, which left returning users no way to reach their account from
+   a phone. Sign in now stays in the bar and everything else moves into this
+   panel behind the hamburger. */
+.nav-toggle{display:none;width:38px;height:38px;flex-shrink:0;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;background:none;border:1px solid var(--border2);border-radius:11px;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
+.nav-toggle:hover{border-color:var(--text3);}
+.nav-toggle span{display:block;width:16px;height:2px;border-radius:2px;background:var(--text2);transition:transform 0.25s var(--ease),opacity 0.18s;}
+.nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0;}
+.nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:62px;left:0;right:0;z-index:99;padding:0.75rem 1.25rem 1.5rem;background:rgba(251,246,241,0.98);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-bottom:1px solid var(--hairline);box-shadow:0 20px 44px rgba(22,12,7,0.14);opacity:0;transform:translateY(-10px);pointer-events:none;transition:opacity 0.22s var(--ease),transform 0.22s var(--ease);}
+.mobile-menu.open{opacity:1;transform:translateY(0);pointer-events:auto;}
+.mobile-menu a{display:block;text-decoration:none;font-size:16px;font-weight:500;color:var(--text2);padding:14px 4px;border-bottom:1px solid var(--hairline);transition:color 0.15s;}
+.mobile-menu a:active{color:var(--accent);}
+.mm-actions{display:flex;flex-direction:column;gap:10px;margin-top:1.25rem;}
+.mobile-menu .mm-actions a{border-bottom:none;text-align:center;border-radius:100px;padding:13px 18px;font-weight:600;font-size:15px;}
+.mobile-menu .mm-signin{border:1px solid var(--border2);color:var(--ink);}
+.mobile-menu .mm-cta{background:var(--gradient);color:#fff;box-shadow:0 4px 16px rgba(217,79,56,0.3);}
 
 /* HERO */
 .hero{min-height:92vh;display:flex;align-items:center;padding:10rem 2rem 6rem;position:relative;overflow:hidden;}
@@ -325,14 +343,27 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
   .compare-table td,.compare-table th{padding:1rem;}
 }
 @media(max-width:600px){
-  nav{padding:1rem 1.25rem;}
+  nav{padding:0.7rem 1rem;gap:8px;}
   .nav-links{display:none;}
-  .nav-signin{display:none;}
   .nav-open-app{display:none;}
+  .nav-logo-tagline{display:none;}
+  .nav-logo{font-size:18px;}
+  .nav-logo-svg{width:34px;height:34px;border-radius:9px;}
+  .nav-brand{gap:9px;}
+  /* Sign in stays reachable in one tap; the rest lives in the menu. */
+  .nav-signin{font-size:13.5px;white-space:nowrap;}
+  .nav-right{gap:11px;}
+  .nav-cta{padding:9px 15px;font-size:13.5px;}
+  .nav-toggle{display:inline-flex;}
+  .mobile-menu{display:block;}
   .features-grid{grid-template-columns:1fr;}
   .stats-inner{gap:2rem;}
   .stat-divider{display:none;}
   h1{letter-spacing:-1px;}
+}
+@media(max-width:360px){
+  .nav-logo{display:none;}
+  .nav-cta{padding:9px 13px;}
 }
 
 /* ── Sign-up modal ───────────────────────────────────────────── */
@@ -434,8 +465,23 @@ h1 em::after{content:'';position:absolute;left:0;bottom:0.04em;width:100%;height
     <a href="/app?signin" class="nav-signin">Sign in</a>
     <a href="/app" class="nav-open-app">Open app</a>
     <a href="/app" class="nav-cta">Try free</a>
+    <button class="nav-toggle" id="nav-toggle" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#features" onclick="smoothScroll('features');closeMobileMenu();return false;">Features</a>
+  <a href="#how" onclick="smoothScroll('how');closeMobileMenu();return false;">How it works</a>
+  <a href="#output" onclick="smoothScroll('output');closeMobileMenu();return false;">Real output</a>
+  <a href="#pricing" onclick="smoothScroll('pricing');closeMobileMenu();return false;">Pricing</a>
+  <a href="#faq" onclick="smoothScroll('faq');closeMobileMenu();return false;">FAQ</a>
+  <div class="mm-actions">
+    <a href="/app?signin" class="mm-signin">Sign in to your account</a>
+    <a href="/app" class="mm-cta">Try free — no card</a>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -1020,6 +1066,33 @@ function smoothScroll(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// ── Mobile menu ──────────────────────────────────────────────
+function closeMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('nav-toggle');
+  if (!menu) return;
+  menu.classList.remove('open');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('nav-toggle');
+  if (!menu) return;
+  const open = menu.classList.toggle('open');
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+// Tapping anywhere outside the panel or the button dismisses it.
+document.addEventListener('click', e => {
+  const menu = document.getElementById('mobile-menu');
+  if (!menu || !menu.classList.contains('open')) return;
+  if (menu.contains(e.target) || e.target.closest('#nav-toggle')) return;
+  closeMobileMenu();
+});
+// Rotating to landscape can cross the 600px breakpoint and hide the toggle,
+// which would otherwise strand the panel open with no way to close it.
+window.addEventListener('resize', () => { if (window.innerWidth > 600) closeMobileMenu(); });
 
 const reveals = document.querySelectorAll('.reveal');
 const observer = new IntersectionObserver((entries) => {
